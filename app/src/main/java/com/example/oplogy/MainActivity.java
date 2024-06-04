@@ -3,6 +3,8 @@ package com.example.oplogy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -12,6 +14,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView textMain = findViewById(R.id.TextMain);
+        EditText textMain = findViewById(R.id.TextMain);
+        Button buttonStart = (Button) findViewById(R.id.buttonStart);
+
+
     }
 }

@@ -12,16 +12,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <TextView
+    <EditText
         android:id="@+id/TextMain"
-        android:textColor="@color/material_on_background_disabled"
+        android:hint="開始を押してください"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:text="PracticeTeam"
+        android:text=""
         android:layout_gravity="center"
-        android:textSize="50dp"/>
+        android:textSize="30dp"/>
     <Button
+        android:id="@+id/buttonStart"
         android:layout_marginTop="300dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
