@@ -8,8 +8,8 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/button1"
-        android:text="押せよ"
+        android:id="@+id/mapmapcreate"
+        android:text="マップ生成"
         android:textSize="50px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
