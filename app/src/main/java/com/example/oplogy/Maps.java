@@ -10,19 +10,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.oplogy.databinding.ActivityMapsBinding;
-//import com.google.type.LatLng;
+import com.example.oplogy.databinding.MapsBinding;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class Maps extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
+    private MapsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
+        binding = MapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -45,13 +44,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        /// 緯度経度
-        LatLng loc = new LatLng(35.17260398479137, 136.88635173557998);
-        /// マーカーオプションを設定（情報ウィンドウ）
-        mMap.addMarker(new MarkerOptions().position(loc).title("トライデントコンピュータ専門学校"));
-        /// 表示位置を地図に指定
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-        /// 地図の倍率を指定
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 17));
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
