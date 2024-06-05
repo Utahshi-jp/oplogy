@@ -20,19 +20,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = findViewById(R.id.button1);
-        button.setOnClickListener(this);
-        editText = findViewById(R.id.textview1);
 
+
+        findViewById(R.id.mapmapcreate).setOnClickListener(
+                view->{
+
+
+                }
+        );
     }
 
-
-
-
-        @Override
+    @Override
     public void onClick(View v) {
-        if (v == button){
-            editText.setText("押した");
-        }
+
     }
 }
