@@ -7,6 +7,7 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
+
     <EditText
         android:id="@+id/editNumber"
         android:layout_width="match_parent"
@@ -45,6 +46,24 @@
         android:layout_height="wrap_content"
         android:text="" />
 
+
+=======
+    <Button
+        android:id="@+id/mapmapcreate"
+        android:text="マップ生成"
+        android:textSize="50px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <EditText
+        android:id="@+id/textview1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="100px"
+        android:hint="ここだよ"
+        android:text=""
+        />
 
 
 </LinearLayout>

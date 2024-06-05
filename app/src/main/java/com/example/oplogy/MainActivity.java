@@ -3,7 +3,9 @@ package com.example.oplogy;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import android.annotation.SuppressLint;
+import androidd.os.Bunle;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,10 +32,19 @@ public class MainActivity extends AppCompatActivity {
     private EditText time;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    Button button;
+//    TextView textView;
+    EditText editText;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
          textView=findViewById(R.id.showText);
          btnShow=findViewById(R.id.btnShow);
@@ -81,6 +92,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
+
+
+
+        findViewById(R.id.mapmapcreate).setOnClickListener(
+                view->{
+
+
+                }
+        );
+    }
+
+    @Override
+    public void onClick(View v) {
+
+
     }
 }
 class User {
