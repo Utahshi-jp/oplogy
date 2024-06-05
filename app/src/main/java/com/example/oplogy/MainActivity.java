@@ -19,10 +19,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
         findViewById(R.id.mapmapcreate).setOnClickListener(
                 view->{
 
+
                 }
         );
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
