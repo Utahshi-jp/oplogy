@@ -1,28 +1,21 @@
 package com.example.oplogy;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
-import androidd.os.Bunle;
-
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.HashMap;
-import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView textView;
     private Button btnShow;
     private Button btnAdd;
@@ -31,9 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText date;
     private EditText time;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     Button button;
