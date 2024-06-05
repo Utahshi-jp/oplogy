@@ -10,50 +10,168 @@
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="5"/>
+        android:layout_weight="2"/>
 
-    <TextView
-        android:id="@+id/creatUUID"
+
+<!--    ID作成のレイアウト-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageUuid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/checked_image"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/creatUUID"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="ID作成"
+            android:textSize="50dp"
+            />
+
+    </LinearLayout>
+
+
+<!--    セットアップのレイアウト-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageSetup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/checked_image"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/setUp"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:text="セットアップ"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+
+
+<!--    ルート表示のレイアウト-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageRoot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/box_root"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/root"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:text="ルート表示"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ID作成"
-        android:textSize="30dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:paddingTop="30dp"
-        android:paddingBottom="20dp"/>
+        android:layout_weight="2"/>
 
-
-
-    <TextView
-        android:id="@+id/setUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="セットアップ"
-        android:textSize="30dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:layout_gravity="center"/>
-
-    <TextView
-        android:id="@+id/root"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ルート表示"
-        android:textSize="30dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:layout_gravity="center"/>
-
+<!--    提出状況のレイアウト-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="提出状況"
-        android:textSize="30dp"
+        android:textSize="40dp"
         android:layout_weight="1"
-        android:tgravity="center"
+        android:gravity="center"
         android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="359dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未提出"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="提出済み"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+
+<!--    未提出・提出済みのボタンのレイアウト-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="5"
+        android:weightSum="10"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/Notsubmission"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="未提出"
+            android:textSize="25dp"
+            android:layout_weight="5"/>
+
+
+        <Button
+            android:id="@+id/submission"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="提出済"
+            android:textSize="25dp"
+            android:layout_weight="5"/>
+    </LinearLayout>
 
 
 </LinearLayout>
