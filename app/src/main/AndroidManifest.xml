@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Oplogy"
         tools:targetApi="31">
-
+        <activity
+            android:name=".SetUpActivity"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -26,19 +28,18 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value = "AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw" />
+            android:value="AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw" />
 
         <activity
             android:name=".MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
-
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
