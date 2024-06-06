@@ -46,40 +46,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          time=findViewById(R.id.editTime);
 
 
-         //データの追加(適当なデータを追加しています。実際にはデータベースに保存したいデータを追加してください。)
-
-        findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                User user = new User(number.getText().toString(), address.getText().toString(),date.getText().toString(),time.getText().toString());
-
-
-                db.collection("users")
-                        .add(user)
-                        .addOnSuccessListener(documentReference -> Log.d("@FB1", "DocumentSnapshot added with ID: " + documentReference.getId()))
-                        .addOnFailureListener(e -> Log.w("@FB1", "Error adding document", e));
+        // ⑤Read Data
+        // Firestoreのコレクション「users」のドキュメント一覧を取得する
+        // 非同期で取得処理が動作する。結果を受け取るために処理完了時のリスナーをセットする
+        db.collection("questionnaireForms").get().addOnCompleteListener(task -> {
+            String data = "";
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Log.d("@FB1", document.getId() + "=>" + document.getData());
+                    data += document.getId() + "=>" + document.getData() + "\n";
+                }
+            } else {
+                data = "Error getting documents." + task.getException().getMessage();
             }
+            textView.setText(data);//編集したデータを画面下部に表示
         });
 
 
-        btnShow.setOnClickListener(v -> {
-            // ⑤Read Data
-            // Firestoreのコレクション「users」のドキュメント一覧を取得する
-            // 非同期で取得処理が動作する。結果を受け取るために処理完了時のリスナーをセットする
-            db.collection("users").get().addOnCompleteListener(task -> {
-                String data = "";
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("@FB1", document.getId() + "=>" + document.getData());
-                        User user = document.toObject(User.class);
-                        data += user + "\n";
-                    }
-                } else {
-                    data = "Error getting documents." + task.getException().getMessage();
-                }
-                textView.setText(data);//編集したデータを画面下部に表示
-            });
 
+        btnShow.setOnClickListener(v -> {
 
         });
 
