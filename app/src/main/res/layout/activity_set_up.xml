@@ -12,70 +12,189 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
-        android:text="設定"
-        android:textSize="100px"/>
+        android:text="@string/setUp"
+        android:textSize="30sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/teacherName"
+        android:gravity="center"/>
 
     <EditText
         android:id="@+id/teacherName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"/>
+        android:autofillHints=""
+        android:inputType=""
+        tools:ignore="LabelFor" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/startPoint"
+        android:gravity="center"/>
 
     <EditText
         android:id="@+id/startPoint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"/>
+        android:autofillHints=""
+        android:inputType=""
+        tools:ignore="LabelFor" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/startTime"
+        android:gravity="center"/>
 
     <EditText
         android:id="@+id/firstTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        />
+        android:autofillHints=""
+        android:inputType=""
+        tools:ignore="LabelFor"/>
 
-    <EditText
-        android:id="@+id/endTime"
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"/>
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/endTime"
+        android:gravity="center"/>
 
     <EditText
-        android:id="@+id/intervalTime"
+    android:id="@+id/endTime"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autofillHints=""
+    android:inputType=""
+    tools:ignore="LabelFor"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"/>
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/intervalTime"
+        android:gravity="center"/>
 
     <EditText
-        android:id="@+id/breakTime"
+    android:id="@+id/intervalTime"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autofillHints=""
+    android:inputType=""
+    tools:ignore="LabelFor"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"/>
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/breakTime"
+        android:gravity="center"/>
 
     <EditText
-        android:id="@+id/totalStudent"
+    android:id="@+id/breakTime"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autofillHints=""
+    android:inputType=""
+    tools:ignore="LabelFor"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"/>
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+    <TextView
+        android:layout_width="90sp"
+        android:layout_height="wrap_content"
+        android:text="@string/totalStudent"
+        android:gravity="center"/>
+
+    <EditText
+    android:id="@+id/totalStudent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autofillHints=""
+    android:inputType=""
+    tools:ignore="LabelFor"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="2">
+        android:weightSum="2"
+        android:layout_marginTop="20sp">
 
     <Button
         android:id="@+id/resetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="リセット"
-        android:layout_marginRight="100dp"/>
+        android:text="@string/reset"
+        android:layout_marginEnd="100dp"/>
 
     <Button
         android:id="@+id/setUpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="設定"/>
+        android:text="@string/setUp"/>
 
     </LinearLayout>
 
