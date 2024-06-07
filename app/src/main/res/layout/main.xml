@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="20"
-    tools:context=".Main">
+    tools:context=".MainActivity">
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -156,7 +156,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/Notsubmission"
+            android:id="@+id/notSubmission"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="未提出"
