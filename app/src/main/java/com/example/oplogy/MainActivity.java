@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        セットアップのクリック処理
         if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetupActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
 
         }
