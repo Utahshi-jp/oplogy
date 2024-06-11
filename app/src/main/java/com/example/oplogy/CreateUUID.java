@@ -1,14 +1,12 @@
 package com.example.oplogy;
 
-import androidx.appcompat.app.AppCompatActivity;
+import java.util.UUID;
 
-import android.os.Bundle;
+public class CreateUUID {
 
-public class CreateUUID extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_uuid);
+    public static String generateUUID() {
+        // UUIDを生成する処理
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 }
