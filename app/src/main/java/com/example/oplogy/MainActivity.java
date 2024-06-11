@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     //    ID作成のTextViewとImageView
@@ -32,6 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int previousRoot = 0; //元の画像のインデックス
     //    提出状況のTextViewとImageView
     private TextView submission;
+
+    //firestoreの受信関連
+    private FirebaseFirestore db;
+    private FirestoreReception firestoreReception;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        提出状況のインテント
         submission = findViewById(R.id.submission);
         submission.setOnClickListener(this);
+
+//      firestoreの受信関連
+        db = FirebaseFirestore.getInstance();
+        firestoreReception = new FirestoreReception();
+
+        firestoreReception.getDocumentsByClassId(100);
+
+
 
 
     }
