@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">oplogy</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="setUp">設定</string>
+    <string name="reset">リセット</string>
+    <string name="teacherName">担任の名前</string>
+    <string name="startPoint">開始地点</string>
+    <string name="startTime">開始時刻</string>
+    <string name="endTime">終了時刻</string>
+    <string name="intervalTime">訪問間隔</string>
+    <string name="breakTime">休憩時間</string>
+    <string name="totalStudent">生徒の人数</string>
 </resources>
