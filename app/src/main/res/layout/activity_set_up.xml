@@ -76,7 +76,7 @@
         android:gravity="center"/>
 
     <EditText
-        android:id="@+id/firstTime"
+        android:id="@+id/startTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints=""
