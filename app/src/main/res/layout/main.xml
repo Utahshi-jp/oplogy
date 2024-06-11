@@ -108,6 +108,7 @@
 
 <!--    提出状況のレイアウト-->
     <TextView
+        android:id="@+id/submission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="提出状況"
@@ -116,62 +117,10 @@
         android:gravity="center"
         android:layout_gravity="center"/>
 
-    <LinearLayout
-        android:layout_width="359dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:weightSum="5">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="未提出"
-            android:textSize="25dp"
-            android:textStyle="bold"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:layout_gravity="center"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="提出済み"
-            android:textSize="25dp"
-            android:textStyle="bold"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:layout_gravity="center"/>
-    </LinearLayout>
 
 
-<!--    未提出・提出済みのボタンのレイアウト-->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="5"
-        android:weightSum="10"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/notSubmission"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="未提出"
-            android:textSize="25dp"
-            android:layout_weight="5"/>
 
 
-        <Button
-            android:id="@+id/submission"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="提出済"
-            android:textSize="25dp"
-            android:layout_weight="5"/>
-    </LinearLayout>
 
 
 </LinearLayout>

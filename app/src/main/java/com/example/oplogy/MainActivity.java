@@ -26,11 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView root;
     private ImageView imageRoot;
     private int previousRoot = 0; //元の画像のインデックス
-
-//    未提出・提出済みのボタン
-    private Button notSubmission;
-    private Button submission;
-
+    //    提出状況のTextViewとImageView
+    private TextView submission;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         root = findViewById(R.id.root);
         root.setOnClickListener(this);
         imageRoot = findViewById(R.id.imageRoot);
-
-//        未提出のボタンのインテント
-        notSubmission = findViewById(R.id.notSubmission);
-        notSubmission.setOnClickListener(this);
-//        未提出のボタンのインテント
+//        提出状況のインテント
         submission = findViewById(R.id.submission);
         submission.setOnClickListener(this);
+
 
     }
 
@@ -83,14 +77,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             imageRoot.setImageResource(R.drawable.pin);
             Intent toRoot = new Intent(MainActivity.this,RootSearchActivity.class);
             startActivity(toRoot);
-
         }
-
-        if(view == notSubmission){
-            Intent toNotsubmission = new Intent(MainActivity.this,SubmissionActivity.class);
-            startActivity(toNotsubmission);
-        }
-
+//        提出状況のクリック処理
         if(view == submission){
             Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
             startActivity(toSubmission);
