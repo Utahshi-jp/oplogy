@@ -8,6 +8,16 @@
     android:orientation="vertical"
     android:gravity="center">
 
+
+    <TextView
+        android:id="@+id/toMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="🔙"
+        android:textSize="50dp"
+        tools:ignore="RtlCompat" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,7 +89,6 @@
             android:id="@+id/startTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="showTimePickerDialog"
             android:autofillHints=""
             android:inputType=""
             tools:ignore="LabelFor"/>
@@ -103,7 +112,6 @@
             android:id="@+id/endTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="showTimePickerDialog"
             android:autofillHints=""
             android:inputType=""
             tools:ignore="LabelFor"/>

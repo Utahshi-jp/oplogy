@@ -15,6 +15,7 @@ public class SetUpActivity extends FragmentActivity
 
     private TextView startTime;
     private TextView endTime;
+    private boolean isStartTimeSelected = true; // デフォルトはstartTimeを選択
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,21 +24,37 @@ public class SetUpActivity extends FragmentActivity
 
         startTime = findViewById(R.id.startTime);
         endTime = findViewById(R.id.endTime);
+
+        startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isStartTimeSelected = true;
+                showTimePickerDialog();
+            }
+        });
+
+        endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isStartTimeSelected = false;
+                showTimePickerDialog();
+            }
+        });
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        String str = String.format(Locale.US, "%d:%d", hourOfDay, minute); // Textviewに保存する形式を設定
 
-        String str = String.format(Locale.US, "%d:%d", hourOfDay, minute);
-
-        startTime.setText(str);
-        endTime.setText(str);
-
+        if (isStartTimeSelected) { //押した場所を判定して、押したほうにだけ挿入する
+            startTime.setText(str);
+        } else {
+            endTime.setText(str);
+        }
     }
 
-    public void showTimePickerDialog(View v) {
+    private void showTimePickerDialog() { // Dialogを表示する
         DialogFragment newFragment = new TimePick();
         newFragment.show(getSupportFragmentManager(), "timePicker");
-
     }
 }
