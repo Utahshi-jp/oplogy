@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         submission = findViewById(R.id.submission);
         submission.setOnClickListener(this);
 
-//      firestoreの受信関連
+//      firestoreの受信関連の宣言
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
-
+//      受信するメソッドの呼び出し
         firestoreReception.getDocumentsByClassId(100);
 
 

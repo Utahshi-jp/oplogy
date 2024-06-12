@@ -36,26 +36,8 @@ public class FirestoreReception {
                                 Map<String, Object> data = document.getData();
 
                                 // デバッグ用のログ出力
-                                Log.d("FirestoreReception", "Document ID: " + document.getId());
+//                                Log.d("FirestoreReception", "Document ID: " + document.getId());
                                 Log.d("FirestoreReception", "Data: " + data);
-
-                                // ここでデータを取得し、必要に応じて処理を行います
-//                                String parentName = (String) data.get("patronName");
-//                                String childName = (String) data.get("childName");
-//                                String studentId = (String) data.get("studentNumber");
-////                                Timestamp address = (Timestamp) data.get("address");
-//                                List<Timestamp> firstDay = (List<Timestamp>) data.get("firstDay");
-//                                List<Timestamp> secondDay = (List<Timestamp>) data.get("secondDay");
-//                                List<Timestamp> thirdDay = (List<Timestamp>) data.get("thirdDay");
-//
-//                                // 取得したデータを使って必要な処理を行う
-//                                Log.d("FirestoreReception", "ParentName: " + parentName);
-//                                Log.d("FirestoreReception", "ChildName: " + childName);
-//                                Log.d("FirestoreReception", "StudentNumber: " + studentId);
-////                                Log.d("FirestoreReception", "Address: " + address.toDate());
-//                                Log.d("FirestoreReception", "First Day: " + firstDay);
-//                                Log.d("FirestoreReception", "Second Day: " + secondDay);
-//                                Log.d("FirestoreReception", "Third Day: " + thirdDay);
                             }
                         } else {
                             Log.w("FirestoreReception", "Error getting documents.", task.getException());
