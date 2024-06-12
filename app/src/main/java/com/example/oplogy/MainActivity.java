@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,18 +19,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
     private ImageView imageUuid;
-    private int previousCreateUUid = 0; //元の画像のインデックス
 
 
     //    セットアップのTextViewとImageView
     private TextView setUp;
     private ImageView imageSetup;
-    private int previousSetUp = 0; //元の画像のインデックス
 
     //    セットアップのTextViewとImageView
     private TextView root;
     private ImageView imageRoot;
-    private int previousRoot = 0; //元の画像のインデックス
     //    提出状況のTextViewとImageView
     private TextView submission;
 
@@ -94,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,RootSearchActivity.class);
+            Intent toRoot = new Intent(MainActivity.this, Map_Activity.class);
             startActivity(toRoot);
         }
 //        提出状況のクリック処理

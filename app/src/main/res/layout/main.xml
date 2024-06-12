@@ -85,7 +85,7 @@
             android:id="@+id/imageRoot"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/box_root"
+            android:src="@drawable/pin"
             android:layout_weight="1"
             />
 
@@ -104,7 +104,7 @@
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"/>
+        android:layout_weight="5"/>
 
 <!--    提出状況のレイアウト-->
     <TextView
@@ -113,6 +113,7 @@
         android:layout_height="wrap_content"
         android:text="提出状況"
         android:textSize="40dp"
+        android:textStyle="bold"
         android:layout_weight="1"
         android:gravity="center"
         android:layout_gravity="center"/>
