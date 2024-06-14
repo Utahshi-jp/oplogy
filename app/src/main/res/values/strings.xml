@@ -10,4 +10,5 @@
     <string name="intervalTime">訪問間隔</string>
     <string name="breakTime">休憩時間</string>
     <string name="totalStudent">生徒の人数</string>
+    <string name="timeSet">時刻設定</string>
 </resources>

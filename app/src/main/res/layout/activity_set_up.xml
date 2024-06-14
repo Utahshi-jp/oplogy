@@ -11,9 +11,10 @@
 
     <TextView
         android:id="@+id/toMain"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="left"
+        android:layout_gravity="left"
+        android:paddingStart="20dp"
         android:text="🔙"
         android:textSize="50dp"
         tools:ignore="RtlCompat" />
@@ -85,13 +86,25 @@
             android:text="@string/startTime"
             android:gravity="center"/>
 
-        <EditText
+        <TextView
             android:id="@+id/startTime"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="　　　"
+            android:textSize="20dp"
+            android:textAlignment="center"
             android:autofillHints=""
             android:inputType=""
             tools:ignore="LabelFor"/>
+
+        <Button
+            android:id="@+id/startTimeSetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="65dp"
+            android:layout_marginEnd="65dp"
+            android:text="@string/timeSet"
+            tools:ignore="DuplicateIds" />
 
     </LinearLayout>
 
@@ -108,14 +121,25 @@
             android:text="@string/endTime"
             android:gravity="center"/>
 
-        <EditText
+        <TextView
             android:id="@+id/endTime"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="　　　"
+            android:textSize="20dp"
+            android:textAlignment="center"
             android:autofillHints=""
             android:inputType=""
             tools:ignore="LabelFor"/>
 
+        <Button
+            android:id="@+id/endTimeSetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timeSet"
+            android:layout_marginStart="65dp"
+            android:layout_marginEnd="65dp"
+            tools:ignore="DuplicateIds" />
     </LinearLayout>
 
     <LinearLayout
@@ -172,24 +196,50 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="5dp"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:weightSum="10"
         android:gravity="center">
 
         <TextView
             android:layout_width="90sp"
             android:layout_height="wrap_content"
-            android:text="@string/breakTime"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="@string/breakTime" />
 
-        <EditText
-            android:id="@+id/breakTime"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/startBreakTime"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="例）30分➝30 1時間半➝90"
+            android:hint="　から　"
+            android:textSize="20dp"
+            android:textAlignment="center"
             android:autofillHints=""
+            android:layout_weight="4"
             android:inputType=""
             tools:ignore="LabelFor"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="～"
+            android:textSize="30dp"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp" />
+
+        <TextView
+            android:id="@+id/endBreakTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:hint="　まで　"
+            android:textAlignment="center"
+            android:autofillHints=""
+            android:layout_weight="4"
+            android:inputType=""
+            tools:ignore="LabelFor"/>
+
 
     </LinearLayout>
 
