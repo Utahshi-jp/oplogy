@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageRoot;
     //    提出状況のTextViewとImageView
     private TextView submission;
+    private ImageView imageSubmission;
 
     //firestoreの受信関連
     private FirebaseFirestore db;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        提出状況のインテント
         submission = findViewById(R.id.submission);
         submission.setOnClickListener(this);
+        imageSubmission = findViewById(R.id.imageSubmission);
 
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();

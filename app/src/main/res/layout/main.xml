@@ -75,10 +75,11 @@
 
 <!--    ルート表示のレイアウト-->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:layout_height="0dp"
         android:layout_weight="3"
         android:weightSum="2"
+        android:layout_gravity="center"
         android:orientation="horizontal">
 
         <ImageView
@@ -104,19 +105,37 @@
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="5"/>
+        android:layout_weight="3"/>
+
 
 <!--    提出状況のレイアウト-->
-    <TextView
-        android:id="@+id/submission"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="提出状況"
-        android:textSize="40dp"
-        android:textStyle="bold"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:layout_gravity="center"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageSubmission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/submission"
+            android:layout_weight="1"
+            />
+
+        <TextView
+            android:id="@+id/submission"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:text="提出状況"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:layout_gravity="center"/>
+    </LinearLayout>
 
 
 
