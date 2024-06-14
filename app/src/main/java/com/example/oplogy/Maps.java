@@ -1,7 +1,6 @@
 package com.example.oplogy;
 
 import androidx.fragment.app.FragmentActivity;
-
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,14 +14,14 @@ import com.example.oplogy.databinding.MapsBinding;
 public class Maps extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private MapsBinding binding;
+private MapsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = MapsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+     binding = MapsBinding.inflate(getLayoutInflater());
+     setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
