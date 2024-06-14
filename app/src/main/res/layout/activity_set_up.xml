@@ -15,9 +15,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:paddingStart="20dp"
-        android:text="🔙"
-        android:textSize="50dp"
-        tools:ignore="RtlCompat" />
+        android:text="@string/Back"
+        android:textSize="50sp"
+        tools:ignore="RtlCompat,RtlHardcoded,RtlSymmetry" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
             android:id="@+id/startPoint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="住所"
+            android:hint="@string/startpoint"
             android:autofillHints=""
             android:inputType=""
             tools:ignore="LabelFor" />
@@ -91,11 +91,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="　　　"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
             android:inputType=""
-            tools:ignore="LabelFor"/>
+            tools:ignore="HardcodedText,LabelFor"/>
 
         <Button
             android:id="@+id/startTimeSetButton"
@@ -126,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="　　　"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
             android:inputType=""
@@ -167,7 +167,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="10分"
+                android:text="@string/tenMinute"
                 android:paddingEnd="20dp"
                 tools:ignore="RtlSymmetry" />
 
@@ -176,7 +176,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="15分"
+                android:text="@string/fifteenMinute"
                 android:paddingEnd="20dp"
                 tools:ignore="RtlSymmetry" />
 
@@ -185,7 +185,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="30分"
+                android:text="@string/thirtyMinute"
                 android:paddingEnd="20dp"
                 tools:ignore="RtlSymmetry" />
 
@@ -213,7 +213,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="　から　"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
             android:layout_weight="4"
@@ -224,7 +224,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="～"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:paddingStart="30dp"
             android:paddingEnd="30dp" />
 
@@ -232,7 +232,7 @@
             android:id="@+id/endBreakTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:hint="　まで　"
             android:textAlignment="center"
             android:autofillHints=""
@@ -279,13 +279,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reset"
-            android:layout_marginEnd="100dp"/>
+            android:layout_marginEnd="100dp"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/setUpButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/setUp"/>
+            android:text="@string/setUp"
+            style="?android:attr/buttonBarButtonStyle" />
 
     </LinearLayout>
 

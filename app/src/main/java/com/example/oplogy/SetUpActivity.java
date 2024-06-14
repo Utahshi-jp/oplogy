@@ -10,13 +10,10 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.app.TimePickerDialog;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -80,66 +77,51 @@ public class SetUpActivity extends FragmentActivity
 
 
 
-        setUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        setUp.setOnClickListener(view -> {
 
-                teacherName = setTeacherName.getText().toString(); //各変数に値を挿入
-                Log.d(TAG, "Teacher Name: " + teacherName);
-                startPoint = setStartPoint.getText().toString();
-                Log.d(TAG, "Start Point: " + startPoint);
-                Log.d(TAG, "Start Time" + startTime);
-                Log.d(TAG, "End Time" + endTime);
-                if (setTenMinute.isChecked()){                    //ラジオボタンの状態を取得
-                    intervalTime = "10";
-                } else if (setFifteenMinute.isChecked()) {
-                    intervalTime = "15";
-                } else if (setThirtyMinute.isChecked()) {
-                    intervalTime = "30";
-                } else {
-                    intervalTime = "0";
-                }
-                Log.d(TAG, "Interval Time" + intervalTime);
-                Log.d(TAG, "Start Break Time" + startBreakTime);
-                Log.d(TAG, "End Break Time" + endBreakTime);
-                totalStudent = Integer.parseInt(setTotalStudent.getText().toString());
-                Log.d(TAG, "Total Student" + totalStudent);
-                Log.d(TAG, "onClick: できてるよ");
-
-
-
+            teacherName = setTeacherName.getText().toString(); //各変数に値を挿入
+            Log.d(TAG, "Teacher Name: " + teacherName);
+            startPoint = setStartPoint.getText().toString();
+            Log.d(TAG, "Start Point: " + startPoint);
+            Log.d(TAG, "Start Time" + startTime);
+            Log.d(TAG, "End Time" + endTime);
+            if (setTenMinute.isChecked()){                    //ラジオボタンの状態を取得
+                intervalTime = "10";
+            } else if (setFifteenMinute.isChecked()) {
+                intervalTime = "15";
+            } else if (setThirtyMinute.isChecked()) {
+                intervalTime = "30";
+            } else {
+                intervalTime = "0";
             }
+            Log.d(TAG, "Interval Time" + intervalTime);
+            Log.d(TAG, "Start Break Time" + startBreakTime);
+            Log.d(TAG, "End Break Time" + endBreakTime);
+            totalStudent = Integer.parseInt(setTotalStudent.getText().toString());
+            Log.d(TAG, "Total Student" + totalStudent);
+            Log.d(TAG, "onClick: できてるよ");
+
+
+
         });
-        startTimeSetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isStartTimeSelected = 1; //ボタンの判別
-                showTimePickerDialog(); //TimePeckerの表示
-            }
+        startTimeSetButton.setOnClickListener(v -> {
+            isStartTimeSelected = 1; //ボタンの判別
+            showTimePickerDialog(); //TimePeckerの表示
         });
 
-        endTimeSetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isStartTimeSelected = 2;
-                showTimePickerDialog();
-            }
+        endTimeSetButton.setOnClickListener(v -> {
+            isStartTimeSelected = 2;
+            showTimePickerDialog();
         });
 
-        setStartBreakTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isStartTimeSelected = 3;
-                showTimePickerDialog();
-            }
+        setStartBreakTime.setOnClickListener(v -> {
+            isStartTimeSelected = 3;
+            showTimePickerDialog();
         });
 
-        setEndBreakTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isStartTimeSelected = 4;
-                showTimePickerDialog();
-            }
+        setEndBreakTime.setOnClickListener(v -> {
+            isStartTimeSelected = 4;
+            showTimePickerDialog();
         });
     }
 
