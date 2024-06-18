@@ -19,6 +19,9 @@ public class FirestoreReception {
         db = FirebaseFirestore.getInstance();
     }
 
+    //firestoreから受け取ったデータを束ねるためのマップ
+    public Map<String, Object> firestoreData;
+
     //ClassIdを引数にデータの作成を行う
     public void getDocumentsByClassId(int classId, MainActivity context) {
         CollectionReference collectionRef = db.collection("QuestionnaireForms");
@@ -36,11 +39,17 @@ public class FirestoreReception {
                                 // CreateRootクラスのインスタンスを作成し、dataを引数として渡す
                                 GeoCoder geoCoder = new GeoCoder();
                                 geoCoder.processData(data, context);
+
+                                // firestoreDataにdataを追加
+                                firestoreData = data;
+
                             }
                         } else {
                             Log.w("FirestoreReception", "Error getting documents.", task.getException());
                         }
+                        Log.w ("FirestoreReception", "firestoreData: " + firestoreData.size());
                     }
                 });
+
     }
 }
