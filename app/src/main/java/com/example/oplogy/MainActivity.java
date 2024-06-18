@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //      firestoreの受信関連の宣言
         db = FirebaseFirestore.getInstance();
-        firestoreReception = new FirestoreReception();
+        firestoreReception = new FirestoreReception(this);
 //      受信するメソッドの呼び出し
         firestoreReception.getDocumentsByClassId(100);
 
@@ -85,12 +85,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
 //        セットアップのクリック処理
-        if(view == setUp){
-            imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetupActivity.class);
-            startActivity(toSetup);
-
-        }
+//        if(view == setUp){
+//            imageSetup.setImageResource(R.drawable.ischecked_uuid);
+//            Intent toSetup = new Intent(MainActivity.this,SetupActivity.class);
+//            startActivity(toSetup);
+//
+//        }
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
