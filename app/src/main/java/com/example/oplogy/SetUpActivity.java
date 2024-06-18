@@ -124,6 +124,19 @@ public class SetUpActivity extends FragmentActivity
             isStartTimeSelected = 4;
             showTimePickerDialog();
         });
+
+        reset.setOnClickListener(v -> {
+            setTeacherName.setText("");
+            setStartPoint.setText("");
+            setStartTime.setText("");
+            setEndTime.setText("");
+            setTenMinute.setChecked(false);
+            setFifteenMinute.setChecked(false);
+            setThirtyMinute.setChecked(false);
+            setStartBreakTime.setText("");
+            setEndBreakTime.setText("");
+            setTotalStudent.setText("");
+        });
     }
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
