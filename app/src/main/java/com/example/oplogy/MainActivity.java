@@ -19,20 +19,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
     private ImageView imageUuid;
-    private int previousCreateUUid = 0; //元の画像のインデックス
 
 
     //    セットアップのTextViewとImageView
     private TextView setUp;
     private ImageView imageSetup;
-    private int previousSetUp = 0; //元の画像のインデックス
 
     //    セットアップのTextViewとImageView
     private TextView root;
     private ImageView imageRoot;
-    private int previousRoot = 0; //元の画像のインデックス
     //    提出状況のTextViewとImageView
     private TextView submission;
+    private ImageView imageSubmission;
 
     //firestoreの受信関連
     private FirebaseFirestore db;
@@ -61,12 +59,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        提出状況のインテント
         submission = findViewById(R.id.submission);
         submission.setOnClickListener(this);
+        imageSubmission = findViewById(R.id.imageSubmission);
 
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
 
-        firestoreReception.getDocumentsByClassId(100);
+        firestoreReception.getDocumentsByClassId(100,MainActivity.this);
 
 
 
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,RootSearchActivity.class);
+            Intent toRoot = new Intent(MainActivity.this, Map_Activity.class);
             startActivity(toRoot);
         }
 //        提出状況のクリック処理

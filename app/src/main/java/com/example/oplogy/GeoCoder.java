@@ -1,26 +1,25 @@
 package com.example.oplogy;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.model.GeocodingResult;
 
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public class GeoCoding {
-    private GeoApiContext geoApiContext;
-    public void processData(Map<String, Object> data) {
+public class GeoCoder {
+    private Context context;
 
+    public void processData(Map<String, Object> data, Context context) {
         try {
-            // Google Cloud Platformで作成したAPIキーを設定します
-            geoApiContext = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw")
-                    .build();
+            this.context = context;
+
             //家庭訪問先の住所
             List<String> address = (List<String>) data.get("address");
             //家庭訪問の第一希望日(配列0が希望時間帯のはじめ、配列1がおわり)
@@ -41,18 +40,20 @@ public class GeoCoding {
             Log.e("NullPointerException", "getの中身がnull" + e);
         }
     }
+
     private LatLng geocodeAddress(String address) {
         try {
-            Log.d("Geocodingtry", "tryに入った");
-            GeocodingResult[] results = GeocodingApi.geocode(geoApiContext, address).await();
-            Log.d("GeocodingResult", "Results: " + Arrays.toString(results));
-            if (results != null && results.length > 0) {
-                return new LatLng(results[0].geometry.location.lat, results[0].geometry.location.lng);
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocationName(address, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address addressResult = addresses.get(0);
+                double latitude = addressResult.getLatitude();
+                double longitude = addressResult.getLongitude();
+                return new LatLng(latitude, longitude);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e("GeocodingException", "Error geocoding address: " + address, e);
         }
         return null;
     }
-
 }

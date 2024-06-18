@@ -20,7 +20,7 @@ public class FirestoreReception {
     }
 
     //ClassIdを引数にデータの作成を行う
-    public void getDocumentsByClassId(int classId) {
+    public void getDocumentsByClassId(int classId, MainActivity context) {
         CollectionReference collectionRef = db.collection("QuestionnaireForms");
 
         // classIdが引数のものを取得する
@@ -34,8 +34,8 @@ public class FirestoreReception {
                                 Map<String, Object> data = document.getData();
 
                                 // CreateRootクラスのインスタンスを作成し、dataを引数として渡す
-                                GeoCoding geoCoding = new GeoCoding();
-                                geoCoding.processData(data);
+                                GeoCoder geoCoder = new GeoCoder();
+                                geoCoder.processData(data, context);
                             }
                         } else {
                             Log.w("FirestoreReception", "Error getting documents.", task.getException());
