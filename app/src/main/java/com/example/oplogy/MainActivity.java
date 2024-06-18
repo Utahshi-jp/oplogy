@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this, Map_Activity.class);
+            Intent toRoot = new Intent(MainActivity.this,MapsActivity.class);
             startActivity(toRoot);
         }
 //        提出状況のクリック処理
