@@ -1,9 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetupActivity">
+    tools:context=".SetUpActivity"
+    android:orientation="vertical"
+    android:gravity="center">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/toMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:paddingStart="20dp"
+        android:text="@string/Back"
+        android:textSize="50sp"
+        tools:ignore="RtlCompat,RtlHardcoded,RtlSymmetry" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:text="@string/setUp"
+        android:textSize="30sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:text="@string/teacherName"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/teacherName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:inputType=""
+            tools:ignore="LabelFor" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:text="@string/startPoint"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/startPoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/startpoint"
+            android:autofillHints=""
+            android:inputType=""
+            tools:ignore="LabelFor" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:text="@string/startTime"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/startTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="　　　"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:autofillHints=""
+            android:inputType=""
+            tools:ignore="HardcodedText,LabelFor"/>
+
+        <Button
+            android:id="@+id/startTimeSetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="65dp"
+            android:layout_marginEnd="65dp"
+            android:text="@string/timeSet"
+            tools:ignore="DuplicateIds" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:text="@string/endTime"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/endTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="　　　"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:autofillHints=""
+            android:inputType=""
+            tools:ignore="LabelFor"/>
+
+        <Button
+            android:id="@+id/endTimeSetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timeSet"
+            android:layout_marginStart="65dp"
+            android:layout_marginEnd="65dp"
+            tools:ignore="DuplicateIds" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:text="@string/intervalTime"
+            android:gravity="center"/>
+
+        <RadioGroup
+            android:id="@+id/timeInterval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <RadioButton
+                android:id="@+id/tenMinute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/tenMinute"
+                android:paddingEnd="20dp"
+                tools:ignore="RtlSymmetry" />
+
+            <RadioButton
+                android:id="@+id/fifteenMinute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/fifteenMinute"
+                android:paddingEnd="20dp"
+                tools:ignore="RtlSymmetry" />
+
+            <RadioButton
+                android:id="@+id/thirtyMinute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/thirtyMinute"
+                android:paddingEnd="20dp"
+                tools:ignore="RtlSymmetry" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="@string/breakTime" />
+
+        <TextView
+            android:id="@+id/startBreakTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="　から　"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:autofillHints=""
+            android:layout_weight="4"
+            android:inputType=""
+            tools:ignore="LabelFor"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="～"
+            android:textSize="30sp"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp" />
+
+        <TextView
+            android:id="@+id/endBreakTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:hint="　まで　"
+            android:textAlignment="center"
+            android:autofillHints=""
+            android:layout_weight="4"
+            android:inputType=""
+            tools:ignore="LabelFor"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:text="@string/totalStudent"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/totalStudent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="例）30人➝30"
+            android:autofillHints=""
+            android:inputType=""
+            tools:ignore="LabelFor"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_marginTop="20sp">
+
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reset"
+            android:layout_marginEnd="100dp"
+            style="?android:attr/buttonBarButtonStyle" />
+
+        <Button
+            android:id="@+id/setUpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setUp"
+            style="?android:attr/buttonBarButtonStyle" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
