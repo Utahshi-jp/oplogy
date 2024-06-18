@@ -49,9 +49,6 @@
             android:name=".RootSearchActivity"
             android:exported="false" />
         <activity
-            android:name=".SetUpActivity"
-            android:exported="false" />
-        <activity
             android:name=".CreateUUID"
             android:exported="false" />
         <activity
