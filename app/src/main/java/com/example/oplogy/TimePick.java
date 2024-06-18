@@ -27,6 +27,5 @@ public class TimePick extends DialogFragment implements
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
     }
 }
