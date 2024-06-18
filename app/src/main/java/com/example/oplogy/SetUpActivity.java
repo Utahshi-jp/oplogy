@@ -74,6 +74,7 @@ public class SetUpActivity extends FragmentActivity
         endTimeSetButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するためのボタン
 
         Button setUp = findViewById(R.id.setUpButton);                      //画面下の設定ボタン
+        Button reset = findViewById(R.id.resetButton);
 
 
 
