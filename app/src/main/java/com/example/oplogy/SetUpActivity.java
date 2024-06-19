@@ -12,12 +12,16 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.room.Room;
 
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class SetUpActivity extends FragmentActivity
@@ -47,6 +51,9 @@ public class SetUpActivity extends FragmentActivity
 
     Button startTimeSetButton;
     Button endTimeSetButton;
+
+
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +114,47 @@ public class SetUpActivity extends FragmentActivity
             totalStudent = Integer.parseInt(setTotalStudent.getText().toString()); //数値型に変更
             Log.d(TAG, "Total Student" + totalStudent);
             Log.d(TAG, "onClick: できてるよ");
+
+
+            // データベースへの登録処理
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+
+            executor.execute(() -> {
+                //roomのインスタンスを作成
+                AppDatabase db = Room.databaseBuilder(
+                        getApplicationContext(),
+                        AppDatabase.class,
+                        "SetUpTable"
+                ).build();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+                // Roomの操作を行う
+                SetUpTable setUpTable = new SetUpTable(
+                        teacherName,
+                        startPoint,
+                        startTime,
+                        endTime,
+                        intervalTime,
+                        startBreakTime,
+                        endBreakTime,
+                        totalStudent
+                );
+
+                // 同じ名前のエントリが存在するかどうかを確認
+                SetUpTable existingSetUpTable = setUpTableDao.findByName(teacherName);
+                if (existingSetUpTable != null) {
+                    // エントリが存在する場合は、そのエントリを更新
+                    setUpTable.setId(existingSetUpTable.getId()); // 既存のIDを設定
+                    setUpTableDao.update(setUpTable);
+
+                    runOnUiThread(() -> Toast.makeText(SetUpActivity.this, "更新しました", Toast.LENGTH_SHORT).show());
+                } else {
+                    // エントリが存在しない場合は、新しいエントリを挿入
+                    setUpTableDao.insertAll(setUpTable);
+                    runOnUiThread(() -> Toast.makeText(SetUpActivity.this, "登録しました", Toast.LENGTH_SHORT).show());
+                }
+
+            });
+
 
         });
         startTimeSetButton.setOnClickListener(v -> {
