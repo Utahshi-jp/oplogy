@@ -39,7 +39,6 @@ public class MyDataClass {
                 ", secondDay=" + secondDay +
                 '}';
     }
-
     //getter
     public String getPatronName() {
         return patronName;
