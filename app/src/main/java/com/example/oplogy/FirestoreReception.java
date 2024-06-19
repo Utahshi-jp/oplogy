@@ -58,10 +58,14 @@ public class FirestoreReception {
                                 //リストに追加
                                 myDataList.add(myData);
                             }
+
+
                             //取得したデータをログ表示
                             for(MyDataClass data :myDataList){
                                 Log.i("FirestoreReceptiond", "data: " + data.toString());
                             }
+                            CreateRoot createRoot=new CreateRoot();
+                            createRoot.receiveData(myDataList);
                         } else {
                             Log.w("FirestoreReceptiond", "Error getting documents.", task.getException());
                         }

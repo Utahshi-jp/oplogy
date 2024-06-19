@@ -2,28 +2,17 @@ package com.example.oplogy;
 
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.Timestamp;
+import java.util.List;
 
 public class CreateRoot {
-    private String address;
-    private Timestamp startTimestamp;
-    private Timestamp endTimestamp;
-    private long studentNumber;
-    private LatLng latLng;
+    public void receiveData(List<MyDataClass> myDataList) {
 
-    public void receiveData(String address, Timestamp startTimestamp, Timestamp endTimestamp, long studentNumber, LatLng latLng) {
-        this.address = address;
-        this.startTimestamp = startTimestamp;
-        this.endTimestamp = endTimestamp;
-        this.studentNumber = studentNumber;
-        this.latLng = latLng;
+        // デバッグ用ログ
+        for(MyDataClass data : myDataList){
+            Log.d("CreateRoot", "data: "+ data.toString());
+        }
+            Log.d("CreateRoot", "myDataList[0]: " + myDataList.get(0).toString());
 
-        // 受け取ったデータを利用してログを出力
-        Log.d("CreateRoot", "address: " + address);
-        Log.d("CreateRoot", "startTimestamp: " + startTimestamp);
-        Log.d("CreateRoot", "endTimestamp: " + endTimestamp);
-        Log.d("CreateRoot", "studentNumber: " + studentNumber);
-        Log.d("CreateRoot", "latLng: " + latLng);
+
     }
 }
