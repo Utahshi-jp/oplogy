@@ -36,11 +36,6 @@ public class GeoCoder {
             Log.d("FirestoreReception", "studentNumber: " + studentNumber);
             Log.d("FirestoreReception", "latLng: "+latLng );
 
-            // CreateRootクラスのインスタンスを作成
-            CreateRoot createRoot = new CreateRoot();
-            // データを渡す
-            createRoot.receiveData(address.get(0), firstDay.get(0), firstDay.get(1), studentNumber, latLng);
-
         } catch (NullPointerException e) {
             Log.e("NullPointerException", "getの中身がnull" + e);
         }
