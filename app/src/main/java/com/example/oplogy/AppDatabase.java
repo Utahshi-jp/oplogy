@@ -3,9 +3,8 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {QuestionnaireForm.class}, version = 1)
-@TypeConverters({Converters.class})
+@Database(entities = {SetUpTable.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     // データベースにアクセスするためのメソッドを提供する
-    public abstract QuestionnaireFormDao questionnaireFormDao();
+    public abstract SetUpTableDao setUpTableDao();
 }
