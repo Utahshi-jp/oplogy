@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.Locale;
+import java.util.Set;
 
 
 public class SetUpActivity extends FragmentActivity
@@ -73,9 +75,14 @@ public class SetUpActivity extends FragmentActivity
         startTimeSetButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するためのボタン
         endTimeSetButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するためのボタン
 
+        TextView backMain = findViewById(R.id.backMain);
         Button setUp = findViewById(R.id.setUpButton);                      //画面下の設定ボタン
+        Button reset = findViewById(R.id.resetButton);
 
-
+        backMain.setOnClickListener(view -> {
+            Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
+            startActivity(intent);
+        });
 
         setUp.setOnClickListener(view -> {
 
@@ -97,11 +104,9 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Interval Time" + intervalTime);
             Log.d(TAG, "Start Break Time" + startBreakTime);
             Log.d(TAG, "End Break Time" + endBreakTime);
-            totalStudent = Integer.parseInt(setTotalStudent.getText().toString());
+            totalStudent = Integer.parseInt(setTotalStudent.getText().toString()); //数値型に変更
             Log.d(TAG, "Total Student" + totalStudent);
             Log.d(TAG, "onClick: できてるよ");
-
-
 
         });
         startTimeSetButton.setOnClickListener(v -> {
@@ -122,6 +127,19 @@ public class SetUpActivity extends FragmentActivity
         setEndBreakTime.setOnClickListener(v -> {
             isStartTimeSelected = 4;
             showTimePickerDialog();
+        });
+
+        reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
+            setTeacherName.setText("");
+            setStartPoint.setText("");
+            setStartTime.setText("");
+            setEndTime.setText("");
+            setTenMinute.setChecked(false);
+            setFifteenMinute.setChecked(false);
+            setThirtyMinute.setChecked(false);
+            setStartBreakTime.setText("");
+            setEndBreakTime.setText("");
+            setTotalStudent.setText("");
         });
     }
 
