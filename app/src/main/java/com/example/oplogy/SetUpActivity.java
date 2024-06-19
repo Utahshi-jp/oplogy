@@ -125,7 +125,7 @@ public class SetUpActivity extends FragmentActivity
             showTimePickerDialog();
         });
 
-        reset.setOnClickListener(v -> {
+        reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
             setTeacherName.setText("");
             setStartPoint.setText("");
             setStartTime.setText("");
