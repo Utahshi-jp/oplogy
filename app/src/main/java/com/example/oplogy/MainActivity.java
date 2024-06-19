@@ -80,14 +80,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(view == creatUUID){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
-            finish();
+            finish();   // 画面遷移後元の状態に戻す
         }
 //        セットアップのクリック処理
         if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
             startActivity(toSetup);
-            finish();
+            finish();   // 画面遷移後元の状態に戻す
         }
 
 //        ルート作成のクリック処理

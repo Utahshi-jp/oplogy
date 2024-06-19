@@ -3,6 +3,7 @@ package com.example.oplogy;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
@@ -16,8 +17,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.oplogy.databinding.MapsBinding;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.model.DirectionsResult;
 
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +37,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback,View.On
     private GoogleMap mMap;
     private MapsBinding binding;
 
-    private LatLng location;
+    private LatLng loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,30 +70,44 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback,View.On
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // ↓ここに地点の処理を書いておく↓
-
-        location = new LatLng(35.09050879999539, 136.87845379325216);
-        mMap.addMarker(new MarkerOptions().position(location).title("名古屋港水族館"));
-
         /// 地図の倍率を指定
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17));
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap.setOnMapClickListener(tapLocation -> {
-            // tapされた位置の緯度経度
-            location = new LatLng(tapLocation.latitude, tapLocation.longitude);
-            String str = String.format(Locale.JAPAN, "%f, %f", tapLocation.latitude, tapLocation.longitude);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17));
 
-//            ピンの処理
-            mMap.addMarker(new MarkerOptions()
-                    .position(location)
-                    .title(str)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                    .anchor(0.5f, 0.5f)
-            );
+        // ↓ここに地点の処理を書いておく↓
+        // Add a marker in Sydney and move the camera
+        loc = new LatLng(35.09050879999539, 136.87845379325216);
+        mMap.addMarker(new MarkerOptions().position(loc).title("名古屋港水族館"));
+        /// 表示位置を地図に指定
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 17));
+
+        LatLng startLatLng = new LatLng(35.09050879999539, 136.87845379325216);
+        LatLng secandLatLng = new LatLng(35.09284820618655, 136.88165119390393);
+        LatLng thirdLatLng = new LatLng(35.09364708442631, 136.88171563326418);
 
 
-        });
+        Marker startMaker = mMap.addMarker(new MarkerOptions()
+                .position(startLatLng)
+                .title("名古屋港水族館")
+        );
+
+        Marker secondMaker = mMap.addMarker(new MarkerOptions()
+                .position(secandLatLng)
+                .title("2番目")
+        );
+
+        Marker thirdMaker = mMap.addMarker(new MarkerOptions()
+                .position(thirdLatLng)
+                .title("3番目")
+        );
+
+        drowRoute(startLatLng,secandLatLng,thirdLatLng);
+    }
+
+    private  void drowRoute(LatLng startLatLng,LatLng secondLatLung,LatLng thirdLatLng){
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey("AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw")
+                .build();
     }
 
     @Override
