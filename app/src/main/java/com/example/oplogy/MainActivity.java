@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
 
-        firestoreReception.getDocumentsByClassId(100,MainActivity.this);
+        firestoreReception.getDocumentsByClassId(100);
 
 
 
