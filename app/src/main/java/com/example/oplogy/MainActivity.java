@@ -80,20 +80,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(view == creatUUID){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
-
+            finish();
         }
 //        セットアップのクリック処理
         if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
             startActivity(toSetup);
-
+            finish();
         }
+
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
             Intent toRoot = new Intent(MainActivity.this,Maps.class);
             startActivity(toRoot);
+
         }
 //        提出状況のクリック処理
         if(view == submission){
