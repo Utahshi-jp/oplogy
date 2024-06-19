@@ -29,13 +29,18 @@ public class GeoCoder {
             // 住所を緯度経度に変換
             LatLng latLng = geocodeAddress(address.get(0));
 
+            //デバッグ用ログ
             Log.d("FirestoreReception", "address: " + address.get(0));
             Log.d("FirestoreReception", "firstDay: " + firstDay.get(0));
             Log.d("FirestoreReception", "firstDay: " + firstDay.get(1));
             Log.d("FirestoreReception", "studentNumber: " + studentNumber);
+            Log.d("FirestoreReception", "latLng: "+latLng );
 
-            // 緯度経度をLogに出力
-            Log.d("緯度経度", "latLng: "+latLng );
+            // CreateRootクラスのインスタンスを作成
+            CreateRoot createRoot = new CreateRoot();
+            // データを渡す
+            createRoot.receiveData(address.get(0), firstDay.get(0), firstDay.get(1), studentNumber, latLng);
+
         } catch (NullPointerException e) {
             Log.e("NullPointerException", "getの中身がnull" + e);
         }
