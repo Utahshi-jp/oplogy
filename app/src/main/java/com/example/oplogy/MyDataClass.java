@@ -14,6 +14,7 @@ public class MyDataClass {
     List<Timestamp> thirdDay;
     List<Timestamp> secondDay;
     double latitude;
+    private Long Timezone;
 
     public MyDataClass(String patronName, int classId, List<String> address, List<Timestamp> firstDay, int studentNumber, String childName, List<Timestamp> thirdDay, List<Timestamp> secondDay) {
         this.patronName = patronName;
@@ -52,6 +53,8 @@ public class MyDataClass {
     public List<Timestamp> getFirstDay() {
         return firstDay;
     }
+
+
     public int getStudentNumber() {
         return studentNumber;
     }
@@ -94,5 +97,9 @@ public class MyDataClass {
     }
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public void setTimezone(Long Timezone) {
+        this.Timezone=Timezone;
     }
 }
