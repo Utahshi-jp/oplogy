@@ -69,8 +69,17 @@ public class FirestoreReception {
                         } else {
                             Log.w("FirestoreReceptiond", "Error getting documents.", task.getException());
                         }
+                        Log.i("FirestoreReceptiond", "data: " + myDataList.size());
                     }
                 });
 
+    }
+    //Dataのリストのサイズを返す
+    public int getMyDataListSize(){
+        return myDataList.size();
+    }
+    //Dataのリストを返す
+    public List<MyDataClass> getMyDataList(){
+        return myDataList;
     }
 }

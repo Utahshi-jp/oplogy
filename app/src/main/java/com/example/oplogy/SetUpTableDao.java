@@ -16,4 +16,7 @@ public interface SetUpTableDao {
     //名前が一致しているかの確認
     @Query("SELECT * FROM SetUpTable WHERE teacherName = :name LIMIT 1")
     SetUpTable findByName(String name);
+
+    @Query("SELECT totalStudent FROM SetUpTable")
+    int getTotalStudent();
 }

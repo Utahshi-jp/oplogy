@@ -11,8 +11,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -67,9 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         firestoreReception.getDocumentsByClassId(100);
 
-
-
-
     }
 
 
@@ -92,8 +93,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,Maps.class);
-            startActivity(toRoot);
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+
+            executor.execute(() -> {
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+
+                // データベースに登録されている生徒の数、formにデータを送信した生徒の合計数をを取得
+                int totalStudent = setUpTableDao.getTotalStudent();
+                int myDataListSize = firestoreReception.myDataList.size();
+
+                runOnUiThread(() -> {
+                    if (totalStudent != myDataListSize) {
+                        // 値が一致しない場合、ダイアログを表示
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("警告")
+                                .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent toRoot = new Intent(MainActivity.this,Maps.class);
+                                        startActivity(toRoot);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
+                    } else {
+                        Intent toRoot = new Intent(MainActivity.this,Maps.class);
+                        startActivity(toRoot);
+                    }
+                });
+            });
         }
 //        提出状況のクリック処理
         if(view == submission){
