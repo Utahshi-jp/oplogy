@@ -107,23 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 runOnUiThread(() -> {
                     if (totalStudent != myDataListSize) {
                         // 値が一致しない場合、ダイアログを表示
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("警告")
-                                .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent toRoot = new Intent(MainActivity.this,Maps.class);
-                                        startActivity(toRoot);
-                                    }
-                                })
-                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .show();
+                        showRouteCreationDialog();
                     } else {
                         Intent toRoot = new Intent(MainActivity.this,Maps.class);
                         startActivity(toRoot);
@@ -159,5 +143,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         builder.show();
+    }
+    //ルート作成のダイアログ
+    private void showRouteCreationDialog() {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("警告")
+                .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent toRoot = new Intent(MainActivity.this,Maps.class);
+                        startActivity(toRoot);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

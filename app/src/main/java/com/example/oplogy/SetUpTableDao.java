@@ -14,9 +14,19 @@ public interface SetUpTableDao {
     @Update
     void update(SetUpTable setUpTable);
     //名前が一致しているかの確認
+
+    //削除処理
+    @Query("DELETE FROM SetUpTable")
+    void deleteAll();
+
     @Query("SELECT * FROM SetUpTable WHERE teacherName = :name LIMIT 1")
     SetUpTable findByName(String name);
 
     @Query("SELECT totalStudent FROM SetUpTable")
     int getTotalStudent();
+    //開始時間と終了時間の取得
+    @Query("SELECT startTime FROM SetUpTable")
+    String getStartTime();
+    @Query("SELECT endTime FROM SetUpTable")
+    String getEndTime();
 }
