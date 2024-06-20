@@ -14,7 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
@@ -68,39 +71,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         firestoreReception.getDocumentsByClassId(100);
 
 
-
-
     }
 
 
-//    クリック処理
+    //    クリック処理
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
-        if(view == creatUUID){
+        if (view == creatUUID) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
 
         }
 //        セットアップのクリック処理
-        if(view == setUp){
+        if (view == setUp) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
 
         }
 //        ルート作成のクリック処理
-        if(view == root){
+        if (view == root) {
+            //CreateRootにmyDataListを渡す
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,Maps.class);
+            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+            CreateRoot createRoot = new CreateRoot(MainActivity.this);
+            createRoot.receiveData(myDataList);
+            Intent toRoot = new Intent(MainActivity.this, CreateRoot.class);
+            toRoot.putExtra("myDataList", (ArrayList<MyDataClass>) myDataList);
             startActivity(toRoot);
+
         }
 //        提出状況のクリック処理
-        if(view == submission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+        if (view == submission) {
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             startActivity(toSubmission);
         }
     }
+
     private void showUUIDYesNoDialog() {
         //ダイアログの表示
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -119,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("DialogNO","DialogでNoが選ばれました");
+                Log.d("DialogNO", "DialogでNoが選ばれました");
             }
         });
         builder.show();

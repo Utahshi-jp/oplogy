@@ -1,10 +1,9 @@
 package com.example.oplogy;
+
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
-
-import java.util.List;
 
 @Dao
 public interface SetUpTableDao {
@@ -16,4 +15,9 @@ public interface SetUpTableDao {
     //名前が一致しているかの確認
     @Query("SELECT * FROM SetUpTable WHERE teacherName = :name LIMIT 1")
     SetUpTable findByName(String name);
+    //開始時間と終了時間の取得
+    @Query("SELECT startTime FROM SetUpTable")
+    String getStartTime();
+    @Query("SELECT endTime FROM SetUpTable")
+    String getEndTime();
 }
