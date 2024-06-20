@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -92,14 +91,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 //        ルート作成のクリック処理
         if (view == root) {
-            //CreateRootにmyDataListを渡す
             imageRoot.setImageResource(R.drawable.pin);
             List<MyDataClass> myDataList = firestoreReception.getMyDataList();
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
             createRoot.receiveData(myDataList);
-            Intent toRoot = new Intent(MainActivity.this, CreateRoot.class);
-            toRoot.putExtra("myDataList", (ArrayList<MyDataClass>) myDataList);
-            startActivity(toRoot);
 
         }
 //        提出状況のクリック処理

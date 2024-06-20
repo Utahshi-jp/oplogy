@@ -19,7 +19,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.room.Room;
 
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -125,7 +124,9 @@ public class SetUpActivity extends FragmentActivity
                         getApplicationContext(),
                         AppDatabase.class,
                         "SetUpTable"
-                ).build();
+                )
+                        .fallbackToDestructiveMigration()
+                        .build();
                 SetUpTableDao setUpTableDao = db.setUpTableDao();
                 // Roomの操作を行う
                 SetUpTable setUpTable = new SetUpTable(
