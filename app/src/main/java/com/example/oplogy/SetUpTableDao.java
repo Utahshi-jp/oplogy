@@ -20,4 +20,13 @@ public interface SetUpTableDao {
     String getStartTime();
     @Query("SELECT endTime FROM SetUpTable")
     String getEndTime();
+    //インターバル時間の取得
+    @Query("SELECT intervalTime FROM SetUpTable")
+    String getIntervalTime();
+    //休憩開始時間の取得
+    @Query("SELECT startBreakTime FROM SetUpTable")
+    String getStartBreakTime();
+    //休憩終了時間の取得
+    @Query("SELECT endBreakTime FROM SetUpTable")
+    String getEndBreakTime();
 }
