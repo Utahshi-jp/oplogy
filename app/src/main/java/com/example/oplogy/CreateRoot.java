@@ -70,13 +70,13 @@ public class CreateRoot {
         }
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                SetUpTableDao setUpTableDao = db.setUpTableDao();
-                String startTime=setUpTableDao.getStartTime();
-                Log.d("CreateRoot", "開始時間" + startTime);
-            }
+        executor.execute(() -> {
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            String startTime=setUpTableDao.getStartTime();
+            String endTime=setUpTableDao.getEndTime();
+            Log.d("CreateRoot", "開始時間" + startTime);
+            Log.d("CreateRoot", "終了時刻" + endTime);
+
         });
     }
 }
