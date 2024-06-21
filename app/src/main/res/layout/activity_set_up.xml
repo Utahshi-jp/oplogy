@@ -9,15 +9,24 @@
     android:gravity="center">
 
 
-    <TextView
-        android:id="@+id/backMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+<!--    <TextView-->
+<!--        android:id="@+id/backMain"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="left"-->
+<!--        android:paddingStart="20dp"-->
+<!--        android:text="@string/Back"-->
+<!--        android:textSize="50sp"-->
+<!--        tools:ignore="RtlCompat,RtlHardcoded,RtlSymmetry" />-->
+
+    <ImageView
+        android:id="@+id/toMain"
+        android:layout_width="100dp"
+        android:layout_height="90dp"
         android:layout_gravity="left"
-        android:paddingStart="20dp"
-        android:text="@string/Back"
-        android:textSize="50sp"
-        tools:ignore="RtlCompat,RtlHardcoded,RtlSymmetry" />
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/back_button"/>
+
 
     <TextView
         android:layout_width="wrap_content"

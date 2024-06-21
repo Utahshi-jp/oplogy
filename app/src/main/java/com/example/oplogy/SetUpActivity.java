@@ -6,9 +6,11 @@ import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -81,11 +83,11 @@ public class SetUpActivity extends FragmentActivity
         startTimeSetButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するためのボタン
         endTimeSetButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するためのボタン
 
-        TextView backMain = findViewById(R.id.backMain);
+        ImageView toMain = findViewById(R.id.toMain);
         Button setUp = findViewById(R.id.setUpButton);                      //画面下の設定ボタン
         Button reset = findViewById(R.id.resetButton);
 
-        backMain.setOnClickListener(view -> {
+        toMain.setOnClickListener(view -> {
             Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
             startActivity(intent);
         });
