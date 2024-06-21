@@ -15,6 +15,8 @@ import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -93,27 +95,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-
             ExecutorService executor = Executors.newSingleThreadExecutor();
+
+            CountDownLatch latch = new CountDownLatch(2);
 
             executor.execute(() -> {
                 AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
                 SetUpTableDao setUpTableDao = db.setUpTableDao();
 
-                // データベースに登録されている生徒の数、formにデータを送信した生徒の合計数をを取得
+                Log.d("MainActivity", "db" + setUpTableDao.getAll());
+
                 int totalStudent = setUpTableDao.getTotalStudent();
-                int myDataListSize = firestoreReception.myDataList.size();
+                int myDataListSize = firestoreReception.getMyDataListSize();
 
                 runOnUiThread(() -> {
                     if (totalStudent != myDataListSize) {
-                        // 値が一致しない場合、ダイアログを表示
-                        showRouteCreationDialog();
+                        showRouteCreationDialog(latch);
                     } else {
-                        Intent toRoot = new Intent(MainActivity.this,Maps.class);
-                        startActivity(toRoot);
+                        latch.countDown();
                     }
                 });
             });
+
+            executor.execute(() -> {
+                List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+                CreateRoot createRoot = new CreateRoot(MainActivity.this);
+                createRoot.receiveData(myDataList);
+                latch.countDown();
+            });
+
+            new Thread(() -> {
+                try {
+                    latch.await();  // Both tasks must call countDown() before this returns
+                    runOnUiThread(() -> {
+                        Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                        startActivity(toRoot);
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            executor.shutdown();
         }
 //        提出状況のクリック処理
         if(view == submission){
@@ -145,15 +168,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.show();
     }
     //ルート作成のダイアログ
-    private void showRouteCreationDialog() {
+    private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
                 .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent toRoot = new Intent(MainActivity.this,Maps.class);
-                        startActivity(toRoot);
+                        latch.countDown();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

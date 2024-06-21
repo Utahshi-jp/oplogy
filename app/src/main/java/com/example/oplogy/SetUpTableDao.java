@@ -18,6 +18,9 @@ public interface SetUpTableDao {
     //削除処理
     @Query("DELETE FROM SetUpTable")
     void deleteAll();
+    //全件取得
+    @Query("SELECT * FROM SetUpTable")
+    List<SetUpTable> getAll();
 
     @Query("SELECT * FROM SetUpTable WHERE teacherName = :name LIMIT 1")
     SetUpTable findByName(String name);
