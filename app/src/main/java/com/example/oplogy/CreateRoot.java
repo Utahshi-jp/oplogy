@@ -8,6 +8,7 @@ import androidx.room.Room;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
 public class CreateRoot {
     private Context context;
     private AppDatabase db;
+    private int arraySize;
 
     public CreateRoot(MainActivity activity) {
         this.context = activity;
@@ -27,7 +29,7 @@ public class CreateRoot {
 
     public void receiveData(List<MyDataClass> myDataList) {
         for (int i = 0; i < myDataList.size(); i++) {
-            //希望時間帯の終了時刻から開始時刻を引いて希望時間帯の長さ(timezone)に入れる
+            // 希望時間帯の終了時刻から開始時刻を引いて希望時間帯の長さ(timezone)に入れる
             MyDataClass data = myDataList.get(i);
             List<Timestamp> firstDay = data.getFirstDay();
             Timestamp startTime = firstDay.get(0);
@@ -35,7 +37,7 @@ public class CreateRoot {
             Long timezone = endTime.getSeconds() - startTime.getSeconds();
             data.setTimezone(timezone);
 
-            //TimeStampを日付に変換
+            // TimeStampを日付に変換
             Date startDate = new Date(startTime.getSeconds() * 1000);
             Date endDate = new Date(endTime.getSeconds() * 1000);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -66,17 +68,60 @@ public class CreateRoot {
             Log.d("CreateRoot", "(index: " + i + ") timezone: " + myDataList.get(i).getTimezone());
             Log.d("CreateRoot", "(index: " + i + ") startDate: " + myDataList.get(i).getStartDateString());
             Log.d("CreateRoot", "(index: " + i + ") data: " + myDataList.get(i));
-
         }
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
+            // setUpActivityによって入力され、Roomに保存された値を取り出す処理
             SetUpTableDao setUpTableDao = db.setUpTableDao();
-            String startTime=setUpTableDao.getStartTime();
-            String endTime=setUpTableDao.getEndTime();
+            String startTime = setUpTableDao.getStartTime();
+            String endTime = setUpTableDao.getEndTime();
+            String intervalTime = setUpTableDao.getIntervalTime();
+            String startBreakTime = setUpTableDao.getStartBreakTime();
+            String endBreakTime = setUpTableDao.getEndBreakTime();
+            // デバッグ用
             Log.d("CreateRoot", "開始時間" + startTime);
             Log.d("CreateRoot", "終了時刻" + endTime);
+            Log.d("CreateRoot", "一家庭当たりの所要時間" + intervalTime);
+            Log.d("CreateRoot", "休憩開始時刻" + startBreakTime);
+            Log.d("CreateRoot", "休憩終了時刻" + endBreakTime);
 
+            // endTimeからstartTimeの値を引いた値をintervalTime+10で割って配列を作る
+            int startHour = Integer.parseInt(startTime.substring(0, 2));
+            int endHour = Integer.parseInt(endTime.substring(0, 2));
+            int startMinute = Integer.parseInt(startTime.substring(2, 4));
+            int endMinute = Integer.parseInt(endTime.substring(2, 4));
+
+            int totalTime = (endHour - startHour) * 60 + (endMinute - startMinute);
+            int interval = Integer.parseInt(intervalTime) + 10;
+            arraySize = totalTime / interval;
+
+            int startBreakHour = Integer.parseInt(startBreakTime.substring(0, 2));
+            int startBreakMinute = Integer.parseInt(startBreakTime.substring(2, 4));
+            int endBreakHour = Integer.parseInt(endBreakTime.substring(0, 2));
+            int endBreakMinute = Integer.parseInt(endBreakTime.substring(2, 4));
+
+            int startBreakTimeMinutes = (startBreakHour - startHour) * 60 + (startBreakMinute - startMinute);
+            int endBreakTimeMinutes = (endBreakHour - startHour) * 60 + (endBreakMinute - startMinute);
+
+            List<Integer> intervalList = new ArrayList<>();
+
+            for (int i = 0; i < arraySize; i++) {
+                int intervalMinutes = i * interval;
+                if (intervalMinutes < startBreakTimeMinutes || intervalMinutes >= endBreakTimeMinutes) {
+                    intervalList.add(intervalMinutes);
+                }
+            }
+
+            int[] intervalArray = new int[intervalList.size()];
+            for (int i = 0; i < intervalList.size(); i++) {
+                intervalArray[i] = intervalList.get(i);
+            }
+
+            // デバッグ用ログ
+            for (int i = 0; i < intervalArray.length; i++) {
+                Log.d("CreateRoot", "家庭訪問時間" + intervalArray[i]);
+            }
         });
     }
 }
