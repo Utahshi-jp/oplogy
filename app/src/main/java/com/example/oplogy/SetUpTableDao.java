@@ -32,6 +32,7 @@ public interface SetUpTableDao {
     String getStartTime();
     @Query("SELECT endTime FROM SetUpTable")
     String getEndTime();
+    //教師名の取得
     @Query("SELECT intervalTime FROM SetUpTable")
     String getIntervalTime();
     @Query("SELECT StartBreakTime FROM SetUpTable")
