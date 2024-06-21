@@ -45,21 +45,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         creatUUID = findViewById(R.id.creatUUID);
         creatUUID.setOnClickListener(this);
         imageUuid = findViewById(R.id.imageUuid);
+        imageUuid.setOnClickListener(this);
 
 
 //        セットアップ用のインテント
         setUp = findViewById(R.id.setUp);
         setUp.setOnClickListener(this);
         imageSetup = findViewById(R.id.imageSetup);
+        imageSetup.setOnClickListener(this);
 
 //        ルート作成用のインテント
         root = findViewById(R.id.root);
         root.setOnClickListener(this);
         imageRoot = findViewById(R.id.imageRoot);
+        imageRoot.setOnClickListener(this);
+
 //        提出状況のインテント
         submission = findViewById(R.id.submission);
         submission.setOnClickListener(this);
         imageSubmission = findViewById(R.id.imageSubmission);
+        imageSubmission.setOnClickListener(this);
 
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
@@ -82,8 +87,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
             finish();   // 画面遷移後元の状態に戻す
         }
+        if(view == imageUuid){
+            imageUuid.setImageResource(R.drawable.ischecked_uuid);
+            showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
+            finish();
+        }
 //        セットアップのクリック処理
         if(view == setUp){
+            imageSetup.setImageResource(R.drawable.ischecked_uuid);
+            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            startActivity(toSetup);
+            finish();   // 画面遷移後元の状態に戻す
+        }
+        if (view == imageSetup){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
             startActivity(toSetup);
@@ -95,10 +111,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             imageRoot.setImageResource(R.drawable.pin);
             Intent toRoot = new Intent(MainActivity.this,Maps.class);
             startActivity(toRoot);
-
+        }
+        if(view == imageRoot){
+            imageRoot.setImageResource(R.drawable.pin);
+            Intent toRoot = new Intent(MainActivity.this,Maps.class);
+            startActivity(toRoot);
         }
 //        提出状況のクリック処理
         if(view == submission){
+            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+            startActivity(toSubmission);
+        }
+        if(view == imageSubmission){
             Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
             startActivity(toSubmission);
         }
