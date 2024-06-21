@@ -11,12 +11,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
@@ -69,41 +73,77 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         firestoreReception.getDocumentsByClassId(100);
 
-
     }
 
 
-    //    クリック処理
+//    クリック処理
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
-        if (view == creatUUID) {
+        if(view == creatUUID){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
 
         }
 //        セットアップのクリック処理
-        if (view == setUp) {
+        if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
             startActivity(toSetup);
 
         }
 //        ルート作成のクリック処理
-        if (view == root) {
+        if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
-            CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            createRoot.receiveData(myDataList);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
 
+            CountDownLatch latch = new CountDownLatch(2);
+
+            executor.execute(() -> {
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+
+                Log.d("MainActivity", "db" + setUpTableDao.getAll());
+
+                int totalStudent = setUpTableDao.getTotalStudent();
+                int myDataListSize = firestoreReception.getMyDataListSize();
+
+                runOnUiThread(() -> {
+                    if (totalStudent != myDataListSize) {
+                        showRouteCreationDialog(latch);
+                    } else {
+                        latch.countDown();
+                    }
+                });
+            });
+
+            executor.execute(() -> {
+                List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+                CreateRoot createRoot = new CreateRoot(MainActivity.this);
+                createRoot.receiveData(myDataList);
+                latch.countDown();
+            });
+
+            new Thread(() -> {
+                try {
+                    latch.await();  // Both tasks must call countDown() before this returns
+                    runOnUiThread(() -> {
+                        Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                        startActivity(toRoot);
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            executor.shutdown();
         }
 //        提出状況のクリック処理
-        if (view == submission) {
-            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+        if(view == submission){
+            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
             startActivity(toSubmission);
         }
     }
-
     private void showUUIDYesNoDialog() {
         //ダイアログの表示
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -122,9 +162,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("DialogNO", "DialogでNoが選ばれました");
+                Log.d("DialogNO","DialogでNoが選ばれました");
             }
         });
         builder.show();
+    }
+    //ルート作成のダイアログ
+    private void showRouteCreationDialog(CountDownLatch latch) {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("警告")
+                .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        latch.countDown();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

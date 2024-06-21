@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class FirestoreReception {
     }
 
     //firestoreから受け取ったデータを束ねるためのマップ
-    public List<MyDataClass> myDataList = new ArrayList<>();
+    public List<MyDataClass>myDataList = new ArrayList<>();
 
     //ClassIdを引数にデータの作成を行う
     public void getDocumentsByClassId(int classId) {
@@ -60,23 +61,23 @@ public class FirestoreReception {
 
 
                             //取得したデータをログ表示
-                            for (MyDataClass data : myDataList) {
+                            for(MyDataClass data :myDataList){
                                 Log.i("FirestoreReceptiond", "data: " + data.toString());
                             }
-
                         } else {
                             Log.w("FirestoreReceptiond", "Error getting documents.", task.getException());
                         }
+                        Log.i("FirestoreReceptiond", "data: " + myDataList.size());
                     }
                 });
 
     }
-
-    public int getMyDataListSize() {
+    //Dataのリストのサイズを返す
+    public int getMyDataListSize(){
         return myDataList.size();
     }
-
-    public List<MyDataClass> getMyDataList() {
+    //Dataのリストを返す
+    public List<MyDataClass> getMyDataList(){
         return myDataList;
     }
 }

@@ -178,6 +178,8 @@ public class SetUpActivity extends FragmentActivity
             showTimePickerDialog();
         });
 
+        //リセットボタンの処理
+
         reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
             setTeacherName.setText("");
             setStartPoint.setText("");
@@ -189,6 +191,13 @@ public class SetUpActivity extends FragmentActivity
             setStartBreakTime.setText("");
             setEndBreakTime.setText("");
             setTotalStudent.setText("");
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+                setUpTableDao.deleteAll();
+            });
         });
     }
 
