@@ -16,6 +16,9 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".row_submission"
+            android:exported="false" />
+        <activity
             android:name=".SetUpActivity"
             android:exported="false" />
         <!--

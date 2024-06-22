@@ -15,6 +15,7 @@ import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -112,64 +113,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-
-            CountDownLatch latch = new CountDownLatch(2);
-
-            executor.execute(() -> {
-                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-                SetUpTableDao setUpTableDao = db.setUpTableDao();
-
-                Log.d("MainActivity", "db" + setUpTableDao.getAll());
-
-                int totalStudent = setUpTableDao.getTotalStudent();
-                int myDataListSize = firestoreReception.getMyDataListSize();
-
-                runOnUiThread(() -> {
-                    if (totalStudent != myDataListSize) {
-                        showRouteCreationDialog(latch);
-                    } else {
-                        latch.countDown();
-                    }
-                });
-            });
-
-            executor.execute(() -> {
-                List<MyDataClass> myDataList = firestoreReception.getMyDataList();
-                CreateRoot createRoot = new CreateRoot(MainActivity.this);
-                createRoot.receiveData(myDataList);
-                latch.countDown();
-            });
-
-            new Thread(() -> {
-                try {
-                    latch.await();  // Both tasks must call countDown() before this returns
-                    runOnUiThread(() -> {
-                        Intent toRoot = new Intent(MainActivity.this, Maps.class);
-                        startActivity(toRoot);
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-            executor.shutdown();
+            fetchDataAndCreateRoute();
         }
         if(view == imageRoot){
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,Maps.class);
-            startActivity(toRoot);
+            fetchDataAndCreateRoute();
         }
 //        提出状況のクリック処理
         if(view == submission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+            ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+            toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
         if(view == imageSubmission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+            ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+            toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
     }
+
+
+
     private void showUUIDYesNoDialog() {
         //ダイアログの表示
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -193,7 +159,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         builder.show();
     }
-    //ルート作成のダイアログ
+
+    //ルート作成のダイアログ＋ルート作成の処理の非同期処理実装
+    private void fetchDataAndCreateRoute() {
+        //非同期処理の開始
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        // 2つのタスクの完了をカウントする変数
+        CountDownLatch latch = new CountDownLatch(2);
+
+        // タスク1: ローカルDBから生徒数を取得
+        executor.execute(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+
+            Log.d("MainActivity", "db" + setUpTableDao.getAll());
+
+            int totalStudent = setUpTableDao.getTotalStudent();
+            int myDataListSize = firestoreReception.getMyDataListSize();
+
+            runOnUiThread(() -> {
+                if (totalStudent != myDataListSize) {
+                    showRouteCreationDialog(latch);
+                } else {
+                    latch.countDown();
+                }
+            });
+        });
+
+        // タスク2: Firestoreからデータを取得
+        executor.execute(() -> {
+            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+            CreateRoot createRoot = new CreateRoot(MainActivity.this);
+            createRoot.receiveData(myDataList);
+            latch.countDown();
+        });
+
+        new Thread(() -> {
+            try {
+                latch.await();  // Both tasks must call countDown() before this returns
+                runOnUiThread(() -> {
+                    Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                    startActivity(toRoot);
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        executor.shutdown();
+    }
+
+    //ルート作成する際の警告のダイアログ
     private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
@@ -211,5 +228,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 })
                 .show();
+    }
+    //submissionクラスに渡すlistの作成
+    private ArrayList<SubmissionStudent> getSubmissionStudents() {
+        ArrayList<SubmissionStudent> submissionStudents = new ArrayList<>();
+        List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        CountDownLatch latch = new CountDownLatch(1);
+
+        executor.execute(() -> {
+            // 1. Roomデータベースから全生徒数を取得
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            int totalStudent = setUpTableDao.getTotalStudent();
+            // 2. Firestoreから生徒番号のリストを取得
+            ArrayList<Integer> firestoreStudentNumbers = new ArrayList<>();
+            for (MyDataClass myData : myDataList) {
+                int studentNumber = myData.getStudentNumber();
+                firestoreStudentNumbers.add(studentNumber);
+            }
+
+            // 3. SubmissionStudentオブジェクトのリストを作成
+            for (int i = 1; i <= totalStudent; i++) {
+                boolean submitted = firestoreStudentNumbers.contains(i);
+                submissionStudents.add(new SubmissionStudent(i, submitted));
+            }
+
+            // 4. データベース操作が完了したことを通知
+            latch.countDown();
+        });
+
+        try {
+            // データベース操作が完了するのを待つ
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        // SubmissionStudentオブジェクトのリストを返す
+        return submissionStudents;
     }
 }
