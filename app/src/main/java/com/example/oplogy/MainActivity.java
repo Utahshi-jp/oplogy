@@ -23,6 +23,8 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    //
+
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
     private ImageView imageUuid;

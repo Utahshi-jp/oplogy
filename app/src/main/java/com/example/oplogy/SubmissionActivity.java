@@ -24,12 +24,14 @@ public class SubmissionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.submission);
 
+        // 戻るボタンの処理
         ImageView backButton = findViewById(R.id.BackMain_fromSubmission);
         backButton.setOnClickListener(v -> {
             finish();
         });
 
 
+        // インテントから提出状況の生徒の数を取得
         studentNumbers=getIntent().getIntegerArrayListExtra("submissionStudents");
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -37,6 +39,7 @@ public class SubmissionActivity extends AppCompatActivity {
         submissionAdapter = new SubmissionAdapter(students);
         recyclerView.setAdapter(submissionAdapter);
 
+        // 生徒のリストを取得
         fetchStudents();
     }
     private void fetchStudents() {

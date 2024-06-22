@@ -18,6 +18,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.St
 
         public StudentViewHolder(View view) {
             super(view);
+            // レイアウトファイルのTextViewを取得
             studentNumberTextView = view.findViewById(R.id.studentNumberTextView);
             statusTextView = view.findViewById(R.id.statusTextView);
         }
@@ -38,6 +39,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.St
 public void onBindViewHolder(StudentViewHolder holder, int position) {
     SubmissionStudent student = students.get(position);
     holder.studentNumberTextView.setText(String.valueOf(student.getStudentNumber()));
+    // 提出済みかどうかで表示を変える
     if (student.isSubmitted()) {
         holder.statusTextView.setText("提出済み");
         holder.statusTextView.setBackgroundColor(Color.BLACK);
