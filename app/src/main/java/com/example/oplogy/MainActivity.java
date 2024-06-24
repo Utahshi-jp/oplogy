@@ -123,11 +123,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 //        提出状況のクリック処理
         if(view == submission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+            ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+            toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
         if(view == imageSubmission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+            ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+            toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
     }
