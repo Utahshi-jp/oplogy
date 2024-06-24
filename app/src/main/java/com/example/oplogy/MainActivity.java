@@ -15,6 +15,7 @@ import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -220,6 +221,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 })
                 .show();
+    }
+
+
+    //Main
+    private ArrayList<SubmissionStudent> getSubmissionStudents() {
+        ArrayList<SubmissionStudent> submissionStudents = new ArrayList<>();
+        List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        CountDownLatch latch = new CountDownLatch(1);
+
+        executor.execute(() -> {
+            // 1. Roomデータベースから全生徒数を取得
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            int totalStudent = setUpTableDao.getTotalStudent();
+            // 2. Firestoreから生徒番号のリストを取得
+            ArrayList<Integer> firestoreStudentNumbers = new ArrayList<>();
+            for (MyDataClass myData : myDataList) {
+                int studentNumber = myData.getStudentNumber();
+                firestoreStudentNumbers.add(studentNumber);
+            }
+
+            // 3. SubmissionStudentオブジェクトのリストを作成
+            for (int i = 1; i <= totalStudent; i++) {
+                boolean submitted = firestoreStudentNumbers.contains(i);
+                submissionStudents.add(new SubmissionStudent(i, submitted));
+            }
+
+            // 4. データベース操作が完了したことを通知
+            latch.countDown();
+        });
+
+        try {
+            // データベース操作が完了するのを待つ
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        // SubmissionStudentオブジェクトのリストを返す
+        return submissionStudents;
     }
 
     @Override
