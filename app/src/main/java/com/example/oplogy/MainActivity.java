@@ -140,19 +140,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CreateRoot createRoot = new CreateRoot(MainActivity.this);
                 createRoot.receiveData(myDataList);
                 latch.countDown();
+
+                new Thread(() -> {
+                    try {
+                        latch.await();  // Both tasks must call countDown() before this returns
+                        runOnUiThread(() -> {
+                            Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                            startActivity(toRoot);
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             });
 
-            new Thread(() -> {
-                try {
-                    latch.await();  // Both tasks must call countDown() before this returns
-                    runOnUiThread(() -> {
-                        Intent toRoot = new Intent(MainActivity.this, Maps.class);
-                        startActivity(toRoot);
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+
 
             executor.shutdown();
         }
