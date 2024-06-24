@@ -22,6 +22,9 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    //    ダイアログの宣言
+    private AlertDialog alertDialog;
+
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
     private ImageView imageUuid;
@@ -88,12 +91,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(view == creatUUID){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
-            finish();   // 画面遷移後元の状態に戻す
         }
         if(view == imageUuid){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
-            finish();
         }
 //        セットアップのクリック処理
         if(view == setUp){
@@ -171,28 +172,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     private void showUUIDYesNoDialog() {
-        //ダイアログの表示
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this); // この 'this' が問題でないか確認
         builder.setTitle("クラスID");
         builder.setMessage("あなたのクラスIDを表示しますか？");
 
-        //YESのときは初回はUUIDを生成、表示
-        //二回目以降は保存されたUUIDを表示
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String classId = CreateUUID.generateUUID();//classIDにuuidが入ってる
-                Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();//テスト用
+                String classId = CreateUUID.generateUUID();
+                Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("DialogNO","DialogでNoが選ばれました");
+                Log.d("DialogNO", "DialogでNoが選ばれました");
             }
         });
-        builder.show();
+
+        alertDialog = builder.create();
+        alertDialog.show();
+
     }
+
+
     //ルート作成のダイアログ
     private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
@@ -212,4 +215,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .show();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (alertDialog != null && alertDialog.isShowing()) {
+            alertDialog.dismiss();
+        }
+    }
+
 }
