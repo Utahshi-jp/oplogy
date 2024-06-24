@@ -113,55 +113,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if(view == root){
             imageRoot.setImageResource(R.drawable.pin);
-            ExecutorService executor = Executors.newSingleThreadExecutor();
+            fetchDataAndCreateRoute();
 
-            CountDownLatch latch = new CountDownLatch(2);
-
-            executor.execute(() -> {
-                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-                SetUpTableDao setUpTableDao = db.setUpTableDao();
-
-                Log.d("MainActivity", "db" + setUpTableDao.getAll());
-
-                int totalStudent = setUpTableDao.getTotalStudent();
-                int myDataListSize = firestoreReception.getMyDataListSize();
-
-                runOnUiThread(() -> {
-                    if (totalStudent != myDataListSize) {
-                        showRouteCreationDialog(latch);
-                    } else {
-                        latch.countDown();
-                    }
-                });
-            });
-
-            executor.execute(() -> {
-                List<MyDataClass> myDataList = firestoreReception.getMyDataList();
-                CreateRoot createRoot = new CreateRoot(MainActivity.this);
-                createRoot.receiveData(myDataList);
-                latch.countDown();
-
-                new Thread(() -> {
-                    try {
-                        latch.await();  // Both tasks must call countDown() before this returns
-                        runOnUiThread(() -> {
-                            Intent toRoot = new Intent(MainActivity.this, Maps.class);
-                            startActivity(toRoot);
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            });
-
-
-
-            executor.shutdown();
         }
         if(view == imageRoot){
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,Maps.class);
-            startActivity(toRoot);
+            fetchDataAndCreateRoute();
         }
 //        提出状況のクリック処理
         if(view == submission){
@@ -173,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(toSubmission);
         }
     }
+    //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this); // この 'this' が問題でないか確認
         builder.setTitle("クラスID");
@@ -196,8 +154,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
 
     }
+    //ルート作成の非同期処理
+    private void fetchDataAndCreateRoute() {
+        //非同期処理の開始
+        ExecutorService executor = Executors.newSingleThreadExecutor();
 
+        CountDownLatch latch = new CountDownLatch(2);
 
+        // タスク1: ローカルDBから生徒数を取得
+        executor.execute(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+
+            Log.d("MainActivity", "db" + setUpTableDao.getAll());
+
+            int totalStudent = setUpTableDao.getTotalStudent();
+            int myDataListSize = firestoreReception.getMyDataListSize();
+
+            runOnUiThread(() -> {
+                if (totalStudent != myDataListSize) {
+                    showRouteCreationDialog(latch);
+                } else {
+                    latch.countDown();
+                }
+            });
+        });
+
+        // タスク2: Firestoreからデータを取得
+        executor.execute(() -> {
+            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+            CreateRoot createRoot = new CreateRoot(MainActivity.this);
+            createRoot.receiveData(myDataList);
+            latch.countDown();
+        });
+
+        new Thread(() -> {
+            try {
+                latch.await();  // Both tasks must call countDown() before this returns
+                runOnUiThread(() -> {
+                    Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                    startActivity(toRoot);
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        executor.shutdown();
+    }
     //ルート作成のダイアログ
     private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
