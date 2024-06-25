@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //firestoreの受信関連
     private FirebaseFirestore db;
     private FirestoreReception firestoreReception;
+    private FirestoreReception_classIdDatabase firestoreReception_classIdDatabase;
+
+    //取得するためのクラスID
+    private int classId=100000;
 
 
     @Override
@@ -80,7 +84,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
 
-        firestoreReception.getDocumentsByClassId(100);
+        //TODO:3.classIdをmainアクティビティで取得する手段を作る
+        //4.以上のことを実装するためにユーザーにid作成、setupをすることを促すような制限をかける
+        if(classId!=100000){
+            firestoreReception.getDocumentsByClassId(classId);
+        }
 
     }
 
@@ -137,15 +145,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this); // この 'this' が問題でないか確認
+        firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
+        List<String> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("クラスID");
         builder.setMessage("あなたのクラスIDを表示しますか？");
 
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String classId = CreateUUID.generateUUID();
+                String classId = CreateUUID.generateUUID(classIdList);
                 Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
+                Log .d("classIdList", classIdList.toString());
+
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -227,8 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
-
-    //Main
+    //提出状況の取得
     private ArrayList<SubmissionStudent> getSubmissionStudents() {
         ArrayList<SubmissionStudent> submissionStudents = new ArrayList<>();
         List<MyDataClass> myDataList = firestoreReception.getMyDataList();

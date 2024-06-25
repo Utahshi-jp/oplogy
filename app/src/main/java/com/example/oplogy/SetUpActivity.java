@@ -91,6 +91,7 @@ public class SetUpActivity extends FragmentActivity
             Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
             startActivity(intent);
         });
+        //TODO:.SetUpの際に、classIdを挿入すること
 
         setUp.setOnClickListener(view -> {
 
