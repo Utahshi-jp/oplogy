@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String classId = CreateUUID.generateUUID(classIdList);
+                classId = CreateUUID.generateUUID(classIdList);
                 Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
                 Log .d("classIdList", classIdList.toString());
 
@@ -289,6 +289,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         if (alertDialog != null && alertDialog.isShowing()) {
             alertDialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if (classId != 100000) {
+            firestoreReception.getDocumentsByClassId(classId);
         }
     }
 
