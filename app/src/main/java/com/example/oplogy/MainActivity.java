@@ -84,12 +84,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
 
-        //TODO:3.classIdをmainアクティビティで取得する手段を作る
-        //4.以上のことを実装するためにユーザーにid作成、setupをすることを促すような制限をかける
-        if(classId!=100000){
-            firestoreReception.getDocumentsByClassId(classId);
-        }
-
     }
 
 
@@ -109,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            toSetup.putExtra("classId", classId);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
@@ -156,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String classId = CreateUUID.generateUUID(classIdList);
+                classId = CreateUUID.generateUUID(classIdList);
                 Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
                 Log .d("classIdList", classIdList.toString());
 
@@ -292,4 +287,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        //roomからclassIdを取得
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            classId = setUpTableDao.getClassId();
+        });
+        if (classId != 100000 ) {
+            firestoreReception.getDocumentsByClassId(classId);
+        }
+    }
 }
+

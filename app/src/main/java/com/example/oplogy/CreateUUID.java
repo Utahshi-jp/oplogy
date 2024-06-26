@@ -5,12 +5,12 @@ import java.util.List;
 
 public class CreateUUID {
 
-    public static String generateUUID(List<String> classIdList ){
+    public static int generateUUID(List<String> classIdList ){
         while (true){
-            String uuid = String.valueOf((int)(Math.random()*100000));
+            String uuid = String.valueOf((int)(Math.random() * 1000000));
             boolean isDuplicate = false;
             for(String classId : classIdList){
-                if(Integer.parseInt(classId) == Integer.parseInt(uuid)){
+                if(classId.equals(uuid)){
                     //重複があればフラグを立て、ループを抜ける
                     isDuplicate = true;
                     break;
@@ -19,7 +19,9 @@ public class CreateUUID {
             //重複がなければ生成したUUIDを返す
             if (!isDuplicate) {
                 //firestoreに挿入処理
-                return uuid;
+                //テスト用
+                uuid="100";
+                return Integer.parseInt(uuid);
             }
         }
     }

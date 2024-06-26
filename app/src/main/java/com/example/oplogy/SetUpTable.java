@@ -16,12 +16,13 @@ public class SetUpTable {
     public String endBreakTime;
     public int totalStudent;
 
-    //TODO: ここのコードをあとで実装する。roomにString classIdの作成
+    //TODO: ここのコードをあとで実装する。roomにint classIdの作成
+    int classId;
 
 
     //コンストラクタ
     public SetUpTable(String teacherName, String startPoint, String startTime, String endTime,
-                        String intervalTime, String startBreakTime, String endBreakTime, int totalStudent) {
+                        String intervalTime, String startBreakTime, String endBreakTime, int totalStudent,int classId) {
         this.teacherName = teacherName;
         this.startPoint = startPoint;
         this.startTime = startTime;
@@ -30,6 +31,7 @@ public class SetUpTable {
         this.startBreakTime = startBreakTime;
         this.endBreakTime = endBreakTime;
         this.totalStudent = totalStudent;
+        this.classId = classId;
     }
     //getter
     public int getId() {
