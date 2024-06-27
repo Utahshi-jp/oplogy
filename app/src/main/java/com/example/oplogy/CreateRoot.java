@@ -33,14 +33,16 @@ public class CreateRoot {
     private final AppDatabase db;
     private int arraySize;
 
-    String testdata[]={"20240604","20240605","20240606"};
+    boolean secondDuplicates;
+
+    String testdata[] = {"20240604", "20240605", "20240606"};
 
 
     public CreateRoot(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
     }
 
-    public void receiveData(List<MyDataClass> myDataList) {
+    public Boolean receiveData(List<MyDataClass> myDataList) {
 
         //myDataListの要素data第一希望日と第二希望日に以下を追加する
         //・保護者の希望時間帯の長さ
@@ -78,26 +80,34 @@ public class CreateRoot {
             //家庭訪問全体のスケジュールの開始時間を要素とした配列の作成
             int[][][] intervalArray = homeVisitSchedule();
 
+
             outPutLogIntervalArray(intervalArray);
             //スケジュール作成
             boolean Duplicates = createSchedule(myDataList, intervalArray);
 
             //重複によるエラー確認
             if (!Duplicates) {
+                sortSchedule(myDataList);
                 outPutLogSchedule(myDataList);
             } else {
                 //第二希望日で同じ処理を行う
+                Log.d("CreateRoot", "第二希望");
                 secondSetData(myDataList);
                 secondTimeZoneSort(myDataList);
-                boolean secondDuplicates = secondCreateSchedule(myDataList, intervalArray);
-                if(!secondDuplicates){
+                secondDuplicates = secondCreateSchedule(myDataList, intervalArray);
+                if (!secondDuplicates) {
+                    sortSchedule(myDataList);
                     outPutLogSchedule(myDataList);
+                }else{
+                    Log.d("CreateRoot", "重複によるエラー");
                 }
-                Log.d("CreateRoot","重複によるエラー");
             }
         });
-
-
+        if(!secondDuplicates){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 
@@ -262,9 +272,11 @@ public class CreateRoot {
                 intervalList.add(intervalMinutes);
             }
         }
+
+
         int[][][] intervalArray = new int[3][intervalList.size()][2];
         for (int i = 0; i < intervalList.size(); i++) {
-            for(int j=0;j<3;j++) {
+            for (int j = 0; j < 3; j++) {
                 intervalArray[j][i][0] = intervalList.get(i);
                 intervalArray[j][i][1] = 0;//割り当てされていないことを表す
             }
@@ -274,11 +286,8 @@ public class CreateRoot {
     }
 
     private void outPutLogIntervalArray(int[][][] intervalArray) {
-        for (int i = 0; i < intervalArray.length; i++) {
-            for (int j = 0; j < 3; j++) {
-                Log.d("CreateRoot:PutLogIntervalArray", "(index:" + i + ") intervalArray:" + intervalArray[j][
-                i][0]);
-            }
+        for (int i = 0; i < intervalArray[0].length; i++) {
+                Log.d("CreateRoot","inteintervalArray:(intex:" + i + ") :"+intervalArray[0][i][0]);
         }
     }
 
@@ -286,34 +295,18 @@ public class CreateRoot {
     private Boolean createSchedule(List<MyDataClass> myDataList, int[][][] intervalArray) {
 
         for (int i = 0; i < myDataList.size(); i++) {
-            for (int j = 0; j < intervalArray.length - 1; j++) {
-                if (testdata[0].equals(myDataList.get(i).getStartDateString())) {
-                    checkSchedule(myDataList,intervalArray,i,j);
-//                    if (intervalArray[0][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[0][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[0][j][1] == 0) {
-//                        intervalArray[0][j][1] += 1;//割り当て済みを表す
-//                        myDataList.get(i).setSchedule(intervalArray[0][j][0]);
-//                        Log.d("CreateRoot:createSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
-//                        break;
-//                    }
-                } else if (testdata[1].equals(myDataList.get(i).getStartDateString())) {
-                    if (intervalArray[1][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[1][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[1][j][1] == 0) {
-                        intervalArray[1][j][1] += 1;//割り当て済みを表す
-                        myDataList.get(i).setSchedule(intervalArray[1][j][0]);
-                        Log.d("CreateRoot:createSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
+            for (int j = 0; j < intervalArray[0].length - 1; j++) {
+                for (int x = 0; x < 3; x++) {
+                    if (testdata[x].equals(myDataList.get(i).getStartDateString())&&myDataList.get(i).getSchedule()==0) {
+                        String desiredDate=myDataList.get(i).getStartDateString();
+                        checkSchedule(myDataList, intervalArray, i, j, x,desiredDate);
                         break;
                     }
-                } else if (testdata[2].equals(myDataList.get(i).getStartDateString())) {
-                    if (intervalArray[2][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[2][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[2][j][1] == 0) {
-                        intervalArray[2][j][1] += 1;//割り当て済みを表す
-                        myDataList.get(i).setSchedule(intervalArray[2][j][0]);
-                        Log.d("CreateRoot:createSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
-                        break;
-                    }
-                } else {
-                    Log.d("CreateRoot", "第一希望日:日付との紐づけエラー");
                 }
             }
+
         }
+
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getSchedule() == 0) ;
             return true;
@@ -323,53 +316,38 @@ public class CreateRoot {
 
     private boolean secondCreateSchedule(List<MyDataClass> myDataList, int[][][] intervalArray) {
         for (int i = 0; i < myDataList.size(); i++) {
-            for (int j = 0; j < intervalArray.length - 1; j++) {
-                if(testdata[0].equals(myDataList.get(i).getSecondDayStartDateString())) {
-                    if (intervalArray[0][j][0] >= Integer.parseInt(myDataList.get(i).getSecondDayParentStartTimeString()) && intervalArray[0][j + 1][0] <= Integer.parseInt(myDataList.get(i).getSecondDayParentEndTimeString()) && intervalArray[0][j][1] == 0) {
-                        intervalArray[0][j][1] += 1;//割り当て済みを表す
-                        myDataList.get(i).setSchedule(intervalArray[0][j][0]);
-                        Log.d("CreateRoot:createSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
-                        break;
+            for (int j = 0; j < intervalArray[0].length - 1; j++) {
+                for (int x = 0; x < 3; x++) {
+                    if (testdata[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                        String desiredDate=myDataList.get(i).getSecondDayStartDateString();
+                        checkSchedule(myDataList, intervalArray, i, j, x,desiredDate);
                     }
-                }else if(testdata[1].equals(myDataList.get(i).getSecondDayStartDateString())){
-                    if (intervalArray[1][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[1][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[1][j][1] == 0) {
-                        intervalArray[1][j][1] += 1;//割り当て済みを表す
-                        myDataList.get(i).setSchedule(intervalArray[1][j][0]);
-                        Log.d("CreateRoot:createSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
-                        break;
-                    }
-                } else if (testdata[2].equals(myDataList.get(i).getSecondDayStartDateString())) {
-                    if (intervalArray[2][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[2][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[2][j][1] == 0) {
-                        intervalArray[2][j][1] += 1;//割り当て済みを表す
-                        myDataList.get(i).setSchedule(intervalArray[2][j][0]);
-                        Log.d("CreateRoot:createSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
-                        break;
-                    }
-                }else{
-                    Log.d("CreateRoot", "第二希望日:日付との紐づけエラー");
                 }
             }
-
         }
+
         for (int i = 0; i < myDataList.size(); i++) {
-            if (myDataList.get(i).getSchedule() == 0) ;
-            return true;
+            if (myDataList.get(i).getSchedule() == 0) {
+                return true;
+            }
         }
         return false;
     }
 
-    private void checkSchedule(List<MyDataClass> myDataList,int[][][] intervalArray,int i,int j) {
-        for (int x = 0; x < 3; x++) {
-            if(intervalArray[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[x][j][1] == 0)
-            {
-                intervalArray[x][j][1] += 1;//割り当て済みを表す
-                myDataList.get(i).setSchedule(intervalArray[x][j][0]);
-                Log.d("CreateRoot:CheckSchedule","(intex:"+i+") :"+myDataList.get(i).getStartDateString());
-                Log.d("CreateRoot:CheckSchedule", "(index:" + i + ") :" + myDataList.get(i).getSchedule());
-                break;
-            }
+    private void checkSchedule(List<MyDataClass> myDataList, int[][][] intervalArray, int i, int j, int x,String desiredDate) {
+
+        if (intervalArray[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[x][j][1] == 0) {
+            intervalArray[x][j][1] += 1;//割り当て済みを表す
+            myDataList.get(i).setSchedule(Integer.parseInt(desiredDate.substring(4,8)+String.valueOf(intervalArray[x][j][0])));
         }
     }
+
+    private void sortSchedule(List<MyDataClass> myDataList) {
+
+        Comparator<MyDataClass> comparator = Comparator.comparing(MyDataClass::getSchedule);
+        myDataList.sort(comparator);
+    }
+
     private void outPutLogSchedule(List<MyDataClass> myDataList) {
         for (int i = 0; i < myDataList.size(); i++) {
             Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") data: " + myDataList.get(i));

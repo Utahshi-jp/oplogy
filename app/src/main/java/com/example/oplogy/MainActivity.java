@@ -148,8 +148,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 Log.d("MainActivity","myDataList"+ myDataList.size());
                 CreateRoot createRoot = new CreateRoot(MainActivity.this);
-                createRoot.receiveData(myDataList);
+                Boolean notDuplicates=createRoot.receiveData(myDataList);
                 latch.countDown();
+                if(notDuplicates){
+                    Log.d("MainActivity","スケジュール作成成功");
+                }else{
+                    showErrorDialog(latch);
+                }
             });
 
             new Thread(() -> {
@@ -226,16 +231,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
-    public void showErrorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("警告");
-        builder.setMessage("保護者の希望の重複が深刻で、ルート検索が行えません。調整してください。");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+    public void showErrorDialog(CountDownLatch latch) {
 
-            }
-        });
-        builder.show();
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("警告")
+                .setMessage("保護者の重複が重大でルート作成ができません。調整してください")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        latch.countDown();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }
