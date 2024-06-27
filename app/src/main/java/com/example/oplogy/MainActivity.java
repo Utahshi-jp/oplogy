@@ -20,7 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
@@ -81,36 +81,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-//    クリック処理
+    //    クリック処理
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
-        if(view == creatUUID){
+        if (view == creatUUID) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
             finish();   // 画面遷移後元の状態に戻す
         }
-        if(view == imageUuid){
+        if (view == imageUuid) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
             finish();
         }
 //        セットアップのクリック処理
-        if(view == setUp){
+        if (view == setUp) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
-        if (view == imageSetup){
+        if (view == imageSetup) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
 
 //        ルート作成のクリック処理
-        if(view == root){
+        if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
             ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -135,7 +135,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
 
             executor.execute(() -> {
-                List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+
+                List<MyDataClass> myDataList = null;
+                while (myDataList == null) {
+                    myDataList = firestoreReception.getMyDataList();
+                    try {
+                        Thread.sleep(3000);
+                        Log.d("MainActivity","myDataList"+ myDataList.size());
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                Log.d("MainActivity","myDataList"+ myDataList.size());
                 CreateRoot createRoot = new CreateRoot(MainActivity.this);
                 createRoot.receiveData(myDataList);
                 latch.countDown();
@@ -155,21 +166,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             executor.shutdown();
         }
-        if(view == imageRoot){
+        if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
-            Intent toRoot = new Intent(MainActivity.this,Maps.class);
+            Intent toRoot = new Intent(MainActivity.this, Maps.class);
             startActivity(toRoot);
         }
 //        提出状況のクリック処理
-        if(view == submission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+        if (view == submission) {
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             startActivity(toSubmission);
         }
-        if(view == imageSubmission){
-            Intent toSubmission = new Intent(MainActivity.this,SubmissionActivity.class);
+        if (view == imageSubmission) {
+            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             startActivity(toSubmission);
         }
     }
+
     private void showUUIDYesNoDialog() {
         //ダイアログの表示
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -188,11 +200,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("DialogNO","DialogでNoが選ばれました");
+                Log.d("DialogNO", "DialogでNoが選ばれました");
             }
         });
         builder.show();
     }
+
     //ルート作成のダイアログ
     private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
@@ -211,5 +224,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 })
                 .show();
+    }
+
+    public void showErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("警告");
+        builder.setMessage("保護者の希望の重複が深刻で、ルート検索が行えません。調整してください。");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
     }
 }

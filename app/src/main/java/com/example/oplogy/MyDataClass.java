@@ -17,6 +17,18 @@ public class MyDataClass {
     private Long Timezone;
     private String startDateString;
     private String endDateString;
+    private String AssignedStartTime;
+    private int AssignedIndex;
+    private boolean linking;
+    private String parentStartTimeString;
+    private String parentEndTimeString;
+    private int schedule;
+    private String secondDayStartDateString;
+    private String secondDayEndDateString;
+    private Long secondDayTimezone;
+    private String secondDayParentStartTimeString;
+    private String secondDayParentEndTimeString;
+
 
     public MyDataClass(String patronName, int classId, List<String> address, List<Timestamp> firstDay, int studentNumber, String childName, List<Timestamp> thirdDay, List<Timestamp> secondDay) {
         this.patronName = patronName;
@@ -132,7 +144,94 @@ public class MyDataClass {
     public String getStartDateString() {
         return startDateString;
     }
+
     public void setStartDateString(String startDateString) {
         this.startDateString = startDateString;
+    }
+
+
+    public void setAssignedStartTime(String AssignedStartTime) {
+        this.AssignedStartTime = AssignedStartTime;
+
+    }
+
+    public String setAssignedEndTime(String s) {
+        return AssignedStartTime;
+    }
+
+    public void setAssignedIndex(int AssignedIndex) {
+        this.AssignedIndex = AssignedIndex;
+    }
+
+    public int getAssignedIndex() {
+        return AssignedIndex;
+    }
+
+    public void setLinking(boolean linking) {
+        this.linking = linking;
+    }
+
+    public boolean getLinking() {
+        return linking;
+    }
+
+    public void setParentStartTimeString(String parentStartTimeString) {
+        this.parentStartTimeString = parentStartTimeString;
+    }
+
+    public void setParentEndTimeString(String parentEndTimeString) {
+        this.parentEndTimeString = parentEndTimeString;
+    }
+
+    public String getParentStartTimeString() {
+        return parentStartTimeString;
+    }
+
+    public String getParentEndTimeString() {
+        return parentEndTimeString;
+    }
+
+    public void setSchedule(int schedule) {
+        this.schedule = schedule;
+    }
+
+    public int getSchedule() {
+        return schedule;
+    }
+
+    public void setSecondDayStartDateString(String secondDayStartDateString) {
+        this.secondDayStartDateString=secondDayStartDateString;
+    }
+
+    public void setSecondDayEndDateString(String secondDayEndDateString) {
+        this.secondDayEndDateString=secondDayEndDateString;
+    }
+    public void setSecondDayTimezone(Long secondDayTimezone) {
+        this.secondDayTimezone=secondDayTimezone;
+    }
+
+    public Long getSecondDayTimezone(){
+        return secondDayTimezone;
+    }
+
+
+    public void setSecondDayParentStartTimeString(String secondDayParentStartTimeString) {
+        this.secondDayParentStartTimeString=secondDayParentStartTimeString;
+    }
+
+    public void setSecondDayParentEndTimeString(String secondDayParentEndTimeString) {
+        this.secondDayParentEndTimeString=secondDayParentEndTimeString;
+    }
+
+    public String getSecondDayParentStartTimeString() {
+        return secondDayParentStartTimeString;
+    }
+
+    public String getSecondDayParentEndTimeString() {
+        return  secondDayParentEndTimeString;
+    }
+
+    public String getSecondDayStartDateString() {
+        return  secondDayStartDateString;
     }
 }
