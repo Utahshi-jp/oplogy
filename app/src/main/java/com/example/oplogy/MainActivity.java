@@ -176,7 +176,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // タスク1: ローカルDBから生徒数を取得してtotalStudentと比較
         executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
+                    .fallbackToDestructiveMigration()
+                    .build();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
 
             Log.d("MainActivity", "db" + setUpTableDao.getAll());
@@ -341,7 +343,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //roomからclassIdを取得
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
+                    .fallbackToDestructiveMigration()
+                    .build();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
             classId = setUpTableDao.getClassId();
         });
