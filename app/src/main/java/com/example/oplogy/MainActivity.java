@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-//    クリック処理
+    //    クリック処理
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
@@ -187,10 +187,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // タスク2: Firestoreからデータを取得
         executor.execute(() -> {
-            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+            List<MyDataClass> myDataList = null;
+            while (myDataList == null) {
+                myDataList = firestoreReception.getMyDataList();
+                try {
+                    Thread.sleep(3000);
+                    Log.d("MainActivity","myDataList"+ myDataList.size());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Log.d("MainActivity","myDataList"+ myDataList.size());
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            createRoot.receiveData(myDataList);
+            Boolean notDuplicates=createRoot.receiveData(myDataList);
             latch.countDown();
+
+            if(notDuplicates){
+                Log.d("MainActivity","スケジュール作成成功");
+            }else{
+                showErrorDialog(latch);
+            }
         });
 
         new Thread(() -> {
@@ -226,7 +242,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .show();
     }
+    public void showErrorDialog(CountDownLatch latch) {
 
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("警告")
+                .setMessage("保護者の重複が重大でルート作成ができません。調整してください")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        latch.countDown();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
 
     //Main
     private ArrayList<SubmissionStudent> getSubmissionStudents() {
@@ -280,3 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 }
+
+
+
+
