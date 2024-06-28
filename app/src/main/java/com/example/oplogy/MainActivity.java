@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //    ダイアログの宣言
     private AlertDialog alertDialog;
@@ -89,52 +89,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
-        if(view == creatUUID){
+        if (view == creatUUID) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
         }
-        if(view == imageUuid){
+        if (view == imageUuid) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
         }
 //        セットアップのクリック処理
-        if(view == setUp){
+        if (view == setUp) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
-        if (view == imageSetup){
+        if (view == imageSetup) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
 
 //        ルート作成のクリック処理
-        if(view == root){
+        if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
 
         }
-        if(view == imageRoot){
+        if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
         }
 //        提出状況のクリック処理
-        if(view == submission){
+        if (view == submission) {
             ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
             Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
-        if(view == imageSubmission){
+        if (view == imageSubmission) {
             ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
             Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
     }
+
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this); // この 'this' が問題でないか確認
@@ -159,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
 
     }
+
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
         //非同期処理の開始
@@ -192,20 +194,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 myDataList = firestoreReception.getMyDataList();
                 try {
                     Thread.sleep(3000);
-                    Log.d("MainActivity","myDataList"+ myDataList.size());
+                    Log.d("MainActivity", "myDataList" + myDataList.size());
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-            Log.d("MainActivity","myDataList"+ myDataList.size());
+            Log.d("MainActivity", "myDataList" + myDataList.size());
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            Boolean notDuplicates=createRoot.receiveData(myDataList);
+            Boolean notDuplicates = createRoot.receiveData(myDataList);
             latch.countDown();
 
-            if(notDuplicates){
-                Log.d("MainActivity","スケジュール作成成功");
-            }else{
-                showErrorDialog(latch);
+            if (notDuplicates) {
+                Log.d("MainActivity", "スケジュール作成成功");
+            } else {
+                showErrorDialog(latch, myDataList);
             }
         });
 
@@ -223,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         executor.shutdown();
     }
+
     //ルート作成のダイアログ
     private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
@@ -242,11 +245,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .show();
     }
-    public void showErrorDialog(CountDownLatch latch) {
 
+    public void showErrorDialog(CountDownLatch latch, List<MyDataClass> myDataList) {
+        List<Integer> studentNumbers = new ArrayList<>();
+        for (int i = 0; i < myDataList.size(); i++) {
+            if (myDataList.get(i).getSchedule() == 0) {
+                studentNumbers.add(myDataList.get(i).getStudentNumber());
+            }
+        }
+        StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。調整してください。\n出席番号: ");
+        for (int i = 0; i < studentNumbers.size(); i++) {
+            message.append(studentNumbers.get(i));
+            if (i < studentNumbers.size() - 1) {
+                message.append(", ");
+            }
+        }
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
-                .setMessage("保護者の重複が重大でルート作成ができません。調整してください")
+                .setMessage(message.toString())
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
