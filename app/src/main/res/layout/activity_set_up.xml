@@ -95,24 +95,42 @@
             android:text="@string/startTime"
             android:gravity="center"/>
 
-        <TextView
-            android:id="@+id/startTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="　　　"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:autofillHints=""
-            android:inputType=""
-            tools:ignore="HardcodedText,LabelFor"/>
+<!--        <TextView-->
+<!--            android:id="@+id/startTime"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="　　　"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textAlignment="center"-->
+<!--            android:autofillHints=""-->
+<!--            android:inputType=""-->
+<!--            tools:ignore="HardcodedText,LabelFor"/>-->
 
         <Button
-            android:id="@+id/startTimeSetButton"
+            android:id="@+id/startFirstDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="65dp"
-            android:layout_marginEnd="65dp"
-            android:text="@string/timeSet"
+            android:text="1日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
+
+        <Button
+            android:id="@+id/startSecondDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
+
+        <Button
+            android:id="@+id/startThirdDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
 
     </LinearLayout>
@@ -130,24 +148,50 @@
             android:text="@string/endTime"
             android:gravity="center"/>
 
-        <TextView
-            android:id="@+id/endTime"
+<!--        <TextView-->
+<!--            android:id="@+id/endTime"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="　　　"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textAlignment="center"-->
+<!--            android:autofillHints=""-->
+<!--            android:inputType=""-->
+<!--            tools:ignore="LabelFor"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/endTimeSetButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/timeSet"-->
+<!--            android:layout_marginStart="65dp"-->
+<!--            android:layout_marginEnd="65dp"-->
+<!--            tools:ignore="DuplicateIds" />-->
+        <Button
+            android:id="@+id/endFirstDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="　　　"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:autofillHints=""
-            android:inputType=""
-            tools:ignore="LabelFor"/>
+            android:text="1日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
 
         <Button
-            android:id="@+id/endTimeSetButton"
+            android:id="@+id/endSecondDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/timeSet"
-            android:layout_marginStart="65dp"
-            android:layout_marginEnd="65dp"
+            android:text="2日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
+
+        <Button
+            android:id="@+id/endThirdDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
     </LinearLayout>
 
