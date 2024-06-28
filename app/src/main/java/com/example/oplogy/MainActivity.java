@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    クリック処理
     @Override
     public void onClick(View view) {
+
 //        ID作成のクリック処理
         if(view == creatUUID){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
@@ -101,13 +102,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
-            startActivity(toSetup);
+            startActivityForResult(toSetup,100);
+            overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
             finish();   // 画面遷移後元の状態に戻す
         }
         if (view == imageSetup){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
-            startActivity(toSetup);
+            startActivityForResult(toSetup,100);
+            overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
             finish();   // 画面遷移後元の状態に戻す
         }
 
@@ -152,6 +155,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d("DialogNO", "DialogでNoが選ばれました");
+
+                // Noを押したら、元の画像に戻す処理
+                imageUuid.setImageResource(R.drawable.checked_image);
             }
         });
 
