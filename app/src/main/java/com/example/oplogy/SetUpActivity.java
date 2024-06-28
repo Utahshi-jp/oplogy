@@ -50,6 +50,8 @@ public class SetUpActivity extends FragmentActivity
 
 
 
+
+
     Button startTimeSetButton;
     Button endTimeSetButton;
 
@@ -60,6 +62,8 @@ public class SetUpActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
+
+        int classId= getIntent().getIntExtra("classId", 100000);
 
         setTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         setStartPoint = findViewById(R.id.startPoint);                      //開始地点
@@ -139,7 +143,8 @@ public class SetUpActivity extends FragmentActivity
                         intervalTime,
                         startBreakTime,
                         endBreakTime,
-                        totalStudent
+                        totalStudent,
+                        classId
                 );
 
                 // 同じ名前のエントリが存在するかどうかを確認

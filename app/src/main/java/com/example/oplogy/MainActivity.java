@@ -84,10 +84,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
 
-        if(classId!=100000){
-            firestoreReception.getDocumentsByClassId(classId);
-        }
-
     }
 
 
@@ -107,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
             Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            toSetup.putExtra("classId", classId);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
@@ -177,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         CountDownLatch latch = new CountDownLatch(2);
 
-        // タスク1: ローカルDBから生徒数を取得
+        // タスク1: ローカルDBから生徒数を取得してtotalStudentと比較
         executor.execute(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
@@ -196,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
         });
 
-        // タスク2: Firestoreからデータを取得
+        // タスク2: ルート作成を行う
         executor.execute(() -> {
             List<MyDataClass> myDataList = null;
             while (myDataList == null) {
@@ -341,9 +338,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume(){
         super.onResume();
-        if (classId != 100000) {
+        //roomからclassIdを取得
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            classId = setUpTableDao.getClassId();
+        });
+        if (classId != 100000 ) {
             firestoreReception.getDocumentsByClassId(classId);
         }
     }
-
 }

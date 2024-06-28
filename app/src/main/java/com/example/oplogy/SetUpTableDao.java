@@ -39,4 +39,7 @@ public interface SetUpTableDao {
     String getStartBreakTime();
     @Query("SELECT EndBreakTime FROM SetUpTable")
     String getEndBreakTime();
+    //クラスIDの取得
+    @Query("SELECT classId FROM SetUpTable")
+    int getClassId();
 }
