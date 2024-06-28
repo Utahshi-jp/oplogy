@@ -127,7 +127,6 @@ public class SetUpActivity extends FragmentActivity
                         AppDatabase.class,
                         "SetUpTable"
                 )
-                        .fallbackToDestructiveMigration()
                         .build();
                 SetUpTableDao setUpTableDao = db.setUpTableDao();
                 // Roomの操作を行う
