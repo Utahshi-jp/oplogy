@@ -1,17 +1,23 @@
 package com.example.oplogy;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,8 +38,10 @@ public class CreateRoot {
 
     private final AppDatabase db;
     private int arraySize;
+    boolean Duplicates=true;
+    boolean secondDuplicates=true;
 
-    boolean secondDuplicates;
+    private Context context;
 
     String testdata[] = {"20240604", "20240605", "20240606"};
 
@@ -83,12 +91,12 @@ public class CreateRoot {
 
             outPutLogIntervalArray(intervalArray);
             //スケジュール作成
-            boolean Duplicates = createSchedule(myDataList, intervalArray);
+            Duplicates = createSchedule(myDataList, intervalArray);
 
             //重複によるエラー確認
             if (!Duplicates) {
                 sortSchedule(myDataList);
-                outPutLogSchedule(myDataList);
+
             } else {
                 //第二希望日で同じ処理を行う
                 Log.d("CreateRoot", "第二希望");
@@ -97,13 +105,16 @@ public class CreateRoot {
                 secondDuplicates = secondCreateSchedule(myDataList, intervalArray);
                 if (!secondDuplicates) {
                     sortSchedule(myDataList);
-                    outPutLogSchedule(myDataList);
+
                 } else {
                     Log.d("CreateRoot", "重複によるエラー");
                 }
             }
         });
+
         if (!secondDuplicates) {
+            geocodeAddress(myDataList);
+            outPutLogSchedule(myDataList);
             return true;
         } else {
             return false;
@@ -346,12 +357,30 @@ public class CreateRoot {
         myDataList.sort(comparator);
     }
 
+
+
+    private void geocodeAddress(List<MyDataClass> myDataList) {
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            for(int i=0;i<myDataList.size();i++) {
+                List<Address> addresses = geocoder.getFromLocationName(myDataList.get(i).getAddress().toString(), 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address addressResult = addresses.get(0);
+                    double latitude = addressResult.getLatitude();
+                    double longitude = addressResult.getLongitude();
+                    myDataList.get(i).setLatLng(new LatLng(latitude, longitude));
+                }
+            }
+        } catch (IOException e) {
+            Log.e("CreateRoot", "緯度経度の取得に失敗: " +e);
+        }
+    }
+
     private void outPutLogSchedule(List<MyDataClass> myDataList) {
         for (int i = 0; i < myDataList.size(); i++) {
             Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") data: " + myDataList.get(i));
             Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") Schedule: " + myDataList.get(i).getSchedule());
-            Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") date: " + myDataList.get(i).getStartDateString());
+            Log.d("CreateRoot","(index: " + i + ") LatLng"+myDataList.get(i).getLatLng());
         }
     }
-
 }
