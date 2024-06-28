@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //firestoreの受信関連
     private FirebaseFirestore db;
     private FirestoreReception firestoreReception;
+    private FirestoreReception_classIdDatabase firestoreReception_classIdDatabase;
+
+    //取得するためのクラスID
+    private int classId=100000;
 
 
     @Override
@@ -80,33 +84,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
 
-        firestoreReception.getDocumentsByClassId(100);
+        if(classId!=100000){
+            firestoreReception.getDocumentsByClassId(classId);
+        }
 
     }
 
 
-    //    クリック処理
+//    クリック処理
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
-        if (view == creatUUID) {
+        if(view == creatUUID){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
         }
-        if (view == imageUuid) {
+        if(view == imageUuid){
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
         }
 //        セットアップのクリック処理
-        if (view == setUp) {
+        if(view == setUp){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
-        if (view == imageSetup) {
+        if (view == imageSetup){
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
@@ -117,12 +123,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             fetchDataAndCreateRoute();
 
         }
-        if (view == imageRoot) {
+        if(view == imageRoot){
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
         }
 //        提出状況のクリック処理
-        if (view == submission) {
+        if(view == submission){
             ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
             Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
@@ -135,17 +141,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(toSubmission);
         }
     }
-
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this); // この 'this' が問題でないか確認
+        firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
+        List<String> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("クラスID");
         builder.setMessage("あなたのクラスIDを表示しますか？");
 
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String classId = CreateUUID.generateUUID();
+                classId = CreateUUID.generateUUID(classIdList);
                 Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
             }
         });
@@ -278,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
-    //Main
+    //提出状況の取得
     private ArrayList<SubmissionStudent> getSubmissionStudents() {
         ArrayList<SubmissionStudent> submissionStudents = new ArrayList<>();
         List<MyDataClass> myDataList = firestoreReception.getMyDataList();
@@ -329,8 +338,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if (classId != 100000) {
+            firestoreReception.getDocumentsByClassId(classId);
+        }
+    }
+
 }
-
-
-
-

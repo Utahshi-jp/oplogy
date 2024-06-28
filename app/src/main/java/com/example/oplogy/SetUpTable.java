@@ -16,6 +16,8 @@ public class SetUpTable {
     public String endBreakTime;
     public int totalStudent;
 
+    //TODO: ここのコードをあとで実装する。roomにString classIdの作成
+
 
     //コンストラクタ
     public SetUpTable(String teacherName, String startPoint, String startTime, String endTime,
