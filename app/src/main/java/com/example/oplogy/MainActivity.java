@@ -131,11 +131,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
                         latch.countDown();
                     }
+
                 });
             });
 
             executor.execute(() -> {
-
                 List<MyDataClass> myDataList = null;
                 while (myDataList == null) {
                     myDataList = firestoreReception.getMyDataList();
@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CreateRoot createRoot = new CreateRoot(MainActivity.this);
                 Boolean notDuplicates=createRoot.receiveData(myDataList);
                 latch.countDown();
+
                 if(notDuplicates){
                     Log.d("MainActivity","スケジュール作成成功");
                 }else{
@@ -221,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(DialogInterface dialog, int which) {
                         latch.countDown();
                     }
+
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override

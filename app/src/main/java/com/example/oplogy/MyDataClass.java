@@ -200,27 +200,28 @@ public class MyDataClass {
     }
 
     public void setSecondDayStartDateString(String secondDayStartDateString) {
-        this.secondDayStartDateString=secondDayStartDateString;
+        this.secondDayStartDateString = secondDayStartDateString;
     }
 
     public void setSecondDayEndDateString(String secondDayEndDateString) {
-        this.secondDayEndDateString=secondDayEndDateString;
-    }
-    public void setSecondDayTimezone(Long secondDayTimezone) {
-        this.secondDayTimezone=secondDayTimezone;
+        this.secondDayEndDateString = secondDayEndDateString;
     }
 
-    public Long getSecondDayTimezone(){
+    public void setSecondDayTimezone(Long secondDayTimezone) {
+        this.secondDayTimezone = secondDayTimezone;
+    }
+
+    public Long getSecondDayTimezone() {
         return secondDayTimezone;
     }
 
 
     public void setSecondDayParentStartTimeString(String secondDayParentStartTimeString) {
-        this.secondDayParentStartTimeString=secondDayParentStartTimeString;
+        this.secondDayParentStartTimeString = secondDayParentStartTimeString;
     }
 
     public void setSecondDayParentEndTimeString(String secondDayParentEndTimeString) {
-        this.secondDayParentEndTimeString=secondDayParentEndTimeString;
+        this.secondDayParentEndTimeString = secondDayParentEndTimeString;
     }
 
     public String getSecondDayParentStartTimeString() {
@@ -228,10 +229,10 @@ public class MyDataClass {
     }
 
     public String getSecondDayParentEndTimeString() {
-        return  secondDayParentEndTimeString;
+        return secondDayParentEndTimeString;
     }
 
     public String getSecondDayStartDateString() {
-        return  secondDayStartDateString;
+        return secondDayStartDateString;
     }
 }

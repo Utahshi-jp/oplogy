@@ -34,7 +34,7 @@ public class GeoCoder {
             Log.d("FirestoreReception", "firstDay: " + firstDay.get(0));
             Log.d("FirestoreReception", "firstDay: " + firstDay.get(1));
             Log.d("FirestoreReception", "studentNumber: " + studentNumber);
-            Log.d("FirestoreReception", "latLng: "+latLng );
+            Log.d("FirestoreReception", "latLng: " + latLng);
 
         } catch (NullPointerException e) {
             Log.e("NullPointerException", "getの中身がnull" + e);
