@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //    ダイアログの宣言
     private AlertDialog alertDialog;
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 //        ルート作成のクリック処理
-        if(view == root){
+        if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
 
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
             startActivity(toSubmission);
         }
-        if(view == imageSubmission){
+        if (view == imageSubmission) {
             ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
             Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
@@ -153,8 +153,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 classId = CreateUUID.generateUUID(classIdList);
                 Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
-                Log .d("classIdList", classIdList.toString());
-
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -168,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
 
     }
+
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
         //非同期処理の開始
@@ -196,10 +195,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // タスク2: ルート作成を行う
         executor.execute(() -> {
-            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
+            List<MyDataClass> myDataList = null;
+            while (myDataList == null) {
+                myDataList = firestoreReception.getMyDataList();
+                try {
+                    Thread.sleep(3000);
+                    Log.d("MainActivity", "myDataList" + myDataList.size());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Log.d("MainActivity", "myDataList" + myDataList.size());
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            createRoot.receiveData(myDataList);
+            Boolean notDuplicates = createRoot.receiveData(myDataList);
             latch.countDown();
+
+            if (notDuplicates) {
+                Log.d("MainActivity", "スケジュール作成成功");
+            } else {
+                showErrorDialog(latch, myDataList);
+            }
         });
 
         new Thread(() -> {
@@ -216,11 +231,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         executor.shutdown();
     }
+
     //ルート作成のダイアログ
     private void showRouteCreationDialog(CountDownLatch latch) {
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
                 .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        latch.countDown();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    public void showErrorDialog(CountDownLatch latch, List<MyDataClass> myDataList) {
+        List<Integer> studentNumbers = new ArrayList<>();
+        for (int i = 0; i < myDataList.size(); i++) {
+            if (myDataList.get(i).getSchedule() == 0) {
+                studentNumbers.add(myDataList.get(i).getStudentNumber());
+            }
+        }
+        StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。調整してください。\n出席番号: ");
+        for (int i = 0; i < studentNumbers.size(); i++) {
+            message.append(studentNumbers.get(i));
+            if (i < studentNumbers.size() - 1) {
+                message.append(", ");
+            }
+        }
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("警告")
+                .setMessage(message.toString())
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -302,4 +350,3 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 }
-
