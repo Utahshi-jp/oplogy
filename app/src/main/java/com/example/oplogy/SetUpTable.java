@@ -16,7 +16,6 @@ public class SetUpTable {
     public String endBreakTime;
     public int totalStudent;
 
-    //TODO: ここのコードをあとで実装する。roomにint classIdの作成
     int classId;
 
 

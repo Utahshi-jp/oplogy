@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         CountDownLatch latch = new CountDownLatch(2);
 
-        // タスク1: ローカルDBから生徒数を取得
+        // タスク1: ローカルDBから生徒数を取得してtotalStudentと比較
         executor.execute(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
         });
 
-        // タスク2: Firestoreからデータを取得
+        // タスク2: ルート作成を行う
         executor.execute(() -> {
             List<MyDataClass> myDataList = firestoreReception.getMyDataList();
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
