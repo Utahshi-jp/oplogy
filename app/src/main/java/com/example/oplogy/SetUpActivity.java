@@ -38,8 +38,6 @@ public class SetUpActivity extends FragmentActivity
     int totalStudent;
     private TextView setTeacherName;
     private TextView setStartPoint;
-    private TextView setStartTime;
-    private TextView setEndTime;
     private TextView setStartBreakTime;
     private TextView setEndBreakTime;
     private TextView setTotalStudent;
@@ -47,6 +45,13 @@ public class SetUpActivity extends FragmentActivity
 
     String stringHourOfDay;
     String stringMinute;
+
+    Button startFirstDay;
+    Button startSecondDay;
+    Button startThirdDay;
+    Button endFirstDay;
+    Button endSecondDay;
+    Button endThirdDay;
 
 
 
@@ -68,10 +73,13 @@ public class SetUpActivity extends FragmentActivity
         setTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         setStartPoint = findViewById(R.id.startPoint);                      //開始地点
 
-        setStartTime = findViewById(R.id.startTime);                        //開始時刻
-        setStartTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);              //下線を引く
-        setEndTime = findViewById(R.id.endTime);                            //終了時刻
-        setEndTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        startFirstDay = findViewById(R.id.startFirstDay);                   //1日目の開始時刻を設定するボタン
+        startSecondDay = findViewById(R.id.startSecondDay);                 //2日目の開始時刻
+        startThirdDay = findViewById(R.id.startThirdDay);                   //3日目の開始時刻
+
+        endFirstDay = findViewById(R.id.endFirstDay);                       //1日目の終了時刻を設定するボタン
+        endSecondDay = findViewById(R.id.endSecondDay);                     //2日目の終了時刻
+        endThirdDay = findViewById(R.id.endThirdDay);                       //3日目の終了時刻
 
         RadioButton setTenMinute = findViewById(R.id.tenMinute);            //訪問間隔（10分）
         RadioButton setFifteenMinute = findViewById(R.id.fifteenMinute);    //訪問間隔（15分）
@@ -83,9 +91,6 @@ public class SetUpActivity extends FragmentActivity
         setEndBreakTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
 
         setTotalStudent = findViewById(R.id.totalStudent);                  //クラスの人数
-
-        startTimeSetButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するためのボタン
-        endTimeSetButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するためのボタン
 
         ImageView toMain = findViewById(R.id.toMain);
         Button setUp = findViewById(R.id.setUpButton);                      //画面下の設定ボタン
@@ -190,8 +195,6 @@ public class SetUpActivity extends FragmentActivity
         reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
             setTeacherName.setText("");
             setStartPoint.setText("");
-            setStartTime.setText("");
-            setEndTime.setText("");
             setTenMinute.setChecked(false);
             setFifteenMinute.setChecked(false);
             setThirtyMinute.setChecked(false);
@@ -217,13 +220,11 @@ public class SetUpActivity extends FragmentActivity
             stringHourOfDay = String.format("%02d", hourOfDay); //時を取得
             stringMinute = String.format("%02d", minute);       //分を取得
             startTime = stringHourOfDay + stringMinute;         //時と分を結合し四桁の文字列に
-            setStartTime.setText("　" + str + "　");            //画面に出力
 
         } else if (isStartTimeSelected == 2) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endTime = stringHourOfDay + stringMinute;
-            setEndTime.setText("　" + str + "　");
 
         } else if (isStartTimeSelected == 3) {
             stringHourOfDay = String.format("%02d", hourOfDay);
