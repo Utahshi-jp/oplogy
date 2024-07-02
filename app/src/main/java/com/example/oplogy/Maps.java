@@ -33,11 +33,15 @@ public class Maps extends FragmentActivity implements View.OnClickListener {
         webSettings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
+//        ここにデータを入れておいてください、処理は[/]で区切っています
         loadMapInWebView("35.09050879999539,136.87845379325216/35.09284820618655,136.88165119390393/35.09364708442631,136.88171563326418");
     }
 
+//    WebViewの処理です（Mapの中の処理をやっています）
     private void loadMapInWebView(String locations) {
+//        区切ることで、追加の地点を入れて、最終地点にピンを打ってある状態です
         String[] locArray = locations.split("/");
+//        ↓URLで経路案内（車）での表示をしています
         StringBuilder urlBuilder = new StringBuilder("https://www.google.com/maps/dir/?api=1&travelmode=driving");
 
         if (locArray.length > 0) {
