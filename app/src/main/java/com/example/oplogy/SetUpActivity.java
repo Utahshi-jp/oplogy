@@ -2,14 +2,17 @@ package com.example.oplogy;
 
 import static android.content.ContentValues.TAG;
 
+
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -26,10 +29,13 @@ import java.util.concurrent.Executors;
 
 
 public class SetUpActivity extends FragmentActivity
-        implements TimePickerDialog.OnTimeSetListener {
+        implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
     String teacherName;
     String startPoint;
+    String firstDay;
+    String secondDay;
+    String thirdDay;
     String startTime;
     String endTime;
     String intervalTime;
@@ -43,7 +49,13 @@ public class SetUpActivity extends FragmentActivity
     private TextView setStartBreakTime;
     private TextView setEndBreakTime;
     private TextView setTotalStudent;
+    private int isDateSelected;
     private int isStartTimeSelected;
+
+    String stringYear;
+    String stringMonth;
+    String stringDayOfMonth;
+
 
     String stringHourOfDay;
     String stringMinute;
@@ -95,7 +107,6 @@ public class SetUpActivity extends FragmentActivity
             Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
             startActivity(intent);
         });
-        //TODO:.SetUpの際に、classIdを挿入すること
 
         setUp.setOnClickListener(view -> {
 
@@ -103,6 +114,9 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Teacher Name: " + teacherName);
             startPoint = setStartPoint.getText().toString();
             Log.d(TAG, "Start Point: " + startPoint);
+            Log.d(TAG, "First Day:" + firstDay);
+            Log.d(TAG, "Second Day:" + secondDay);
+            Log.d(TAG, "Third Day:" + thirdDay);
             Log.d(TAG, "Start Time" + startTime);
             Log.d(TAG, "End Time" + endTime);
             if (setTenMinute.isChecked()){                    //ラジオボタンの状態を取得
@@ -160,6 +174,15 @@ public class SetUpActivity extends FragmentActivity
                     setUpTableDao.insertAll(setUpTable);
                     runOnUiThread(() -> Toast.makeText(SetUpActivity.this, "登録しました", Toast.LENGTH_SHORT).show());
                 }
+                //家庭訪問日を保存する共有プリファレンス
+                SharedPreferences sharedPreferences=getSharedPreferences("visitingDate",MODE_PRIVATE);
+                SharedPreferences.Editor editor= sharedPreferences.edit();
+
+                editor.putString("day1",firstDay);
+                editor.putString("day2",secondDay);
+                editor.putString("day3",thirdDay);
+
+                editor.apply();
 
             });
 
@@ -167,37 +190,37 @@ public class SetUpActivity extends FragmentActivity
         });
 
         setFirstDay.setOnClickListener(v ->{
-            isStartTimeSelected = 1;
-            showTimePickerDialog();
+            isDateSelected = 1;
+            showDatePickerDialog(); //DatePickerの表示
         });
 
         setSecondDay.setOnClickListener(v ->{
+            isDateSelected = 2;
+            showDatePickerDialog();
+        });
+
+        setThirdDay.setOnClickListener(v ->{
+            isDateSelected = 3;
+            showDatePickerDialog();
+        });
+
+        setStartTimeButton.setOnClickListener(v -> {
+            isStartTimeSelected = 1; //ボタンの判別
+            showTimePickerDialog(); //TimePickerの表示
+        });
+
+        setEndTimeButton.setOnClickListener(v -> {
             isStartTimeSelected = 2;
             showTimePickerDialog();
         });
 
-        setThirdDay.setOnClickListener(v ->{
+        setStartBreakTime.setOnClickListener(v -> {
             isStartTimeSelected = 3;
             showTimePickerDialog();
         });
 
-        setStartTimeButton.setOnClickListener(v -> {
-            isStartTimeSelected = 4; //ボタンの判別
-            showTimePickerDialog(); //TimePeckerの表示
-        });
-
-        setEndTimeButton.setOnClickListener(v -> {
-            isStartTimeSelected = 5;
-            showTimePickerDialog();
-        });
-
-        setStartBreakTime.setOnClickListener(v -> {
-            isStartTimeSelected = 6;
-            showTimePickerDialog();
-        });
-
         setEndBreakTime.setOnClickListener(v -> {
-            isStartTimeSelected = 7;
+            isStartTimeSelected = 4;
             showTimePickerDialog();
         });
 
@@ -222,48 +245,59 @@ public class SetUpActivity extends FragmentActivity
         });
     }
 
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) { //Dateを成形する
+        // DatePickerDialogで選択された日付を処理する
+        String str = String.format(Locale.JAPAN, "%02d/%02d",  month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
+
+        if (isDateSelected == 1) {
+            stringYear = String.valueOf(year);                                          //年
+            stringMonth = String.format(Locale.JAPAN, "%02d", month + 1); //月
+            stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);  //日
+            firstDay = stringYear + stringMonth + stringDayOfMonth;
+            setFirstDay.setText(str);
+        } else if (isDateSelected == 2) {
+            stringYear = String.valueOf(year);
+            stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
+            stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);
+            secondDay = stringYear + stringMonth + stringDayOfMonth;
+            setSecondDay.setText(str);
+
+
+        } else if (isDateSelected == 3) {
+            stringYear = String.valueOf(year);
+            stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
+            stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);
+            thirdDay = stringYear + stringMonth + stringDayOfMonth;
+            setThirdDay.setText(str);
+
+        }
+    }
+
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        String str = String.format(Locale.US, "%02d:%02d", hourOfDay, minute); // Textviewに保存する形式を設定
+        String str = String.format(Locale.JAPAN, "%02d:%02d", hourOfDay, minute); // Textviewに保存する形式を設定
 
-        if (isStartTimeSelected == 1) {                         //押した場所を判定して、押したほうにだけ挿入する
-            stringHourOfDay = String.format("%02d", hourOfDay); //時を取得
-            stringMinute = String.format("%02d", minute);       //分を取得
-            startTime = stringHourOfDay + stringMinute;         //時と分を結合し四桁の文字列に
-            setFirstDay.setText(str);
+        if (isStartTimeSelected == 1) {
+            stringHourOfDay = String.format("%02d", hourOfDay);
+            stringMinute = String.format("%02d", minute);
+            startTime = stringHourOfDay + stringMinute;
+            setStartTime.setText(str);
 
         } else if (isStartTimeSelected == 2) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endTime = stringHourOfDay + stringMinute;
-            setSecondDay.setText(str);
-
-        } else if (isStartTimeSelected == 3) {
-            stringHourOfDay = String.format("%02d", hourOfDay);
-            stringMinute = String.format("%02d", minute);
-            endTime = stringHourOfDay + stringMinute;
-            setThirdDay.setText(str);
-
-        } else if (isStartTimeSelected == 4) {
-            stringHourOfDay = String.format("%02d", hourOfDay);
-            stringMinute = String.format("%02d", minute);
-            endTime = stringHourOfDay + stringMinute;
-            setStartTime.setText(str);
-
-        } else if (isStartTimeSelected == 5) {
-            stringHourOfDay = String.format("%02d", hourOfDay);
-            stringMinute = String.format("%02d", minute);
-            endTime = stringHourOfDay + stringMinute;
             setEndTime.setText(str);
 
-        } else if (isStartTimeSelected == 6) {
+        } else if (isStartTimeSelected == 3) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             startBreakTime =stringHourOfDay + stringMinute;
             setStartBreakTime.setText("　" + str + "　");
 
-        } else if (isStartTimeSelected == 7) {
+        } else if (isStartTimeSelected == 4) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endBreakTime = stringHourOfDay + stringMinute;
@@ -271,9 +305,14 @@ public class SetUpActivity extends FragmentActivity
         }
     }
 
+    private void showDatePickerDialog() {
+        DialogFragment newFragment = new DatePick();
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
 
     private void showTimePickerDialog() { // Dialogを表示する
         DialogFragment newFragment = new TimePick();
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
+
 }
