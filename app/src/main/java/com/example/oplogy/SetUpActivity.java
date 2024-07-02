@@ -48,9 +48,9 @@ public class SetUpActivity extends FragmentActivity
     String stringHourOfDay;
     String stringMinute;
 
-    Button firstDay;
-    Button secondDay;
-    Button thirdDay;
+    Button setFirstDay;
+    Button setSecondDay;
+    Button setThirdDay;
     Button setStartTimeButton;
     Button setEndTimeButton;
 
@@ -67,9 +67,9 @@ public class SetUpActivity extends FragmentActivity
         setTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         setStartPoint = findViewById(R.id.startPoint);                      //開始地点
 
-        firstDay = findViewById(R.id.setFirstDayButton);                    //1日目の日付
-        secondDay = findViewById(R.id.setSecondDayButton);                  //2日目の日付
-        thirdDay = findViewById(R.id.setThirdDayButton);                    //3日目の日付
+        setFirstDay = findViewById(R.id.setFirstDayButton);                    //1日目の日付
+        setSecondDay = findViewById(R.id.setSecondDayButton);                  //2日目の日付
+        setThirdDay = findViewById(R.id.setThirdDayButton);                    //3日目の日付
 
         setStartTimeButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するボタン
         setStartTime = findViewById(R.id.startTime);                        //開始時刻を出力するTextView
@@ -165,23 +165,39 @@ public class SetUpActivity extends FragmentActivity
 
 
         });
-        setStartTimeButton.setOnClickListener(v -> {
-            isStartTimeSelected = 1; //ボタンの判別
-            showTimePickerDialog(); //TimePeckerの表示
+
+        setFirstDay.setOnClickListener(v ->{
+            isStartTimeSelected = 1;
+            showTimePickerDialog();
         });
 
-        setEndTimeButton.setOnClickListener(v -> {
+        setSecondDay.setOnClickListener(v ->{
             isStartTimeSelected = 2;
             showTimePickerDialog();
         });
 
-        setStartBreakTime.setOnClickListener(v -> {
+        setThirdDay.setOnClickListener(v ->{
             isStartTimeSelected = 3;
             showTimePickerDialog();
         });
 
+        setStartTimeButton.setOnClickListener(v -> {
+            isStartTimeSelected = 4; //ボタンの判別
+            showTimePickerDialog(); //TimePeckerの表示
+        });
+
+        setEndTimeButton.setOnClickListener(v -> {
+            isStartTimeSelected = 5;
+            showTimePickerDialog();
+        });
+
+        setStartBreakTime.setOnClickListener(v -> {
+            isStartTimeSelected = 6;
+            showTimePickerDialog();
+        });
+
         setEndBreakTime.setOnClickListener(v -> {
-            isStartTimeSelected = 4;
+            isStartTimeSelected = 7;
             showTimePickerDialog();
         });
 
@@ -215,20 +231,39 @@ public class SetUpActivity extends FragmentActivity
             stringHourOfDay = String.format("%02d", hourOfDay); //時を取得
             stringMinute = String.format("%02d", minute);       //分を取得
             startTime = stringHourOfDay + stringMinute;         //時と分を結合し四桁の文字列に
-
+            setFirstDay.setText(str);
 
         } else if (isStartTimeSelected == 2) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endTime = stringHourOfDay + stringMinute;
+            setSecondDay.setText(str);
 
         } else if (isStartTimeSelected == 3) {
+            stringHourOfDay = String.format("%02d", hourOfDay);
+            stringMinute = String.format("%02d", minute);
+            endTime = stringHourOfDay + stringMinute;
+            setThirdDay.setText(str);
+
+        } else if (isStartTimeSelected == 4) {
+            stringHourOfDay = String.format("%02d", hourOfDay);
+            stringMinute = String.format("%02d", minute);
+            endTime = stringHourOfDay + stringMinute;
+            setStartTime.setText(str);
+
+        } else if (isStartTimeSelected == 5) {
+            stringHourOfDay = String.format("%02d", hourOfDay);
+            stringMinute = String.format("%02d", minute);
+            endTime = stringHourOfDay + stringMinute;
+            setEndTime.setText(str);
+
+        } else if (isStartTimeSelected == 6) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             startBreakTime =stringHourOfDay + stringMinute;
             setStartBreakTime.setText("　" + str + "　");
 
-        } else if (isStartTimeSelected == 4) {
+        } else if (isStartTimeSelected == 7) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endBreakTime = stringHourOfDay + stringMinute;
