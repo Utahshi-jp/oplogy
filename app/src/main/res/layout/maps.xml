@@ -31,7 +31,6 @@
             android:textSize="40dp" />
     </LinearLayout>
 
-<!--    Webの処理 -->
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
@@ -42,6 +41,11 @@
         android:id="@+id/scrollable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3" />
-
+        android:layout_weight="3">
+        <LinearLayout
+            android:id="@+id/locationsName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </LinearLayout>
