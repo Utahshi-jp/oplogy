@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirestoreReception_classIdDatabase firestoreReception_classIdDatabase;
 
     //取得するためのクラスID
-    private int classId=100000;
+    private int classId;
 
 
     @Override
@@ -83,6 +83,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
+
+        //TODO:classIdの初期値を取得
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try{
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
+                        .build();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+                classId = setUpTableDao.getClassId();
+                firestoreReception.getDocumentsByClassId(classId);
+            }catch (Exception e){
+                //無視して続行
+                e.printStackTrace();
+            }
+
+        });
 
     }
 
@@ -141,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
-        List<String> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
+        List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -176,7 +192,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // タスク1: ローカルDBから生徒数を取得してtotalStudentと比較
         executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
+                    .fallbackToDestructiveMigration()
+                    .build();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
 
             Log.d("MainActivity", "db" + setUpTableDao.getAll());
@@ -332,21 +350,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         if (alertDialog != null && alertDialog.isShowing()) {
             alertDialog.dismiss();
-        }
-    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        //roomからclassIdを取得
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-            SetUpTableDao setUpTableDao = db.setUpTableDao();
-            classId = setUpTableDao.getClassId();
-        });
-        if (classId != 100000 ) {
-            firestoreReception.getDocumentsByClassId(classId);
         }
     }
 }

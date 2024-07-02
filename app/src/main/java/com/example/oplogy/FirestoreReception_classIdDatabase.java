@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Map;
 public class FirestoreReception_classIdDatabase {
     private FirebaseFirestore db;
-    private List<String> classIdList= new ArrayList<>();
+    private List<Integer> classIdList= new ArrayList<>();
 
     public FirestoreReception_classIdDatabase() {
         db = FirebaseFirestore.getInstance();
     }
 
 
-    public List<String> getAllDocumentsFromClassIdDatabase() {
+    public List<Integer> getAllDocumentsFromClassIdDatabase() {
         db.collection("classId_Database")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -34,8 +34,7 @@ public class FirestoreReception_classIdDatabase {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d("結果", document.getId() + " => " + document.getData());
                                 //データをListに追加
-                                classIdList.add((String) document.get("classId"));
-                            }
+                                classIdList.add(((Long) document.get("classId")).intValue());                            }
                         } else {
                             Log.d("結果", "Error getting documents: ", task.getException());
                         }
@@ -45,7 +44,7 @@ public class FirestoreReception_classIdDatabase {
         return classIdList;
     }
 
-    public List<String> getClassIdList() {
+    public List<Integer> getClassIdList() {
         return classIdList;
     }
 }
