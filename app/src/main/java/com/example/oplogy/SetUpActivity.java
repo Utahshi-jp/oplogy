@@ -141,11 +141,8 @@ public class SetUpActivity extends FragmentActivity
 
             executor.execute(() -> {
                 //roomのインスタンスを作成
-                AppDatabase db = Room.databaseBuilder(
-                        getApplicationContext(),
-                        AppDatabase.class,
-                        "SetUpTable"
-                )
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
+                        .fallbackToDestructiveMigration()
                         .build();
                 SetUpTableDao setUpTableDao = db.setUpTableDao();
                 // Roomの操作を行う
