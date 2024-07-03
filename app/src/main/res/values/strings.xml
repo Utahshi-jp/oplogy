@@ -16,6 +16,12 @@
     <string name="tenMinute">10分</string>
     <string name="fifteenMinute">15分</string>
     <string name="thirtyMinute">30分</string>
+    <string name="todo">TODO</string>
+    <string name="setUpDate">日付設定</string>
+    <string name="firstDay">1日目</string>
+    <string name="secondDay">2日目</string>
+    <string name="threeDay">3日目</string>
+    <string name="notSetUp">未設定</string>
     <string-array name="months_array">
         <item>1月</item>
         <item>2月</item>
