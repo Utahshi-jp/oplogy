@@ -40,9 +40,6 @@ public class FirestoreReception {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> data = document.getData();
 
-                                //CreateRootクラスのインスタンスを生成、dataを渡す
-//                                GeoCoder geoCoder = new GeoCoder();
-//                                geoCoder.processData(data, context);
 
                                 // ドキュメントのデータをMyDataClassのインスタンスにマッピング
                                 MyDataClass myData = new MyDataClass(

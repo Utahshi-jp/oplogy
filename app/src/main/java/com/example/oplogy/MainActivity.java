@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirestoreReception_classIdDatabase firestoreReception_classIdDatabase;
 
     //取得するためのクラスID
-    private int classId=100000;
+    private int classId;
+    private String address;
 
 
     @Override
@@ -83,33 +84,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
+        Log.d("MainActivity","geocodeAddress");
+
+
+        //TODO:classIdの初期値を取得
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
+                        .build();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+                classId = setUpTableDao.getClassId();
+                firestoreReception.getDocumentsByClassId(classId);
+            } catch (Exception e) {
+                //無視して続行
+                e.printStackTrace();
+            }
+
+        });
 
     }
 
 
-//    クリック処理
+
+    //    クリック処理
     @Override
     public void onClick(View view) {
 //        ID作成のクリック処理
-        if(view == creatUUID){
+        if (view == creatUUID) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
         }
-        if(view == imageUuid){
+        if (view == imageUuid) {
             imageUuid.setImageResource(R.drawable.ischecked_uuid);
             showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
         }
 //        セットアップのクリック処理
-        if(view == setUp){
+        if (view == setUp) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             toSetup.putExtra("classId", classId);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
-        if (view == imageSetup){
+        if (view == imageSetup) {
             imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this,SetUpActivity.class);
+            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
             startActivity(toSetup);
             finish();   // 画面遷移後元の状態に戻す
         }
@@ -120,12 +140,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             fetchDataAndCreateRoute();
 
         }
-        if(view == imageRoot){
+        if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
         }
 //        提出状況のクリック処理
-        if(view == submission){
+        if (view == submission) {
             ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
             Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
             toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
@@ -138,10 +158,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(toSubmission);
         }
     }
+
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
-        List<String> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
+        List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -207,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.d("MainActivity", "myDataList" + myDataList.size());
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            Boolean notDuplicates = createRoot.receiveData(myDataList);
+            Boolean notDuplicates = createRoot.receiveData(myDataList,getApplicationContext());
             latch.countDown();
 
             if (notDuplicates) {
@@ -272,12 +293,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        latch.countDown();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 })
@@ -332,21 +347,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         if (alertDialog != null && alertDialog.isShowing()) {
             alertDialog.dismiss();
-        }
-    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        //roomからclassIdを取得
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-            SetUpTableDao setUpTableDao = db.setUpTableDao();
-            classId = setUpTableDao.getClassId();
-        });
-        if (classId != 100000 ) {
-            firestoreReception.getDocumentsByClassId(classId);
         }
     }
 }
