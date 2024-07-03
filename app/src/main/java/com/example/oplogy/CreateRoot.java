@@ -3,11 +3,14 @@ package com.example.oplogy;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 
@@ -41,13 +44,25 @@ public class CreateRoot {
     boolean Duplicates=true;
     boolean secondDuplicates=false;
 
+    private Context context;
 
-
-    String[] testdata = {"20240604", "20240605", "20240606"};
+//    String testdata[] = {"20240604", "20240605", "20240606"};
+    String[] testdata;
 
 
     public CreateRoot(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+        SharedPreferences sharedPreferences= activity.getSharedPreferences("visitingDate", Context.MODE_PRIVATE);
+        String day1=sharedPreferences.getString("day1",null);
+        String day2=sharedPreferences.getString("day2",null);
+        String day3=sharedPreferences.getString("day3",null);
+
+        testdata= new String[]{day1, day2, day3};
+
+        for(String day:testdata){
+            Log.d("sharepre","day"+day);
+        }
+
     }
 
     public Boolean receiveData(List<MyDataClass> myDataList,Context context) {
