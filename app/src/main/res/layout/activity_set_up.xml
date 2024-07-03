@@ -21,17 +21,16 @@
 
     <ImageView
         android:id="@+id/toMain"
-        android:layout_width="100dp"
-        android:layout_height="90dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="left"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="10dp"
         android:src="@drawable/back_button"/>
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
         android:text="@string/setUp"
         android:textSize="30sp"/>
 
@@ -92,6 +91,59 @@
         <TextView
             android:layout_width="90sp"
             android:layout_height="wrap_content"
+            android:text="日付設定"
+            android:gravity="center"/>
+
+<!--        <TextView-->
+<!--            android:id="@+id/startTime"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="　　　"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textAlignment="center"-->
+<!--            android:autofillHints=""-->
+<!--            android:inputType=""-->
+<!--            tools:ignore="HardcodedText,LabelFor"/>-->
+
+        <Button
+            android:id="@+id/setFirstDayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
+
+        <Button
+            android:id="@+id/setSecondDayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
+
+        <Button
+            android:id="@+id/setThirdDayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3日目"
+            android:layout_marginStart="7sp"
+            android:layout_marginEnd="7sp"
+            tools:ignore="DuplicateIds" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
             android:text="@string/startTime"
             android:gravity="center"/>
 
@@ -99,20 +151,20 @@
             android:id="@+id/startTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="　　　"
+            android:hint="未設定"
             android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
             android:inputType=""
-            tools:ignore="HardcodedText,LabelFor"/>
+            tools:ignore="LabelFor"/>
 
         <Button
             android:id="@+id/startTimeSetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/timeSet"
             android:layout_marginStart="65dp"
             android:layout_marginEnd="65dp"
-            android:text="@string/timeSet"
             tools:ignore="DuplicateIds" />
 
     </LinearLayout>
@@ -134,7 +186,7 @@
             android:id="@+id/endTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="　　　"
+            android:hint="未設定"
             android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
@@ -149,6 +201,7 @@
             android:layout_marginStart="65dp"
             android:layout_marginEnd="65dp"
             tools:ignore="DuplicateIds" />
+
     </LinearLayout>
 
     <LinearLayout

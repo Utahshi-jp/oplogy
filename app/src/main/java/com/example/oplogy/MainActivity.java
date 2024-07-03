@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
-        List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
+        List<String> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -197,9 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // タスク1: ローカルDBから生徒数を取得してtotalStudentと比較
         executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
-                    .fallbackToDestructiveMigration()
-                    .build();
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
 
             Log.d("MainActivity", "db" + setUpTableDao.getAll());
