@@ -98,7 +98,7 @@ public class CreateRoot {
                 notSecondDuplicatesBoolean = secondCreateSchedule(myDataList, intervalArrayInt);
             }
         });
-        if(notSecondDuplicatesBoolean){
+        if (notSecondDuplicatesBoolean) {
             sortSchedule(myDataList);
             geocodeAddress(myDataList, context);
             outPutLogSchedule(myDataList);
@@ -114,12 +114,12 @@ public class CreateRoot {
             // 希望時間帯の終了時刻から開始時刻を引いて希望時間帯の長さ(timezone)に入れる
             data = myDataList.get(i);
             //保護者の第一希望日
-            List<Timestamp> firstDay = data.getFirstDay();
+            List<Timestamp> firstDayList = data.getFirstDay();
 
             //保護者の第一希望日の開始時間
-            Timestamp parentStartTimestamp = firstDay.get(0);
+            Timestamp parentStartTimestamp = firstDayList.get(0);
             //保護者の第一希望日の終了時間
-            Timestamp parentEndTimestamp = firstDay.get(1);
+            Timestamp parentEndTimestamp = firstDayList.get(1);
             //保護者の第一希望日の希望時間帯の長さ
             Long timezoneLong = parentEndTimestamp.getSeconds() - parentStartTimestamp.getSeconds();
             data.setTimezone(timezoneLong);
@@ -158,11 +158,11 @@ public class CreateRoot {
             data = myDataList.get(i);
             if (myDataList.get(i).getSecondDay() != null) {
                 //保護者の第二希望日
-                List<Timestamp> secondDay = data.getSecondDay();
+                List<Timestamp> secondDayList = data.getSecondDay();
                 //保護者の第二希望日の開始時間
-                Timestamp parentStartTimestamp = secondDay.get(0);
+                Timestamp parentStartTimestamp = secondDayList.get(0);
                 //保護者の第二希望日の終了時間
-                Timestamp parentEndTimestamp = secondDay.get(1);
+                Timestamp parentEndTimestamp = secondDayList.get(1);
                 //保護者の第二希望日の希望時間帯の長さ
                 Long secondDayTimezoneLong = parentEndTimestamp.getSeconds() - parentStartTimestamp.getSeconds();
                 data.setTimezone(secondDayTimezoneLong);
@@ -264,17 +264,18 @@ public class CreateRoot {
             if (intervalMinutesInt % 100 >= 60) {
                 intervalMinutesInt += 40; // 下2桁が60以上の場合は繰り上げる
             }
+            //教師の休憩時間を除く処理
             if (intervalMinutesInt < startBreakTimeMinutesInt || intervalMinutesInt >= endBreakTimeMinutesInt) {
                 intervalList.add(intervalMinutesInt);
             }
         }
 
-
+        //[3]は家庭訪問の〇日目
         int[][][] intervalArrayInt = new int[3][intervalList.size()][2];
         for (int i = 0; i < intervalList.size(); i++) {
             for (int j = 0; j < 3; j++) {
-                intervalArrayInt[j][i][0] = intervalList.get(i);
-                intervalArrayInt[j][i][1] = 0;//割り当てされていないことを表す
+                intervalArrayInt[j][i][0] = intervalList.get(i);//家庭訪問のスケジュール区切りの時間を要素に入れる
+                intervalArrayInt[j][i][1] = 0;//家庭訪問のスケジュールにまだ保護者が割り当てられていないことを表す
             }
         }
 
@@ -293,6 +294,8 @@ public class CreateRoot {
         for (int i = 0; i < myDataList.size(); i++) {
             for (int j = 0; j < intervalArrayInt[0].length - 1; j++) {
                 for (int x = 0; x < 3; x++) {
+                    //家庭訪問の●日目が保護者の第一希望日かを判定する
+                    //まだスケジュールを割り当てていない保護者かを判定する
                     if (testdata[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString());
                         break;
@@ -303,7 +306,7 @@ public class CreateRoot {
         }
 
         for (int i = 0; i < myDataList.size(); i++) {
-            if (myDataList.get(i).getSchedule() == 0) {
+            if (myDataList.get(i).getSchedule() == 0) {//重複により割り当てがされていない保護者がいないかの確認
                 return false;
             }
         }
@@ -314,6 +317,8 @@ public class CreateRoot {
         for (int i = 0; i < myDataList.size(); i++) {
             for (int j = 0; j < intervalArrayInt[0].length - 1; j++) {
                 for (int x = 0; x < 3; x++) {
+                    //家庭訪問の●日目が保護者の第一希望日かを判定する
+                    //まだスケジュールを割り当てていない保護者かを判定する
                     if (testdata[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString());
                     }
@@ -322,23 +327,24 @@ public class CreateRoot {
         }
 
         for (int i = 0; i < myDataList.size(); i++) {
-            if (myDataList.get(i).getSchedule() == 0) {
+            if (myDataList.get(i).getSchedule() == 0) {//重複により割り当てがされていない保護者がいないかの確認
                 return false;
-
             }
         }
         return true;
     }
 
     private void checkSchedule(List<MyDataClass> myDataList, int[][][] intervalArrayInt, int i, int j, int x, String desiredDateString) {
+        //保護者の希望時間の開始と終了の間にまだ保護者の割り当てがされていないスケジュールの空き時間があるかの判定
         if (intervalArrayInt[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArrayInt[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArrayInt[x][j][1] == 0) {
-            intervalArrayInt[x][j][1] += 1;//割り当て済みを表す
-            myDataList.get(i).setSchedule(Integer.parseInt(desiredDateString.substring(4, 8) + intervalArrayInt[x][j][0]));
+            intervalArrayInt[x][j][1] += 1;//その時間が割り当て済みでありこと
+            myDataList.get(i).setSchedule(Integer.parseInt(desiredDateString.substring(4, 8) + intervalArrayInt[x][j][0]));//スケジュールをmyDataListに入れる(例:6041240(6月4日12時40分))
         }
     }
 
     private void sortSchedule(List<MyDataClass> myDataList) {
         Comparator<MyDataClass> comparator = Comparator.comparing(MyDataClass::getSchedule);
+        //スケジュールを元にmyDataListをソートする
         myDataList.sort(comparator);
     }
 
@@ -347,11 +353,13 @@ public class CreateRoot {
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             for (int i = 0; i < myDataList.size(); i++) {
-                List<Address> addresses = geocoder.getFromLocationName(myDataList.get(i).getAddress().toString(), 1);
-                if (addresses != null && !addresses.isEmpty()) {
-                    Address addressResult = addresses.get(0);
+                List<Address> addressesList = geocoder.getFromLocationName(myDataList.get(i).getAddress().toString(), 1);
+                if (addressesList != null && !addressesList.isEmpty()) {
+                    Address addressResult = addressesList.get(0);
+                    //保護者の住所を緯度経度に変換する
                     double latitudeDouble = addressResult.getLatitude();
                     double longitudeDouble = addressResult.getLongitude();
+                    //保護者の住所の緯度経度をmyDataListに追加する
                     myDataList.get(i).setLatLng(new LatLng(latitudeDouble, longitudeDouble));
                 }
             }

@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         new Thread(() -> {
+            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
             try {
                 latch.await();  // Both tasks must call countDown() before this returns
                 runOnUiThread(() -> {
