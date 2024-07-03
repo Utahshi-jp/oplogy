@@ -3,14 +3,11 @@ package com.example.oplogy;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 
@@ -25,47 +22,33 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+//保護者の希望とSetUpActivityによって設定された情報をもとにスケジュールとルートを作成する
 public class CreateRoot {
     MyDataClass data;//Firestoreから受け取ったdataを入れる変数
-    String startTimeHomeVisit;//家庭訪問の開始時間
-    String endTimeHomeVisit;//家庭訪問の終了時間
-    String intervalTime;//家庭訪問の一家庭当たりの時間
-    String startBreakTime;//家庭訪問の休憩の開始時間
-    String endBreakTime;//家庭訪問の休憩の終了時間
+    String startTimeHomeVisitString;//家庭訪問の開始時間
+    String endTimeHomeVisitString;//家庭訪問の終了時間
+    String intervalTimeString;//家庭訪問の一家庭当たりの時間
+    String startBreakTimeString;//家庭訪問の休憩の開始時間
+    String endBreakTimeString;//家庭訪問の休憩の終了時間
 
 
-    int interval;//家庭訪問の一家庭当たりの時間と移動時間の合計
-    int startBreakTimeMinutes;//家庭訪問の開始時間から休憩時間までの時間
-    int endBreakTimeMinutes;//家庭訪問の休憩終了時間から終了時間までの時間
+    int intervalInt;//家庭訪問の一家庭当たりの時間と移動時間の合計
+    int startBreakTimeMinutesInt;//家庭訪問の開始時間から休憩時間までの時間
+    int endBreakTimeMinutesInt;//家庭訪問の休憩終了時間から終了時間までの時間
 
     private final AppDatabase db;
-    private int arraySize;
-    boolean Duplicates=true;
-    boolean secondDuplicates=false;
+    private int arraySizeInt;
 
-    private Context context;
+    boolean notSecondDuplicatesBoolean = true;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
 
-//    String testdata[] = {"20240604", "20240605", "20240606"};
-    String[] testdata;
-
+    String[] testdata = {"20240604", "20240605", "20240606"};
 
     public CreateRoot(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-        SharedPreferences sharedPreferences= activity.getSharedPreferences("visitingDate", Context.MODE_PRIVATE);
-        String day1=sharedPreferences.getString("day1",null);
-        String day2=sharedPreferences.getString("day2",null);
-        String day3=sharedPreferences.getString("day3",null);
-
-        testdata= new String[]{day1, day2, day3};
-
-        for(String day:testdata){
-            Log.d("sharepre","day"+day);
-        }
-
     }
 
-    public Boolean receiveData(List<MyDataClass> myDataList,Context context) {
+    //MainActivityからデータを受け取る
+    public Boolean receiveData(List<MyDataClass> myDataList, Context context) {
 
         //myDataListの要素data第一希望日と第二希望日に以下を追加する
         //・保護者の希望時間帯の長さ
@@ -91,47 +74,38 @@ public class CreateRoot {
             getRoomData();
 
             //Roomから取得した情報のログ
-
             outPutLogRoomData();
 
             //以下の情報を計算
             //・家庭訪問の合計時間
             //・家庭訪問の開始時間から休憩時間までの分数
             //・家庭訪問の休憩終了時間から終了時間までの分数
-            timeCalculation(endTimeHomeVisit, startBreakTime, endBreakTime);
+            timeCalculation(endTimeHomeVisitString, startBreakTimeString, endBreakTimeString);
 
-            //家庭訪問全体のスケジュールの開始時間を要素とした配列の作成
-            int[][][] intervalArray = homeVisitSchedule();
+            //家庭訪問全体のスケジュールの開始時間を要素とした配列の作成(例:1200,1220,1240のように各家庭への到着時間となる区切り)とログ表示
+            int[][][] intervalArrayInt = homeVisitSchedule();
+            outPutLogIntervalArray(intervalArrayInt);
 
-
-            outPutLogIntervalArray(intervalArray);
             //スケジュール作成
-            Duplicates = createSchedule(myDataList, intervalArray);
+            boolean notDuplicatesBoolean = createSchedule(myDataList, intervalArrayInt);
 
-            //重複によるエラー確認
-            if (!Duplicates) {
-                sortSchedule(myDataList);
-
-                geocodeAddress(myDataList,context);
-                outPutLogSchedule(myDataList);
-            } else {
+            //スケジュールの重複の確認
+            if (!notDuplicatesBoolean) {
                 //第二希望日で同じ処理を行う
                 Log.d("CreateRoot", "第二希望");
                 secondSetData(myDataList);
                 secondTimeZoneSort(myDataList);
-                secondDuplicates = secondCreateSchedule(myDataList, intervalArray);
-                if (!secondDuplicates) {
-                    sortSchedule(myDataList);
-                    geocodeAddress(myDataList,context);
-                    outPutLogSchedule(myDataList);
-                } else {
-                    Log.d("CreateRoot", "重複によるエラー");
-                }
+                notSecondDuplicatesBoolean = secondCreateSchedule(myDataList, intervalArrayInt);
             }
-
         });
-
-        return !secondDuplicates;
+        if(notSecondDuplicatesBoolean){
+            sortSchedule(myDataList);
+            geocodeAddress(myDataList, context);
+            outPutLogSchedule(myDataList);
+            return notSecondDuplicatesBoolean;
+        }
+        Log.d("CreateRoot", "重複によるエラー");
+        return !notSecondDuplicatesBoolean;
     }
 
 
@@ -143,16 +117,16 @@ public class CreateRoot {
             List<Timestamp> firstDay = data.getFirstDay();
 
             //保護者の第一希望日の開始時間
-            Timestamp parentStartTime = firstDay.get(0);
+            Timestamp parentStartTimestamp = firstDay.get(0);
             //保護者の第一希望日の終了時間
-            Timestamp parentEndTime = firstDay.get(1);
+            Timestamp parentEndTimestamp = firstDay.get(1);
             //保護者の第一希望日の希望時間帯の長さ
-            Long timezone = parentEndTime.getSeconds() - parentStartTime.getSeconds();
-            data.setTimezone(timezone);
+            Long timezoneLong = parentEndTimestamp.getSeconds() - parentStartTimestamp.getSeconds();
+            data.setTimezone(timezoneLong);
 
             // TimeStampを日付に変換
-            Date startDate = new Date(parentStartTime.getSeconds() * 1000);
-            Date endDate = new Date(parentEndTime.getSeconds() * 1000);
+            Date startDate = new Date(parentStartTimestamp.getSeconds() * 1000);
+            Date endDate = new Date(parentEndTimestamp.getSeconds() * 1000);
             SimpleDateFormat sdfDateData = new SimpleDateFormat("yyyyMMdd");
             sdfDateData.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
             //第一希望日の日付
@@ -163,13 +137,13 @@ public class CreateRoot {
             SimpleDateFormat sdfMinutes = new SimpleDateFormat("HHmm");
             sdfMinutes.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
             //保護者の希望開始時間を時間表記にしたもの
-            String parentStartTimeString = sdfMinutes.format(parentStartTime.toDate());
+            String parentStartTimeString = sdfMinutes.format(parentStartTimestamp.toDate());
             //保護者の希望終了時間を時間表記にしたもの
-            String parentEndTimeString = sdfMinutes.format(parentEndTime.toDate());
+            String parentEndTimeString = sdfMinutes.format(parentEndTimestamp.toDate());
 
 
             // myDataList の中の data に追加する処理
-            myDataList.get(i).setTimezone(timezone);
+            myDataList.get(i).setTimezone(timezoneLong);
             myDataList.get(i).setStartDateString(startDateString);
             myDataList.get(i).setEndDateString(endDateString);
             myDataList.get(i).setParentStartTimeString(parentStartTimeString);
@@ -186,16 +160,16 @@ public class CreateRoot {
                 //保護者の第二希望日
                 List<Timestamp> secondDay = data.getSecondDay();
                 //保護者の第二希望日の開始時間
-                Timestamp parentStartTime = secondDay.get(0);
+                Timestamp parentStartTimestamp = secondDay.get(0);
                 //保護者の第二希望日の終了時間
-                Timestamp parentEndTime = secondDay.get(1);
+                Timestamp parentEndTimestamp = secondDay.get(1);
                 //保護者の第二希望日の希望時間帯の長さ
-                Long secondDayTimezone = parentEndTime.getSeconds() - parentStartTime.getSeconds();
-                data.setTimezone(secondDayTimezone);
+                Long secondDayTimezoneLong = parentEndTimestamp.getSeconds() - parentStartTimestamp.getSeconds();
+                data.setTimezone(secondDayTimezoneLong);
 
                 // TimeStampを日付に変換
-                Date startDate = new Date(parentStartTime.getSeconds() * 1000);
-                Date endDate = new Date(parentEndTime.getSeconds() * 1000);
+                Date startDate = new Date(parentStartTimestamp.getSeconds() * 1000);
+                Date endDate = new Date(parentEndTimestamp.getSeconds() * 1000);
                 SimpleDateFormat sdfDateData = new SimpleDateFormat("yyyyMMdd");
                 sdfDateData.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
                 //第二希望日の日付
@@ -206,13 +180,13 @@ public class CreateRoot {
                 SimpleDateFormat sdfMinutes = new SimpleDateFormat("HHmm");
                 sdfMinutes.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
                 //保護者の希望開始時間を時間表記にしたもの
-                String secondDayParentStartTimeString = sdfMinutes.format(parentStartTime.toDate());
+                String secondDayParentStartTimeString = sdfMinutes.format(parentStartTimestamp.toDate());
                 //保護者の希望終了時間を時間表記にしたもの
-                String secondDayParentEndTimeString = sdfMinutes.format(parentEndTime.toDate());
+                String secondDayParentEndTimeString = sdfMinutes.format(parentEndTimestamp.toDate());
 
 
                 // myDataList の中の data に追加する処理
-                myDataList.get(i).setSecondDayTimezone(secondDayTimezone);
+                myDataList.get(i).setSecondDayTimezone(secondDayTimezoneLong);
                 myDataList.get(i).setSecondDayStartDateString(secondDayStartDateString);
                 myDataList.get(i).setSecondDayEndDateString(secondDaySndDateString);
                 myDataList.get(i).setSecondDayParentStartTimeString(secondDayParentStartTimeString);
@@ -251,77 +225,76 @@ public class CreateRoot {
         // setUpActivityによって入力され、Roomに保存された値を取り出す処理
         //Roomの操作の定義
         SetUpTableDao setUpTableDao = db.setUpTableDao();
-        startTimeHomeVisit = setUpTableDao.getStartTime();
-        endTimeHomeVisit = setUpTableDao.getEndTime();
-        intervalTime = setUpTableDao.getIntervalTime();
-        startBreakTime = setUpTableDao.getStartBreakTime();
-        endBreakTime = setUpTableDao.getEndBreakTime();
+        startTimeHomeVisitString = setUpTableDao.getStartTime();
+        endTimeHomeVisitString = setUpTableDao.getEndTime();
+        intervalTimeString = setUpTableDao.getIntervalTime();
+        startBreakTimeString = setUpTableDao.getStartBreakTime();
+        endBreakTimeString = setUpTableDao.getEndBreakTime();
     }
 
     //Roomからのデータ取得に関するログ
     void outPutLogRoomData() {
-        Log.d("CreateRoot:outPutLogRoomData", "開始時間" + startTimeHomeVisit);
-        Log.d("CreateRoot:outPutLogRoomData", "終了時刻" + endTimeHomeVisit);
-        Log.d("CreateRoot:outPutLogRoomData", "一家庭当たりの所要時間" + intervalTime);
-        Log.d("CreateRoot:outPutLogRoomData", "休憩開始時刻" + startBreakTime);
-        Log.d("CreateRoot:outPutLogRoomData", "休憩終了時刻" + endBreakTime);
+        Log.d("CreateRoot:outPutLogRoomData", "開始時間" + startTimeHomeVisitString);
+        Log.d("CreateRoot:outPutLogRoomData", "終了時刻" + endTimeHomeVisitString);
+        Log.d("CreateRoot:outPutLogRoomData", "一家庭当たりの所要時間" + intervalTimeString);
+        Log.d("CreateRoot:outPutLogRoomData", "休憩開始時刻" + startBreakTimeString);
+        Log.d("CreateRoot:outPutLogRoomData", "休憩終了時刻" + endBreakTimeString);
     }
 
-    private void timeCalculation(String endTimeHomeVisit, String startBreakTime, String endBreakTime) {
+    private void timeCalculation(String endTimeHomeVisitString, String startBreakTime, String endBreakTime) {
         //家庭訪問の合計時間を計算するため、家庭訪問の終了時間から開始時間を引いた数を求めている。但し、(0,2)によって先に１時間単位の差を求めた後に、(2,4)によって分単位の差を求めている
-        int totalTime = ((Integer.parseInt(endTimeHomeVisit.substring(0, 2)) - (Integer.parseInt(startTimeHomeVisit.substring(0, 2)))) * 60 + ((Integer.parseInt(endTimeHomeVisit.substring(2, 4)))) - (Integer.parseInt(startTimeHomeVisit.substring(2, 4))));
+        int totalTimeInt = ((Integer.parseInt(endTimeHomeVisitString.substring(0, 2)) - (Integer.parseInt(startTimeHomeVisitString.substring(0, 2)))) * 60 + ((Integer.parseInt(endTimeHomeVisitString.substring(2, 4)))) - (Integer.parseInt(startTimeHomeVisitString.substring(2, 4))));
         //家庭訪問の休憩開始時間から家庭訪問の開始時間を引くことで家庭訪問の開始から休憩時間までの分数を計算
-        startBreakTimeMinutes = ((Integer.parseInt(startBreakTime.substring(0, 2))) - (Integer.parseInt(startTimeHomeVisit.substring(0, 2)))) * 60 + ((Integer.parseInt(startBreakTime.substring(2, 4))) - (Integer.parseInt(startTimeHomeVisit.substring(2, 4))));
+        startBreakTimeMinutesInt = ((Integer.parseInt(startBreakTime.substring(0, 2))) - (Integer.parseInt(startTimeHomeVisitString.substring(0, 2)))) * 60 + ((Integer.parseInt(startBreakTime.substring(2, 4))) - (Integer.parseInt(startTimeHomeVisitString.substring(2, 4))));
         //家庭訪問の休憩終了時間から家庭訪問の終了時間を引くことで休憩の終わりから家庭訪問の終了時間までの分数を計算
-        endBreakTimeMinutes = ((Integer.parseInt(endBreakTime.substring(0, 2))) - (Integer.parseInt(startTimeHomeVisit.substring(0, 2)))) * 60 + ((Integer.parseInt(endBreakTime.substring(2, 4))) - (Integer.parseInt(startTimeHomeVisit.substring(2, 4))));
-        interval = Integer.parseInt(intervalTime) + 10;//移動時間込みの1家庭当たりの所要時間
-        arraySize = totalTime / interval;//家庭訪問の合計時間から移動時間込みの1家庭当たりの所要時間を割ることで配列の数を求めている
+        endBreakTimeMinutesInt = ((Integer.parseInt(endBreakTime.substring(0, 2))) - (Integer.parseInt(startTimeHomeVisitString.substring(0, 2)))) * 60 + ((Integer.parseInt(endBreakTime.substring(2, 4))) - (Integer.parseInt(startTimeHomeVisitString.substring(2, 4))));
+        intervalInt = Integer.parseInt(intervalTimeString) + 10;//移動時間込みの1家庭当たりの所要時間
+        arraySizeInt = totalTimeInt / intervalInt;//家庭訪問の合計時間から移動時間込みの1家庭当たりの所要時間を割ることで配列の数を求めている
     }
 
     private int[][][] homeVisitSchedule() {
         //家庭訪問の開始時間からの経過分数を入れる配列
         List<Integer> intervalList = new ArrayList<>();
-        startBreakTimeMinutes = (((Integer.parseInt(startTimeHomeVisit.substring(0, 2))) + (startBreakTimeMinutes + (Integer.parseInt(startTimeHomeVisit.substring(0, 2)))) / 60) % 24) * 100 + (startBreakTimeMinutes + (Integer.parseInt(startTimeHomeVisit.substring(2, 4)))) % 60;
-        endBreakTimeMinutes = (((Integer.parseInt(startTimeHomeVisit.substring(0, 2))) + (endBreakTimeMinutes + (Integer.parseInt(startTimeHomeVisit.substring(0, 2)))) / 60) % 24) * 100 + (endBreakTimeMinutes + (Integer.parseInt(startTimeHomeVisit.substring(2, 4)))) % 60;
+        startBreakTimeMinutesInt = (((Integer.parseInt(startTimeHomeVisitString.substring(0, 2))) + (startBreakTimeMinutesInt + (Integer.parseInt(startTimeHomeVisitString.substring(0, 2)))) / 60) % 24) * 100 + (startBreakTimeMinutesInt + (Integer.parseInt(startTimeHomeVisitString.substring(2, 4)))) % 60;
+        endBreakTimeMinutesInt = (((Integer.parseInt(startTimeHomeVisitString.substring(0, 2))) + (endBreakTimeMinutesInt + (Integer.parseInt(startTimeHomeVisitString.substring(0, 2)))) / 60) % 24) * 100 + (endBreakTimeMinutesInt + (Integer.parseInt(startTimeHomeVisitString.substring(2, 4)))) % 60;
 
         //休憩時間を除いた家庭訪問の開始時間からの経過分数+家庭訪問の開始時間=家庭訪問のスケジュール区切りをintervalArrayに入れる処理
-        for (int i = 0; i < arraySize; i++) {
-            int intervalMinutes = (((Integer.parseInt(startTimeHomeVisit.substring(0, 2))) + (interval * i) / 60) % 24) * 100 + (interval * i) % 60;
-            if (intervalMinutes % 100 >= 60) {
-                intervalMinutes += 40; // 下2桁が60以上の場合は繰り上げる
+        for (int i = 0; i < arraySizeInt; i++) {
+            int intervalMinutesInt = (((Integer.parseInt(startTimeHomeVisitString.substring(0, 2))) + (intervalInt * i) / 60) % 24) * 100 + (intervalInt * i) % 60;
+            if (intervalMinutesInt % 100 >= 60) {
+                intervalMinutesInt += 40; // 下2桁が60以上の場合は繰り上げる
             }
-            if (intervalMinutes < startBreakTimeMinutes || intervalMinutes >= endBreakTimeMinutes) {
-                intervalList.add(intervalMinutes);
+            if (intervalMinutesInt < startBreakTimeMinutesInt || intervalMinutesInt >= endBreakTimeMinutesInt) {
+                intervalList.add(intervalMinutesInt);
             }
         }
 
 
-        int[][][] intervalArray = new int[3][intervalList.size()][2];
+        int[][][] intervalArrayInt = new int[3][intervalList.size()][2];
         for (int i = 0; i < intervalList.size(); i++) {
             for (int j = 0; j < 3; j++) {
-                intervalArray[j][i][0] = intervalList.get(i);
-                intervalArray[j][i][1] = 0;//割り当てされていないことを表す
+                intervalArrayInt[j][i][0] = intervalList.get(i);
+                intervalArrayInt[j][i][1] = 0;//割り当てされていないことを表す
             }
         }
 
-        return intervalArray;
+        return intervalArrayInt;
     }
 
-    private void outPutLogIntervalArray(int[][][] intervalArray) {
-        for (int i = 0; i < intervalArray[0].length; i++) {
-            Log.d("CreateRoot", "inteintervalArray:(intex:" + i + ") :" + intervalArray[0][i][0]);
+    private void outPutLogIntervalArray(int[][][] intervalArrayInt) {
+        for (int i = 0; i < intervalArrayInt[0].length; i++) {
+            Log.d("CreateRoot", "inteintervalArray:(intex:" + i + ") :" + intervalArrayInt[0][i][0]);
         }
     }
 
 
-    private Boolean createSchedule(List<MyDataClass> myDataList, int[][][] intervalArray) {
+    private Boolean createSchedule(List<MyDataClass> myDataList, int[][][] intervalArrayInt) {
 
         for (int i = 0; i < myDataList.size(); i++) {
-            for (int j = 0; j < intervalArray[0].length - 1; j++) {
+            for (int j = 0; j < intervalArrayInt[0].length - 1; j++) {
                 for (int x = 0; x < 3; x++) {
                     if (testdata[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
-                        String desiredDate = myDataList.get(i).getStartDateString();
-                        checkSchedule(myDataList, intervalArray, i, j, x, desiredDate);
+                        checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString());
                         break;
                     }
                 }
@@ -331,19 +304,18 @@ public class CreateRoot {
 
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getSchedule() == 0) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
-    private boolean secondCreateSchedule(List<MyDataClass> myDataList, int[][][] intervalArray) {
+    private boolean secondCreateSchedule(List<MyDataClass> myDataList, int[][][] intervalArrayInt) {
         for (int i = 0; i < myDataList.size(); i++) {
-            for (int j = 0; j < intervalArray[0].length - 1; j++) {
+            for (int j = 0; j < intervalArrayInt[0].length - 1; j++) {
                 for (int x = 0; x < 3; x++) {
                     if (testdata[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
-                        String desiredDate = myDataList.get(i).getSecondDayStartDateString();
-                        checkSchedule(myDataList, intervalArray, i, j, x, desiredDate);
+                        checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString());
                     }
                 }
             }
@@ -351,43 +323,40 @@ public class CreateRoot {
 
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getSchedule() == 0) {
-                return true;
+                return false;
 
             }
         }
-        return false;
+        return true;
     }
 
-    private void checkSchedule(List<MyDataClass> myDataList, int[][][] intervalArray, int i, int j, int x, String desiredDate) {
-
-        if (intervalArray[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[x][j][1] == 0) {
-            intervalArray[x][j][1] += 1;//割り当て済みを表す
-            myDataList.get(i).setSchedule(Integer.parseInt(desiredDate.substring(4, 8) + intervalArray[x][j][0]));
+    private void checkSchedule(List<MyDataClass> myDataList, int[][][] intervalArrayInt, int i, int j, int x, String desiredDateString) {
+        if (intervalArrayInt[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArrayInt[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArrayInt[x][j][1] == 0) {
+            intervalArrayInt[x][j][1] += 1;//割り当て済みを表す
+            myDataList.get(i).setSchedule(Integer.parseInt(desiredDateString.substring(4, 8) + intervalArrayInt[x][j][0]));
         }
     }
 
     private void sortSchedule(List<MyDataClass> myDataList) {
-
         Comparator<MyDataClass> comparator = Comparator.comparing(MyDataClass::getSchedule);
         myDataList.sort(comparator);
     }
 
 
-
-    private void geocodeAddress(List<MyDataClass> myDataList,Context context) {
+    private void geocodeAddress(List<MyDataClass> myDataList, Context context) {
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            for(int i=0;i<myDataList.size();i++) {
+            for (int i = 0; i < myDataList.size(); i++) {
                 List<Address> addresses = geocoder.getFromLocationName(myDataList.get(i).getAddress().toString(), 1);
                 if (addresses != null && !addresses.isEmpty()) {
                     Address addressResult = addresses.get(0);
-                    double latitude = addressResult.getLatitude();
-                    double longitude = addressResult.getLongitude();
-                    myDataList.get(i).setLatLng(new LatLng(latitude, longitude));
+                    double latitudeDouble = addressResult.getLatitude();
+                    double longitudeDouble = addressResult.getLongitude();
+                    myDataList.get(i).setLatLng(new LatLng(latitudeDouble, longitudeDouble));
                 }
             }
         } catch (IOException e) {
-            Log.e("CreateRoot", "緯度経度の取得に失敗: " +e);
+            Log.e("CreateRoot", "緯度経度の取得に失敗: " + e);
         }
     }
 
@@ -395,7 +364,7 @@ public class CreateRoot {
         for (int i = 0; i < myDataList.size(); i++) {
             Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") data: " + myDataList.get(i));
             Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") Schedule: " + myDataList.get(i).getSchedule());
-            Log.d("CreateRoot","(index: " + i + ") LatLng"+myDataList.get(i).getLatLng());
+            Log.d("CreateRoot", "(index: " + i + ") LatLng" + myDataList.get(i).getLatLng());
         }
     }
 }
