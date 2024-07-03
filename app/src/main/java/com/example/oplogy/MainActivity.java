@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
-        List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
+        List<String> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
