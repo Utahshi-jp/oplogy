@@ -39,18 +39,18 @@ public class CreateRoot {
     private final AppDatabase db;
     private int arraySize;
     boolean Duplicates=true;
-    boolean secondDuplicates=true;
+    boolean secondDuplicates=false;
 
-    private Context context;
 
-    String testdata[] = {"20240604", "20240605", "20240606"};
+
+    String[] testdata = {"20240604", "20240605", "20240606"};
 
 
     public CreateRoot(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
     }
 
-    public Boolean receiveData(List<MyDataClass> myDataList) {
+    public Boolean receiveData(List<MyDataClass> myDataList,Context context) {
 
         //myDataListの要素data第一希望日と第二希望日に以下を追加する
         //・保護者の希望時間帯の長さ
@@ -97,6 +97,8 @@ public class CreateRoot {
             if (!Duplicates) {
                 sortSchedule(myDataList);
 
+                geocodeAddress(myDataList,context);
+                outPutLogSchedule(myDataList);
             } else {
                 //第二希望日で同じ処理を行う
                 Log.d("CreateRoot", "第二希望");
@@ -105,20 +107,16 @@ public class CreateRoot {
                 secondDuplicates = secondCreateSchedule(myDataList, intervalArray);
                 if (!secondDuplicates) {
                     sortSchedule(myDataList);
-
+                    geocodeAddress(myDataList,context);
+                    outPutLogSchedule(myDataList);
                 } else {
                     Log.d("CreateRoot", "重複によるエラー");
                 }
             }
+
         });
 
-        if (!secondDuplicates) {
-            geocodeAddress(myDataList);
-            outPutLogSchedule(myDataList);
-            return true;
-        } else {
-            return false;
-        }
+        return !secondDuplicates;
     }
 
 
@@ -317,8 +315,9 @@ public class CreateRoot {
         }
 
         for (int i = 0; i < myDataList.size(); i++) {
-            if (myDataList.get(i).getSchedule() == 0) ;
-            return true;
+            if (myDataList.get(i).getSchedule() == 0) {
+                return true;
+            }
         }
         return false;
     }
@@ -338,6 +337,7 @@ public class CreateRoot {
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getSchedule() == 0) {
                 return true;
+
             }
         }
         return false;
@@ -347,7 +347,7 @@ public class CreateRoot {
 
         if (intervalArray[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArray[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArray[x][j][1] == 0) {
             intervalArray[x][j][1] += 1;//割り当て済みを表す
-            myDataList.get(i).setSchedule(Integer.parseInt(desiredDate.substring(4, 8) + String.valueOf(intervalArray[x][j][0])));
+            myDataList.get(i).setSchedule(Integer.parseInt(desiredDate.substring(4, 8) + intervalArray[x][j][0]));
         }
     }
 
@@ -359,7 +359,7 @@ public class CreateRoot {
 
 
 
-    private void geocodeAddress(List<MyDataClass> myDataList) {
+    private void geocodeAddress(List<MyDataClass> myDataList,Context context) {
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             for(int i=0;i<myDataList.size();i++) {
