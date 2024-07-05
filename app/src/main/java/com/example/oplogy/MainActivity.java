@@ -2,6 +2,7 @@ package com.example.oplogy;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //取得するためのクラスID
     private int classId;
     private String address;
+    private Object finalMyDataList;
 
 
     @Override
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
-        Log.d("MainActivity","geocodeAddress");
+        Log.d("MainActivity", "geocodeAddress");
 
 
         //TODO:classIdの初期値を取得
@@ -104,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
     }
-
 
 
     //    クリック処理
@@ -228,30 +230,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.d("MainActivity", "myDataList" + myDataList.size());
             CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
-            Boolean notDuplicates = createSchedule.receiveData(myDataList,getApplicationContext());
+            Boolean notDuplicates = createSchedule.receiveData(myDataList, getApplicationContext());
             latch.countDown();
-
             if (notDuplicates) {
                 Log.d("MainActivity", "スケジュール作成成功");
+                saveMyDataList(myDataList);
+                Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                startActivity(toRoot);
             } else {
                 showErrorDialog(latch, myDataList);
             }
         });
-
-        new Thread(() -> {
-            List<MyDataClass> myDataList = firestoreReception.getMyDataList();
-            try {
-                latch.await();  // Both tasks must call countDown() before this returns
-                runOnUiThread(() -> {
-                    Intent toRoot = new Intent(MainActivity.this, Maps.class);
-                    startActivity(toRoot);
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        executor.shutdown();
     }
 
     //ルート作成のダイアログ
@@ -272,6 +261,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 })
                 .show();
+    }
+
+    // MyDataListを共有プリファレンスに保存するメソッド
+    private void saveMyDataList(List<MyDataClass> myDataList) {
+        // 共有プリファレンスのインスタンスを取得
+        SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // MyDataListをJSON形式に変換
+        Gson gson = new Gson();
+        String json = gson.toJson(myDataList);
+
+        // JSON形式のデータを共有プリファレンスに保存
+        editor.putString("myDataList", json);
+        editor.apply();
     }
 
     public void showErrorDialog(CountDownLatch latch, List<MyDataClass> myDataList) {

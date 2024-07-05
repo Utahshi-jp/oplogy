@@ -360,7 +360,7 @@ public class CreateSchedule {
                     double latitudeDouble = addressResult.getLatitude();
                     double longitudeDouble = addressResult.getLongitude();
                     //保護者の住所の緯度経度をmyDataListに追加する
-                    myDataList.get(i).setLatLng(new LatLng(latitudeDouble, longitudeDouble));
+                    myDataList.get(i).setLatLngString(String.valueOf(new LatLng(latitudeDouble, longitudeDouble)));
                 }
             }
         } catch (IOException e) {
@@ -372,7 +372,7 @@ public class CreateSchedule {
         for (int i = 0; i < myDataList.size(); i++) {
             Log.d("CreateSchedule:outPutLogSchedule", "(index: " + i + ") data: " + myDataList.get(i));
             Log.d("CreateSchedule:outPutLogSchedule", "(index: " + i + ") Schedule: " + myDataList.get(i).getSchedule());
-            Log.d("CreateSchedule", "(index: " + i + ") LatLng" + myDataList.get(i).getLatLng());
+            Log.d("CreateSchedule", "(index: " + i + ") LatLng" + myDataList.get(i).getLatLngString());
         }
     }
 }

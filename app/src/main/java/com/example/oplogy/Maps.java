@@ -1,7 +1,10 @@
 package com.example.oplogy;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -11,13 +14,19 @@ import android.widget.ImageView;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.oplogy.databinding.MapsBinding;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Maps extends FragmentActivity implements View.OnClickListener {
 
     private WebView webView;
     ImageView backMain;
     private MapsBinding binding;
-
+    private ArrayList<Parcelable> myDataList;;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +41,36 @@ public class Maps extends FragmentActivity implements View.OnClickListener {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
+        List<MyDataClass> myDataList=getMyDataList();
+        String latlngString = "";
+        for (int i = 0; i < myDataList.size(); i++) {
+            String latlng = myDataList.get(i).getLatLngString();
+            int startIndex = latlng.indexOf("(") + 1;
+            int endIndex = latlng.indexOf(")");
+            String latlngOnly = latlng.substring(startIndex, endIndex);
+            latlngString += latlngOnly;
+            if (i < myDataList.size() - 1) {
+                latlngString += "/";
+            }
+        }
+        Log.d("Maps","latlngString"+latlngString);
+        loadMapInWebView(latlngString);
+    }
 
-//        ここにデータを入れておいてください、処理は[/]で区切っています
-        loadMapInWebView("35.09050879999539,136.87845379325216/35.09284820618655,136.88165119390393/35.09364708442631,136.88171563326418");
+    // 共有プリファレンスからMyDataListを取得するメソッド
+    private List<MyDataClass> getMyDataList() {
+        // 共有プリファレンスのインスタンスを取得
+        SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
+
+        // 共有プリファレンスからJSON形式のデータを取得
+        String json = sharedPreferences.getString("myDataList", "");
+
+        // JSON形式のデータをMyDataListに変換
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<MyDataClass>>() {}.getType();
+        List<MyDataClass> myDataList = gson.fromJson(json, type);
+
+        return myDataList;
     }
 
 //    WebViewの処理です（Mapの中の処理をやっています）
