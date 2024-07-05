@@ -175,9 +175,10 @@ public class SetUpActivity extends FragmentActivity
                 SharedPreferences sharedPreferences=getSharedPreferences("visitingDate",MODE_PRIVATE);
                 SharedPreferences.Editor editor= sharedPreferences.edit();
 
-                editor.putString("day1",firstDay);
-                editor.putString("day2",secondDay);
-                editor.putString("day3",thirdDay);
+                //editorに値を渡す
+                editor.putString("day1",firstDay);  //1日目
+                editor.putString("day2",secondDay); //2日目
+                editor.putString("day3",thirdDay);  //3日目
 
                 editor.apply();
 
@@ -186,8 +187,9 @@ public class SetUpActivity extends FragmentActivity
 
         });
 
+        //DatePicker用
         buttonFirstDay.setOnClickListener(v ->{
-            intIsDateSelected = 1;
+            intIsDateSelected = 1;  //ボタンの判別（Date）
             showDatePickerDialog(); //DatePickerの表示
         });
 
@@ -201,9 +203,10 @@ public class SetUpActivity extends FragmentActivity
             showDatePickerDialog();
         });
 
+        //TimePicker用
         buttonStartTimeButton.setOnClickListener(v -> {
-            intIsStartTimeSelected = 1; //ボタンの判別
-            showTimePickerDialog(); //TimePickerの表示
+            intIsStartTimeSelected = 1; //ボタンの判別（Time）
+            showTimePickerDialog();     //TimePickerの表示
         });
 
         buttonEndTimeButton.setOnClickListener(v -> {
@@ -251,8 +254,9 @@ public class SetUpActivity extends FragmentActivity
             stringYear = String.valueOf(year);                                          //年
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1); //月
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);  //日
-            firstDay = stringYear + stringMonth + stringDayOfMonth;
-            buttonFirstDay.setText(str);
+            firstDay = stringYear + stringMonth + stringDayOfMonth;                     //8桁の文字列を作成 例)20240604
+            buttonFirstDay.setText(str);                                                //buttonにformatされた文字列を挿入
+
         } else if (intIsDateSelected == 2) {
             stringYear = String.valueOf(year);
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
@@ -277,10 +281,10 @@ public class SetUpActivity extends FragmentActivity
         String str = String.format(Locale.JAPAN, "%02d:%02d", hourOfDay, minute); // Textviewに保存する形式を設定
 
         if (intIsStartTimeSelected == 1) {
-            stringHourOfDay = String.format("%02d", hourOfDay);
-            stringMinute = String.format("%02d", minute);
-            startTime = stringHourOfDay + stringMinute;
-            textViewStartTime.setText(str);
+            stringHourOfDay = String.format("%02d", hourOfDay); //時
+            stringMinute = String.format("%02d", minute);       //分
+            startTime = stringHourOfDay + stringMinute;         //4桁の文字列を作成 例）0930
+            textViewStartTime.setText(str);                     //textViewにformatされている文字列を挿入
 
         } else if (intIsStartTimeSelected == 2) {
             stringHourOfDay = String.format("%02d", hourOfDay);
@@ -302,12 +306,12 @@ public class SetUpActivity extends FragmentActivity
         }
     }
 
-    private void showDatePickerDialog() {
+    private void showDatePickerDialog() { //DatePickerDialogを表示する
         DialogFragment newFragment = new DatePick();
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
-    private void showTimePickerDialog() { // Dialogを表示する
+    private void showTimePickerDialog() { // TimePickerDialogを表示する
         DialogFragment newFragment = new TimePick();
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
