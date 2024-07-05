@@ -47,9 +47,6 @@
             android:name=".RootSearchActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateUUID"
-            android:exported="false" />
-        <activity
             android:name=".DialogFragment"
             android:exported="false" />
         <activity

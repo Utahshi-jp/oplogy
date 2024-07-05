@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             Log.d("MainActivity", "myDataList" + myDataList.size());
-            CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            Boolean notDuplicates = createRoot.receiveData(myDataList,getApplicationContext());
+            CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
+            Boolean notDuplicates = createSchedule.receiveData(myDataList,getApplicationContext());
             latch.countDown();
 
             if (notDuplicates) {
