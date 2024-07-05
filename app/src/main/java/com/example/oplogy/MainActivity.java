@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -283,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(() -> {
                 if (notDuplicates) {
                     Log.d("MainActivity", "スケジュール作成成功");
-                    saveMyDataList(myDataList);
+                    saveMyDataList(finalMyDataList);
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
                     startActivity(toRoot);
                 } else {
