@@ -7,129 +7,129 @@ import java.util.List;
 
 public class MyDataClass {
 
-    String patronName;
-    int classId;
-    List<String> address;
-    List<Timestamp> firstDay;
-    int studentNumber;
-    String childName;
-    List<Timestamp> thirdDay;
-    List<Timestamp> secondDay;
-    double latitude;
-    private Long Timezone;
+    private String patronNameString;
+    private int classIdInt;
+    private List<String> addressList;
+    private List<Timestamp> firstDayList;
+    private int studentNumberInt;
+    private String childNameString;
+    private List<Timestamp> thirdDayList;
+    private List<Timestamp> secondDayList;
+    private double latitudeDouble;
+    private Long timezoneLong;
     private String startDateString;
     private String endDateString;
-    private String AssignedStartTime;
-    private int AssignedIndex;
-    private boolean linking;
+    private String assignedStartTimeString;
+    private int assignedIndexInt;
+    private boolean linkingBoolean;
     private String parentStartTimeString;
     private String parentEndTimeString;
-    private int schedule;
+    private int scheduleInt;
     private String secondDayStartDateString;
     private String secondDayEndDateString;
-    private Long secondDayTimezone;
+    private Long secondDayTimezoneLong;
     private String secondDayParentStartTimeString;
     private String secondDayParentEndTimeString;
     private LatLng latLng;
 
 
     public MyDataClass(String patronName, int classId, List<String> address, List<Timestamp> firstDay, int studentNumber, String childName, List<Timestamp> thirdDay, List<Timestamp> secondDay) {
-        this.patronName = patronName;
-        this.classId = classId;
-        this.address = address;
-        this.firstDay = firstDay;
-        this.studentNumber = studentNumber;
-        this.childName = childName;
-        this.thirdDay = thirdDay;
-        this.secondDay = secondDay;
+        this.patronNameString = patronName;
+        this.classIdInt = classId;
+        this.addressList = address;
+        this.firstDayList = firstDay;
+        this.studentNumberInt = studentNumber;
+        this.childNameString = childName;
+        this.thirdDayList = thirdDay;
+        this.secondDayList = secondDay;
     }
 
     @Override
     public String toString() {
         return "MyDataClass{" +
-                "patronName='" + patronName + '\'' +
-                ", classId=" + classId +
-                ", address=" + address +
-                ", firstDay=" + firstDay +
-                ", studentNumber=" + studentNumber +
-                ", childName='" + childName + '\'' +
-                ", thirdDay=" + thirdDay +
-                ", secondDay=" + secondDay +
+                "patronName='" + patronNameString + '\'' +
+                ", classId=" + classIdInt +
+                ", address=" + addressList +
+                ", firstDay=" + firstDayList +
+                ", studentNumber=" + studentNumberInt +
+                ", childName='" + childNameString + '\'' +
+                ", thirdDay=" + thirdDayList +
+                ", secondDay=" + secondDayList +
                 '}';
     }
 
     //getter
     public String getPatronName() {
-        return patronName;
+        return patronNameString;
     }
 
     //setter
-    public void setPatronName(String patronName) {
-        this.patronName = patronName;
+    public void setPatronName(String patronNameString) {
+        this.patronNameString = patronNameString;
     }
 
     public int getClassId() {
-        return classId;
+        return classIdInt;
     }
 
     public void setClassId(int classId) {
-        this.classId = classId;
+        this.classIdInt = classId;
     }
 
     public List<String> getAddress() {
-        return address;
+        return addressList;
     }
 
     public void setAddress(List<String> address) {
-        this.address = address;
+        this.addressList = address;
     }
 
     public List<Timestamp> getFirstDay() {
-        return firstDay;
+        return firstDayList;
     }
 
     public void setFirstDay(List<Timestamp> firstDay) {
-        this.firstDay = firstDay;
+        this.firstDayList = firstDay;
     }
 
     public int getStudentNumber() {
-        return studentNumber;
+        return studentNumberInt;
     }
 
     public void setStudentNumber(int studentNumber) {
-        this.studentNumber = studentNumber;
+        this.studentNumberInt = studentNumber;
     }
 
     public String getChildName() {
-        return childName;
+        return childNameString;
     }
 
     public void setChildName(String childName) {
-        this.childName = childName;
+        this.childNameString = childName;
     }
 
     public List<Timestamp> getThirdDay() {
-        return thirdDay;
+        return thirdDayList;
     }
 
     public void setThirdDay(List<Timestamp> thirdDay) {
-        this.thirdDay = thirdDay;
+        this.thirdDayList = thirdDay;
     }
 
     public List<Timestamp> getSecondDay() {
-        return secondDay;
+        return secondDayList;
     }
 
     public void setSecondDay(List<Timestamp> secondDay) {
-        this.secondDay = secondDay;
+        this.secondDayList = secondDay;
     }
 
     public double getLatitude() {
-        return latitude;
+        return latitudeDouble;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLatitude(double latitudeDouble) {
+        this.latitudeDouble = latitudeDouble;
     }
 
     public void setEndDateString(String endDateString) {
@@ -137,11 +137,11 @@ public class MyDataClass {
     }
 
     public Long getTimezone() {
-        return Timezone;
+        return timezoneLong;
     }
 
-    public void setTimezone(Long Timezone) {
-        this.Timezone = Timezone;
+    public void setTimezone(Long timezoneLong) {
+        this.timezoneLong = timezoneLong;
     }
 
     public String getStartDateString() {
@@ -153,29 +153,29 @@ public class MyDataClass {
     }
 
 
-    public void setAssignedStartTime(String AssignedStartTime) {
-        this.AssignedStartTime = AssignedStartTime;
+    public void setAssignedStartTime(String assignedStartTime) {
+        this.assignedStartTimeString = assignedStartTime;
 
     }
 
-    public String setAssignedEndTime(String s) {
-        return AssignedStartTime;
+    public String getAssignedEndTime() {
+        return assignedStartTimeString;
     }
 
-    public void setAssignedIndex(int AssignedIndex) {
-        this.AssignedIndex = AssignedIndex;
+    public void setAssignedIndex(int assignedIndexInt) {
+        this.assignedIndexInt = assignedIndexInt;
     }
 
     public int getAssignedIndex() {
-        return AssignedIndex;
+        return assignedIndexInt;
     }
 
     public void setLinking(boolean linking) {
-        this.linking = linking;
+        this.linkingBoolean = linking;
     }
 
     public boolean getLinking() {
-        return linking;
+        return linkingBoolean;
     }
 
     public void setParentStartTimeString(String parentStartTimeString) {
@@ -194,12 +194,12 @@ public class MyDataClass {
         return parentEndTimeString;
     }
 
-    public void setSchedule(int schedule) {
-        this.schedule = schedule;
+    public void setSchedule(int scheduleInt) {
+        this.scheduleInt = scheduleInt;
     }
 
     public int getSchedule() {
-        return schedule;
+        return scheduleInt;
     }
 
     public void setSecondDayStartDateString(String secondDayStartDateString) {
@@ -211,11 +211,11 @@ public class MyDataClass {
     }
 
     public void setSecondDayTimezone(Long secondDayTimezone) {
-        this.secondDayTimezone = secondDayTimezone;
+        this.secondDayTimezoneLong = secondDayTimezone;
     }
 
     public Long getSecondDayTimezone() {
-        return secondDayTimezone;
+        return secondDayTimezoneLong;
     }
 
 

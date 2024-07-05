@@ -42,13 +42,13 @@ public class SetUpActivity extends FragmentActivity
     String startBreakTime;
     String endBreakTime;
     int totalStudent;
-    private TextView setTeacherName;
-    private TextView setStartPoint;
-    private TextView setStartTime;
-    private TextView setEndTime;
-    private TextView setStartBreakTime;
-    private TextView setEndBreakTime;
-    private TextView setTotalStudent;
+    private TextView textViewTeacherName;
+    private TextView textViewStartPoint;
+    private TextView textViewStartTime;
+    private TextView textViewEndTime;
+    private TextView textViewStartBreakTime;
+    private TextView textViewEndBreakTime;
+    private TextView textViewTotalStudent;
     private int isDateSelected;
     private int isStartTimeSelected;
 
@@ -76,28 +76,28 @@ public class SetUpActivity extends FragmentActivity
 
         int classId= getIntent().getIntExtra("classId", 100000);
 
-        setTeacherName = findViewById(R.id.teacherName);                    //先生の名前
-        setStartPoint = findViewById(R.id.startPoint);                      //開始地点
+        textViewTeacherName = findViewById(R.id.teacherName);                    //先生の名前
+        textViewStartPoint = findViewById(R.id.startPoint);                      //開始地点
 
         setFirstDay = findViewById(R.id.setFirstDayButton);                    //1日目の日付
         setSecondDay = findViewById(R.id.setSecondDayButton);                  //2日目の日付
         setThirdDay = findViewById(R.id.setThirdDayButton);                    //3日目の日付
 
         setStartTimeButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するボタン
-        setStartTime = findViewById(R.id.startTime);                        //開始時刻を出力するTextView
+        textViewStartTime = findViewById(R.id.startTime);                        //開始時刻を出力するTextView
         setEndTimeButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するボタン
-        setEndTime = findViewById(R.id.endTime);                            //終了時刻を出力するTextView
+        textViewEndTime = findViewById(R.id.endTime);                            //終了時刻を出力するTextView
 
         RadioButton setTenMinute = findViewById(R.id.tenMinute);            //訪問間隔（10分）
         RadioButton setFifteenMinute = findViewById(R.id.fifteenMinute);    //訪問間隔（15分）
         RadioButton setThirtyMinute = findViewById(R.id.thirtyMinute);      //訪問間隔（30分）
 
-        setStartBreakTime = findViewById(R.id.startBreakTime);              //休憩開始時刻
-        setStartBreakTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
-        setEndBreakTime = findViewById(R.id.endBreakTime);                  //休憩終了時刻
-        setEndBreakTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        textViewStartBreakTime = findViewById(R.id.startBreakTime);              //休憩開始時刻
+        textViewStartBreakTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        textViewEndBreakTime = findViewById(R.id.endBreakTime);                  //休憩終了時刻
+        textViewEndBreakTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
 
-        setTotalStudent = findViewById(R.id.totalStudent);                  //クラスの人数
+        textViewTotalStudent = findViewById(R.id.totalStudent);                  //クラスの人数
 
         ImageView toMain = findViewById(R.id.toMain);
         Button setUp = findViewById(R.id.setUpButton);                      //画面下の設定ボタン
@@ -110,9 +110,9 @@ public class SetUpActivity extends FragmentActivity
 
         setUp.setOnClickListener(view -> {
 
-            teacherName = setTeacherName.getText().toString(); //各変数に値を挿入
+            teacherName = textViewTeacherName.getText().toString(); //各変数に値を挿入
             Log.d(TAG, "Teacher Name: " + teacherName);
-            startPoint = setStartPoint.getText().toString();
+            startPoint = textViewStartPoint.getText().toString();
             Log.d(TAG, "Start Point: " + startPoint);
             Log.d(TAG, "First Day:" + firstDay);
             Log.d(TAG, "Second Day:" + secondDay);
@@ -131,7 +131,7 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Interval Time" + intervalTime);
             Log.d(TAG, "Start Break Time" + startBreakTime);
             Log.d(TAG, "End Break Time" + endBreakTime);
-            totalStudent = Integer.parseInt(setTotalStudent.getText().toString()); //数値型に変更
+            totalStudent = Integer.parseInt(textViewTotalStudent.getText().toString()); //数値型に変更
             Log.d(TAG, "Total Student" + totalStudent);
             Log.d(TAG, "onClick: できてるよ");
 
@@ -211,12 +211,12 @@ public class SetUpActivity extends FragmentActivity
             showTimePickerDialog();
         });
 
-        setStartBreakTime.setOnClickListener(v -> {
+        textViewStartBreakTime.setOnClickListener(v -> {
             isStartTimeSelected = 3;
             showTimePickerDialog();
         });
 
-        setEndBreakTime.setOnClickListener(v -> {
+        textViewEndBreakTime.setOnClickListener(v -> {
             isStartTimeSelected = 4;
             showTimePickerDialog();
         });
@@ -224,14 +224,14 @@ public class SetUpActivity extends FragmentActivity
         //リセットボタンの処理
 
         reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
-            setTeacherName.setText("");
-            setStartPoint.setText("");
+            textViewTeacherName.setText("");
+            textViewStartPoint.setText("");
             setTenMinute.setChecked(false);
             setFifteenMinute.setChecked(false);
             setThirtyMinute.setChecked(false);
-            setStartBreakTime.setText("");
-            setEndBreakTime.setText("");
-            setTotalStudent.setText("");
+            textViewStartBreakTime.setText("");
+            textViewEndBreakTime.setText("");
+            textViewTotalStudent.setText("");
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
@@ -280,25 +280,25 @@ public class SetUpActivity extends FragmentActivity
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             startTime = stringHourOfDay + stringMinute;
-            setStartTime.setText(str);
+            textViewStartTime.setText(str);
 
         } else if (isStartTimeSelected == 2) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endTime = stringHourOfDay + stringMinute;
-            setEndTime.setText(str);
+            textViewEndTime.setText(str);
 
         } else if (isStartTimeSelected == 3) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             startBreakTime =stringHourOfDay + stringMinute;
-            setStartBreakTime.setText("　" + str + "　");
+            textViewStartBreakTime.setText("　" + str + "　");
 
         } else if (isStartTimeSelected == 4) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endBreakTime = stringHourOfDay + stringMinute;
-            setEndBreakTime.setText("　" + str + "　");
+            textViewEndBreakTime.setText("　" + str + "　");
         }
     }
 

@@ -87,12 +87,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("MainActivity","geocodeAddress");
 
 
-        //TODO:classIdの初期値を取得
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable")
-                        .build();
+                AppDatabase db = getDatabaseInstance();
                 SetUpTableDao setUpTableDao = db.setUpTableDao();
                 classId = setUpTableDao.getClassId();
                 firestoreReception.getDocumentsByClassId(classId);
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //UUIDを表示するかのダイアログ
+    //IDに関する処理
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
         List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
@@ -167,19 +165,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("クラスID");
-        builder.setMessage("あなたのクラスIDを表示しますか？");
+        builder.setMessage("あなたのクラスIDを表示/もしくは新規で作成しますか？");
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("作成", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 classId = CreateUUID.generateUUID(classIdList);
-                Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
+                // 生成されたクラスIDを表示するメソッド
+                showClassIdDialog("生成されたクラスID",classId);
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("表示", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("DialogNO", "DialogでNoが選ばれました");
+                //roomを扱うため非同期処理
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // 現在のクラスIDを取得
+                    int currentClassId = getCurrentClassIdFromRoom();
+                    runOnUiThread(() -> {
+                        // 現在のクラスIDを表示するダイアログ
+                        showClassIdDialog("現在のクラスID",currentClassId);
+                    });
+                });
+                executor.shutdown();
             }
         });
 
@@ -187,97 +196,108 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
 
     }
+    private int getCurrentClassIdFromRoom() {
+        AppDatabase db = getDatabaseInstance();
+        SetUpTableDao setUpTableDao = db.setUpTableDao();
+
+        // 現在のクラスIDを取得
+        return setUpTableDao.getClassId();
+    }
+    //クラスIDを表示するダイアログ
+    private void showClassIdDialog(String title, int classId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage("クラスID: " + classId);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
-        //非同期処理の開始
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        CountDownLatch latch = new CountDownLatch(2);
-
-        // タスク1: ローカルDBから生徒数を取得してtotalStudentと比較
         executor.execute(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-            SetUpTableDao setUpTableDao = db.setUpTableDao();
-
-            Log.d("MainActivity", "db" + setUpTableDao.getAll());
-
+            AppDatabase db = getDatabaseInstance();            SetUpTableDao setUpTableDao = db.setUpTableDao();
             int totalStudent = setUpTableDao.getTotalStudent();
             int myDataListSize = firestoreReception.getMyDataListSize();
 
+            //総生徒数と提出済みになっている生徒の数が一致するかの確認
             runOnUiThread(() -> {
                 if (totalStudent != myDataListSize) {
-                    showRouteCreationDialog(latch);
+                    //未提出者がいることの警告ダイアログ
+                    showRouteCreationDialog();
                 } else {
-                    latch.countDown();
+                    //ルート作成
+                    createRoute(executor);
                 }
             });
         });
 
-        // タスク2: ルート作成を行う
+        // `fetchDataAndCreateRoute`メソッド内では、shutdownを呼び出さない
+    }
+
+    private void showRouteCreationDialog() {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("警告")
+                .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
+                .setPositiveButton("OK", (dialog, which) -> {
+                    // 新しいExecutorServiceを作成してタスクを実行
+                    ExecutorService dialogExecutor = Executors.newSingleThreadExecutor();
+                    createRoute(dialogExecutor);
+                    dialogExecutor.shutdown();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    private void createRoute(ExecutorService executor) {
         executor.execute(() -> {
             List<MyDataClass> myDataList = null;
             while (myDataList == null) {
                 myDataList = firestoreReception.getMyDataList();
                 try {
                     Thread.sleep(3000);
-                    Log.d("MainActivity", "myDataList" + myDataList.size());
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             }
-            Log.d("MainActivity", "myDataList" + myDataList.size());
+
+            //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
+            final List<MyDataClass> finalMyDataList = myDataList;
             CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            Boolean notDuplicates = createRoot.receiveData(myDataList,getApplicationContext());
-            latch.countDown();
+            Boolean notDuplicates = createRoot.receiveData(finalMyDataList, getApplicationContext());
 
-            if (notDuplicates) {
-                Log.d("MainActivity", "スケジュール作成成功");
-            } else {
-                showErrorDialog(latch, myDataList);
-            }
-        });
-
-        new Thread(() -> {
-            try {
-                latch.await();  // Both tasks must call countDown() before this returns
-                runOnUiThread(() -> {
+            runOnUiThread(() -> {
+                if (notDuplicates) {
+                    Log.d("MainActivity", "スケジュール作成成功");
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
                     startActivity(toRoot);
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+                } else {
+                    //保護者の重複による警告ダイアログ
+                    showErrorDialog(finalMyDataList);
+                }
+            });
 
-        executor.shutdown();
+            // createRouteの最後にexecutorをシャットダウン
+            executor.shutdown();
+        });
     }
 
-    //ルート作成のダイアログ
-    private void showRouteCreationDialog(CountDownLatch latch) {
-        new AlertDialog.Builder(MainActivity.this)
-                .setTitle("警告")
-                .setMessage("人数が足りてませんがそれでもルート作成を行いますか？")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        latch.countDown();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    public void showErrorDialog(CountDownLatch latch, List<MyDataClass> myDataList) {
+    private void showErrorDialog(List<MyDataClass> myDataList) {
         List<Integer> studentNumbers = new ArrayList<>();
-        for (int i = 0; i < myDataList.size(); i++) {
-            if (myDataList.get(i).getSchedule() == 0) {
-                studentNumbers.add(myDataList.get(i).getStudentNumber());
+        for (MyDataClass data : myDataList) {
+            if (data.getSchedule() == 0) {
+                studentNumbers.add(data.getStudentNumber());
             }
         }
         StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。調整してください。\n出席番号: ");
@@ -290,14 +310,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
                 .setMessage(message.toString())
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
+                .setPositiveButton("OK", (dialog, which) -> {
+                    dialog.dismiss();
                 })
                 .show();
     }
+
+
+    private AppDatabase getDatabaseInstance() {
+        return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+    }
+
+
 
     //提出状況の取得
     private ArrayList<SubmissionStudent> getSubmissionStudents() {
@@ -309,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         executor.execute(() -> {
             // 1. Roomデータベースから全生徒数を取得
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            AppDatabase db = getDatabaseInstance();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
             int totalStudent = setUpTableDao.getTotalStudent();
             // 2. Firestoreから生徒番号のリストを取得
