@@ -60,11 +60,11 @@ public class SetUpActivity extends FragmentActivity
     String stringHourOfDay;
     String stringMinute;
 
-    Button setFirstDay;
-    Button setSecondDay;
-    Button setThirdDay;
-    Button setStartTimeButton;
-    Button setEndTimeButton;
+    Button buttonFirstDay;
+    Button buttonSecondDay;
+    Button buttonThirdDay;
+    Button buttonStartTimeButton;
+    Button buttonEndTimeButton;
 
 
 
@@ -79,13 +79,13 @@ public class SetUpActivity extends FragmentActivity
         textViewTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         textViewStartPoint = findViewById(R.id.startPoint);                      //開始地点
 
-        setFirstDay = findViewById(R.id.setFirstDayButton);                    //1日目の日付
-        setSecondDay = findViewById(R.id.setSecondDayButton);                  //2日目の日付
-        setThirdDay = findViewById(R.id.setThirdDayButton);                    //3日目の日付
+        buttonFirstDay = findViewById(R.id.setFirstDayButton);                    //1日目の日付
+        buttonSecondDay = findViewById(R.id.setSecondDayButton);                  //2日目の日付
+        buttonThirdDay = findViewById(R.id.setThirdDayButton);                    //3日目の日付
 
-        setStartTimeButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するボタン
+        buttonStartTimeButton = findViewById(R.id.startTimeSetButton);         //開始時刻を設定するボタン
         textViewStartTime = findViewById(R.id.startTime);                        //開始時刻を出力するTextView
-        setEndTimeButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するボタン
+        buttonEndTimeButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するボタン
         textViewEndTime = findViewById(R.id.endTime);                            //終了時刻を出力するTextView
 
         RadioButton setTenMinute = findViewById(R.id.tenMinute);            //訪問間隔（10分）
@@ -186,27 +186,27 @@ public class SetUpActivity extends FragmentActivity
 
         });
 
-        setFirstDay.setOnClickListener(v ->{
+        buttonFirstDay.setOnClickListener(v ->{
             intIsDateSelected = 1;
             showDatePickerDialog(); //DatePickerの表示
         });
 
-        setSecondDay.setOnClickListener(v ->{
+        buttonSecondDay.setOnClickListener(v ->{
             intIsDateSelected = 2;
             showDatePickerDialog();
         });
 
-        setThirdDay.setOnClickListener(v ->{
+        buttonThirdDay.setOnClickListener(v ->{
             intIsDateSelected = 3;
             showDatePickerDialog();
         });
 
-        setStartTimeButton.setOnClickListener(v -> {
+        buttonStartTimeButton.setOnClickListener(v -> {
             intIsStartTimeSelected = 1; //ボタンの判別
             showTimePickerDialog(); //TimePickerの表示
         });
 
-        setEndTimeButton.setOnClickListener(v -> {
+        buttonEndTimeButton.setOnClickListener(v -> {
             intIsStartTimeSelected = 2;
             showTimePickerDialog();
         });
@@ -252,13 +252,13 @@ public class SetUpActivity extends FragmentActivity
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1); //月
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);  //日
             firstDay = stringYear + stringMonth + stringDayOfMonth;
-            setFirstDay.setText(str);
+            buttonFirstDay.setText(str);
         } else if (intIsDateSelected == 2) {
             stringYear = String.valueOf(year);
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);
             secondDay = stringYear + stringMonth + stringDayOfMonth;
-            setSecondDay.setText(str);
+            buttonSecondDay.setText(str);
 
 
         } else if (intIsDateSelected == 3) {
@@ -266,7 +266,7 @@ public class SetUpActivity extends FragmentActivity
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);
             thirdDay = stringYear + stringMonth + stringDayOfMonth;
-            setThirdDay.setText(str);
+            buttonThirdDay.setText(str);
 
         }
     }
