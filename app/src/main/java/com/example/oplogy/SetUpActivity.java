@@ -88,9 +88,9 @@ public class SetUpActivity extends FragmentActivity
         buttonEndTimeButton = findViewById(R.id.endTimeSetButton);             //終了時刻を設定するボタン
         textViewEndTime = findViewById(R.id.endTime);                            //終了時刻を出力するTextView
 
-        RadioButton setTenMinute = findViewById(R.id.tenMinute);            //訪問間隔（10分）
-        RadioButton setFifteenMinute = findViewById(R.id.fifteenMinute);    //訪問間隔（15分）
-        RadioButton setThirtyMinute = findViewById(R.id.thirtyMinute);      //訪問間隔（30分）
+        RadioButton radioButtonTenMinute = findViewById(R.id.tenMinute);            //訪問間隔（10分）
+        RadioButton radioButtonFifteenMinute = findViewById(R.id.fifteenMinute);    //訪問間隔（15分）
+        RadioButton radioButtonThirtyMinute = findViewById(R.id.thirtyMinute);      //訪問間隔（30分）
 
         textViewStartBreakTime = findViewById(R.id.startBreakTime);              //休憩開始時刻
         textViewStartBreakTime.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
@@ -119,11 +119,11 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Third Day:" + thirdDay);
             Log.d(TAG, "Start Time" + startTime);
             Log.d(TAG, "End Time" + endTime);
-            if (setTenMinute.isChecked()){                    //ラジオボタンの状態を取得
+            if (radioButtonTenMinute.isChecked()){                    //ラジオボタンの状態を取得
                 intervalTime = "10";
-            } else if (setFifteenMinute.isChecked()) {
+            } else if (radioButtonFifteenMinute.isChecked()) {
                 intervalTime = "15";
-            } else if (setThirtyMinute.isChecked()) {
+            } else if (radioButtonThirtyMinute.isChecked()) {
                 intervalTime = "30";
             } else {
                 intervalTime = "0";
@@ -226,9 +226,9 @@ public class SetUpActivity extends FragmentActivity
         reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
             textViewTeacherName.setText("");
             textViewStartPoint.setText("");
-            setTenMinute.setChecked(false);
-            setFifteenMinute.setChecked(false);
-            setThirtyMinute.setChecked(false);
+            radioButtonTenMinute.setChecked(false);
+            radioButtonFifteenMinute.setChecked(false);
+            radioButtonThirtyMinute.setChecked(false);
             textViewStartBreakTime.setText("");
             textViewEndBreakTime.setText("");
             textViewTotalStudent.setText("");
