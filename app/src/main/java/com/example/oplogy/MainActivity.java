@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //UUIDを表示するかのダイアログ
+    //IDに関する処理
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
         List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
@@ -165,19 +165,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("クラスID");
-        builder.setMessage("あなたのクラスIDを表示しますか？");
+        builder.setMessage("あなたのクラスIDを表示/もしくは新規で作成しますか？");
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("作成", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 classId = CreateUUID.generateUUID(classIdList);
-                Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
+                // 生成されたクラスIDを表示するメソッド
+                showClassIdDialog("生成されたクラスID",classId);
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("表示", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("DialogNO", "DialogでNoが選ばれました");
+                //roomを扱うため非同期処理
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // 現在のクラスIDを取得
+                    int currentClassId = getCurrentClassIdFromRoom();
+                    runOnUiThread(() -> {
+                        // 現在のクラスIDを表示するダイアログ
+                        showClassIdDialog("現在のクラスID",currentClassId);
+                    });
+                });
+                executor.shutdown();
             }
         });
 
@@ -185,6 +196,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
 
     }
+    private int getCurrentClassIdFromRoom() {
+        AppDatabase db = getDatabaseInstance();
+        SetUpTableDao setUpTableDao = db.setUpTableDao();
+
+        // 現在のクラスIDを取得
+        return setUpTableDao.getClassId();
+    }
+    //クラスIDを表示するダイアログ
+    private void showClassIdDialog(String title, int classId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage("クラスID: " + classId);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
