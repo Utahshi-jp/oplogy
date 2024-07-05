@@ -1,6 +1,7 @@
 package com.example.oplogy;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
@@ -41,10 +42,18 @@ public class CreateSchedule {
 
     boolean notSecondDuplicatesBoolean = true;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
 
-    String[] testdata = {"20240604", "20240605", "20240606"};
+    String[] testdate;
 
     public CreateSchedule(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+        SharedPreferences sharedPreferences= activity.getSharedPreferences("visitingDate",Context.MODE_PRIVATE);
+
+        String firstDay=sharedPreferences.getString("day1",null);
+        String secondDay=sharedPreferences.getString("day2",null);
+        String thirdDay=sharedPreferences.getString("day3",null);
+
+        testdate=new String[]{firstDay,secondDay,thirdDay};
+
     }
 
     //MainActivityからデータを受け取る
@@ -296,7 +305,7 @@ public class CreateSchedule {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (testdata[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                    if (testdate[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString());
                         break;
                     }
@@ -319,7 +328,7 @@ public class CreateSchedule {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (testdata[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                    if (testdate[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString());
                     }
                 }
