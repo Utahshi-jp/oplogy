@@ -49,8 +49,8 @@ public class SetUpActivity extends FragmentActivity
     private TextView textViewStartBreakTime;
     private TextView textViewEndBreakTime;
     private TextView textViewTotalStudent;
-    private int isDateSelected;
-    private int isStartTimeSelected;
+    private int intIsDateSelected;
+    private int intIsStartTimeSelected;
 
     String stringYear;
     String stringMonth;
@@ -187,37 +187,37 @@ public class SetUpActivity extends FragmentActivity
         });
 
         setFirstDay.setOnClickListener(v ->{
-            isDateSelected = 1;
+            intIsDateSelected = 1;
             showDatePickerDialog(); //DatePickerの表示
         });
 
         setSecondDay.setOnClickListener(v ->{
-            isDateSelected = 2;
+            intIsDateSelected = 2;
             showDatePickerDialog();
         });
 
         setThirdDay.setOnClickListener(v ->{
-            isDateSelected = 3;
+            intIsDateSelected = 3;
             showDatePickerDialog();
         });
 
         setStartTimeButton.setOnClickListener(v -> {
-            isStartTimeSelected = 1; //ボタンの判別
+            intIsStartTimeSelected = 1; //ボタンの判別
             showTimePickerDialog(); //TimePickerの表示
         });
 
         setEndTimeButton.setOnClickListener(v -> {
-            isStartTimeSelected = 2;
+            intIsStartTimeSelected = 2;
             showTimePickerDialog();
         });
 
         textViewStartBreakTime.setOnClickListener(v -> {
-            isStartTimeSelected = 3;
+            intIsStartTimeSelected = 3;
             showTimePickerDialog();
         });
 
         textViewEndBreakTime.setOnClickListener(v -> {
-            isStartTimeSelected = 4;
+            intIsStartTimeSelected = 4;
             showTimePickerDialog();
         });
 
@@ -247,13 +247,13 @@ public class SetUpActivity extends FragmentActivity
         // DatePickerDialogで選択された日付を処理する
         String str = String.format(Locale.JAPAN, "%02d/%02d",  month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
 
-        if (isDateSelected == 1) {
+        if (intIsDateSelected == 1) {
             stringYear = String.valueOf(year);                                          //年
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1); //月
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);  //日
             firstDay = stringYear + stringMonth + stringDayOfMonth;
             setFirstDay.setText(str);
-        } else if (isDateSelected == 2) {
+        } else if (intIsDateSelected == 2) {
             stringYear = String.valueOf(year);
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);
@@ -261,7 +261,7 @@ public class SetUpActivity extends FragmentActivity
             setSecondDay.setText(str);
 
 
-        } else if (isDateSelected == 3) {
+        } else if (intIsDateSelected == 3) {
             stringYear = String.valueOf(year);
             stringMonth = String.format(Locale.JAPAN, "%02d", month + 1);
             stringDayOfMonth = String.format(Locale.JAPAN, "%02d", dayOfMonth);
@@ -276,25 +276,25 @@ public class SetUpActivity extends FragmentActivity
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         String str = String.format(Locale.JAPAN, "%02d:%02d", hourOfDay, minute); // Textviewに保存する形式を設定
 
-        if (isStartTimeSelected == 1) {
+        if (intIsStartTimeSelected == 1) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             startTime = stringHourOfDay + stringMinute;
             textViewStartTime.setText(str);
 
-        } else if (isStartTimeSelected == 2) {
+        } else if (intIsStartTimeSelected == 2) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endTime = stringHourOfDay + stringMinute;
             textViewEndTime.setText(str);
 
-        } else if (isStartTimeSelected == 3) {
+        } else if (intIsStartTimeSelected == 3) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             startBreakTime =stringHourOfDay + stringMinute;
             textViewStartBreakTime.setText("　" + str + "　");
 
-        } else if (isStartTimeSelected == 4) {
+        } else if (intIsStartTimeSelected == 4) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
             endBreakTime = stringHourOfDay + stringMinute;
