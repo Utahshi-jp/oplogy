@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.room.Room;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -145,7 +146,7 @@ public class SetUpActivity extends FragmentActivity
             // 入力データのバリデーション
             if (TextUtils.isEmpty(teacherName) || TextUtils.isEmpty(startPoint) || TextUtils.isEmpty(startTime)
                     || TextUtils.isEmpty(firstDay) || TextUtils.isEmpty(secondDay) || TextUtils.isEmpty(thirdDay)
-                    || TextUtils.isEmpty(endTime) || TextUtils.isEmpty(intervalTime) || TextUtils.isEmpty(startBreakTime)
+                    || TextUtils.isEmpty(endTime) || Objects.equals(intervalTime, "0") || TextUtils.isEmpty(startBreakTime)
                     || TextUtils.isEmpty(endBreakTime) || totalStudent <= 0) {
                 Toast.makeText(SetUpActivity.this, "必須項目を入力してください", Toast.LENGTH_SHORT).show();
                 return;
@@ -256,6 +257,18 @@ public class SetUpActivity extends FragmentActivity
             textViewStartBreakTime.setText("");
             textViewEndBreakTime.setText("");
             textViewTotalStudent.setText("");
+
+            teacherName = "";
+            startPoint = "";
+            firstDay = "";
+            secondDay = "";
+            thirdDay = "";
+            startTime = "";
+            endTime = "";
+            intervalTime = "";
+            startBreakTime = "";
+            endBreakTime ="" ;
+
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
