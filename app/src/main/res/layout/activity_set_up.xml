@@ -109,7 +109,7 @@
             android:id="@+id/setFirstDayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/firstDay"
+            android:hint="@string/firstDay"
             android:layout_marginStart="7sp"
             android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
@@ -118,7 +118,7 @@
             android:id="@+id/setSecondDayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/secondDay"
+            android:hint="@string/secondDay"
             android:layout_marginStart="7sp"
             android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
@@ -127,7 +127,7 @@
             android:id="@+id/setThirdDayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/threeDay"
+            android:hint="@string/threeDay"
             android:layout_marginStart="7sp"
             android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />

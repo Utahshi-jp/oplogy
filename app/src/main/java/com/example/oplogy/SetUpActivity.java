@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -131,9 +132,24 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Interval Time" + intervalTime);
             Log.d(TAG, "Start Break Time" + startBreakTime);
             Log.d(TAG, "End Break Time" + endBreakTime);
-            totalStudent = Integer.parseInt(textViewTotalStudent.getText().toString()); //数値型に変更
             Log.d(TAG, "Total Student" + totalStudent);
             Log.d(TAG, "onClick: できてるよ");
+
+            // クラスの人数を数値に変換して取得
+            try {
+                totalStudent = Integer.parseInt(textViewTotalStudent.getText().toString());
+            } catch (NumberFormatException e) {
+                totalStudent = 0; // デフォルト値を設定するか、エラー処理を追加することも考慮する必要があります
+            }
+
+            // 入力データのバリデーション
+            if (TextUtils.isEmpty(teacherName) || TextUtils.isEmpty(startPoint) || TextUtils.isEmpty(startTime)
+                    || TextUtils.isEmpty(firstDay) || TextUtils.isEmpty(secondDay) || TextUtils.isEmpty(thirdDay)
+                    || TextUtils.isEmpty(endTime) || TextUtils.isEmpty(intervalTime) || TextUtils.isEmpty(startBreakTime)
+                    || TextUtils.isEmpty(endBreakTime) || totalStudent <= 0) {
+                Toast.makeText(SetUpActivity.this, "必須項目を入力してください", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
 
             // データベースへの登録処理
@@ -229,9 +245,14 @@ public class SetUpActivity extends FragmentActivity
         reset.setOnClickListener(v -> { //テキストとラジオボタンの選択を消去
             textViewTeacherName.setText("");
             textViewStartPoint.setText("");
+            buttonFirstDay.setText("");
+            buttonSecondDay.setText("");
+            buttonThirdDay.setText("");
             radioButtonTenMinute.setChecked(false);
             radioButtonFifteenMinute.setChecked(false);
             radioButtonThirtyMinute.setChecked(false);
+            textViewStartTime.setText("");
+            textViewEndTime.setText("");
             textViewStartBreakTime.setText("");
             textViewEndBreakTime.setText("");
             textViewTotalStudent.setText("");
