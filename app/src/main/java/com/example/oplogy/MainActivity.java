@@ -172,12 +172,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 classId = CreateUUID.generateUUID(classIdList);
                 Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
+                imageUuid.setImageResource(R.drawable.checked_image);
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d("DialogNO", "DialogでNoが選ばれました");
+                imageUuid.setImageResource(R.drawable.checked_image);
             }
         });
 

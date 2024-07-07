@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        tools:ignore="CoarseFineLocation" />
 
     <application
         android:allowBackup="true"
@@ -31,7 +34,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw" />
+            android:value="AIzaSyBqLqPm76UFpwbpU8b3oiH0wbkhosrPWpU" />
 
         <activity
             android:name=".Maps"

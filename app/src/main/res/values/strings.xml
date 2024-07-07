@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">oplogy</string>
+    <string name="app_name">Oplogy</string>
+    <string name="maps_api_key">AIzaSyBqLqPm76UFpwbpU8b3oiH0wbkhosrPWpU</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="setUp">設定</string>
     <string name="reset">リセット</string>
@@ -11,7 +12,6 @@
     <string name="breakTime">休憩時間</string>
     <string name="totalStudent">生徒の人数</string>
     <string name="timeSet">時刻設定</string>
-    <string name="Back">🔙</string>
     <string name="startpoint">住所</string>
     <string name="tenMinute">10分</string>
     <string name="fifteenMinute">15分</string>

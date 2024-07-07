@@ -31,17 +31,24 @@
             android:textSize="40dp" />
     </LinearLayout>
 
-<!--    Webの処理 -->
-    <WebView
-        android:id="@+id/webView"
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="6" />
+        android:layout_weight="6"
+        tools:context=".Maps" />
 
     <ScrollView
         android:id="@+id/scrollable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3" />
-
+        android:layout_weight="3">
+        <LinearLayout
+            android:id="@+id/locationsName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </LinearLayout>
+
