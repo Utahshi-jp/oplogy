@@ -26,6 +26,8 @@ import java.util.concurrent.Executors;
 //保護者の希望とSetUpActivityによって設定された情報をもとにスケジュールとルートを作成する
 public class CreateSchedule {
     MyDataClass data;//Firestoreから受け取ったdataを入れる変数
+
+    String startPointString;//家庭訪問の開始地点
     String startTimeHomeVisitString;//家庭訪問の開始時間
     String endTimeHomeVisitString;//家庭訪問の終了時間
     String intervalTimeString;//家庭訪問の一家庭当たりの時間
@@ -42,22 +44,23 @@ public class CreateSchedule {
 
     boolean notSecondDuplicatesBoolean = true;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
 
-    String[] testdate;
+    String[] date;
+
 
     public CreateSchedule(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
-        SharedPreferences sharedPreferences= activity.getSharedPreferences("visitingDate",Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("visitingDate", Context.MODE_PRIVATE);
 
-        String firstDay=sharedPreferences.getString("day1",null);
-        String secondDay=sharedPreferences.getString("day2",null);
-        String thirdDay=sharedPreferences.getString("day3",null);
+        String firstDay = sharedPreferences.getString("day1", null);
+        String secondDay = sharedPreferences.getString("day2", null);
+        String thirdDay = sharedPreferences.getString("day3", null);
 
-        testdate=new String[]{firstDay,secondDay,thirdDay};
+        date = new String[]{firstDay, secondDay, thirdDay};
 
     }
 
     //MainActivityからデータを受け取る
-    public Boolean receiveData(List<MyDataClass> myDataList, Context context) {
+    public String receiveData(List<MyDataClass> myDataList, Context context) {
 
         //myDataListの要素data第一希望日と第二希望日に以下を追加する
         //・保護者の希望時間帯の長さ
@@ -107,14 +110,18 @@ public class CreateSchedule {
                 notSecondDuplicatesBoolean = secondCreateSchedule(myDataList, intervalArrayInt);
             }
         });
+        //重複がなければ開始地点の緯度経度を返す
         if (notSecondDuplicatesBoolean) {
+            //スケジュールを基準にソートする
             sortSchedule(myDataList);
-            geocodeAddress(myDataList, context);
+            String startPointLatLngString = geocodeAddress(myDataList, context);
+            Log.d("CreateSchedule", "startPointLatLngString" + startPointLatLngString);
             outPutLogSchedule(myDataList);
-            return notSecondDuplicatesBoolean;
+            return startPointLatLngString;
         }
+        //重複があるときは""を返す
         Log.d("CreateSchedule", "重複によるエラー");
-        return !notSecondDuplicatesBoolean;
+        return "";
     }
 
 
@@ -234,6 +241,7 @@ public class CreateSchedule {
         // setUpActivityによって入力され、Roomに保存された値を取り出す処理
         //Roomの操作の定義
         SetUpTableDao setUpTableDao = db.setUpTableDao();
+        startPointString = setUpTableDao.getStartPoint();
         startTimeHomeVisitString = setUpTableDao.getStartTime();
         endTimeHomeVisitString = setUpTableDao.getEndTime();
         intervalTimeString = setUpTableDao.getIntervalTime();
@@ -305,7 +313,7 @@ public class CreateSchedule {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (testdate[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                    if (date[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString());
                         break;
                     }
@@ -328,7 +336,7 @@ public class CreateSchedule {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (testdate[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                    if (date[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString());
                     }
                 }
@@ -358,7 +366,7 @@ public class CreateSchedule {
     }
 
 
-    private void geocodeAddress(List<MyDataClass> myDataList, Context context) {
+    private String geocodeAddress(List<MyDataClass> myDataList, Context context) {
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             for (int i = 0; i < myDataList.size(); i++) {
@@ -372,9 +380,14 @@ public class CreateSchedule {
                     myDataList.get(i).setLatLngString(String.valueOf(new LatLng(latitudeDouble, longitudeDouble)));
                 }
             }
+            //SetUpで設定した家庭訪問の開始地点を緯度経度に変換
+            String startPointLatLngString = String.valueOf(geocoder.getFromLocationName(startPointString, 1));
+            Log.d("CreateSchedule", "startPointLatLngString" + startPointLatLngString);
+            return startPointLatLngString;
         } catch (IOException e) {
             Log.e("CreateSchedule", "緯度経度の取得に失敗: " + e);
         }
+        return null;
     }
 
     private void outPutLogSchedule(List<MyDataClass> myDataList) {

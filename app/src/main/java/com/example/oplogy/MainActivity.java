@@ -55,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //取得するためのクラスID
     private int classId;
-    private String address;
-
+    private final AppDatabase appDatabase = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -319,13 +318,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
             final List<MyDataClass> finalMyDataList = myDataList;
             CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
-            Boolean notDuplicates = createSchedule.receiveData(myDataList, getApplicationContext());
+            String  startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
 
             runOnUiThread(() -> {
-                if (notDuplicates) {
+                if ( !startPointLatLngString.equals("")) {
                     Log.d("MainActivity", "スケジュール作成成功");
                     saveMyDataList(finalMyDataList);
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                    toRoot.putExtra("startPointLatLngString", startPointLatLngString);
                     startActivity(toRoot);
                 } else {
                     //保護者の重複による警告ダイアログ

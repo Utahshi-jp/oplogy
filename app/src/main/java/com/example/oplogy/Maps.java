@@ -26,7 +26,8 @@ public class Maps extends FragmentActivity implements View.OnClickListener {
     private WebView webView;
     ImageView backMain;
     private MapsBinding binding;
-    private ArrayList<Parcelable> myDataList;;
+    private ArrayList<Parcelable> myDataList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,19 +42,31 @@ public class Maps extends FragmentActivity implements View.OnClickListener {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
-        List<MyDataClass> myDataList=getMyDataList();
+
+        // startPointLatLngStringの取得
+        String startPointLatLngString = getIntent().getStringExtra("startPointLatLngString");
+        //MyDataListの取得
+        List<MyDataClass> myDataList = getMyDataList();
+
         String latlngString = "";
-        for (int i = 0; i < myDataList.size(); i++) {
-            String latlng = myDataList.get(i).getLatLngString();
-            int startIndex = latlng.indexOf("(") + 1;
-            int endIndex = latlng.indexOf(")");
-            String latlngOnly = latlng.substring(startIndex, endIndex);
-            latlngString += latlngOnly;
-            if (i < myDataList.size() - 1) {
-                latlngString += "/";
+        for (int i = -1; i < myDataList.size(); i++) {
+            if (i < 0) {
+                //家庭訪問の開始地点の緯度経度
+                latlngString += startPointLatLngString + "/";
+            } else {
+                //各家庭の緯度経度
+                String latlng = myDataList.get(i).getLatLngString();
+                int startIndex = latlng.indexOf("(") + 1;
+                int endIndex = latlng.indexOf(")");
+                String latlngOnly = latlng.substring(startIndex, endIndex);
+                latlngString += latlngOnly;
+                if (i < myDataList.size() - 1) {
+                    latlngString += "/";
+                }
             }
         }
-        Log.d("Maps","latlngString"+latlngString);
+        Log.d("Maps", "startPointLatLngString" + startPointLatLngString);
+        Log.d("Maps", "latlngString" + latlngString);
         loadMapInWebView(latlngString);
     }
 
@@ -67,13 +80,14 @@ public class Maps extends FragmentActivity implements View.OnClickListener {
 
         // JSON形式のデータをMyDataListに変換
         Gson gson = new Gson();
-        Type type = new TypeToken<List<MyDataClass>>() {}.getType();
+        Type type = new TypeToken<List<MyDataClass>>() {
+        }.getType();
         List<MyDataClass> myDataList = gson.fromJson(json, type);
 
         return myDataList;
     }
 
-//    WebViewの処理です（Mapの中の処理をやっています）
+    //    WebViewの処理です（Mapの中の処理をやっています）
     private void loadMapInWebView(String locations) {
 //        区切ることで、追加の地点を入れて、最終地点にピンを打ってある状態です
         String[] locArray = locations.split("/");

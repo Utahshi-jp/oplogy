@@ -1,4 +1,5 @@
 package com.example.oplogy;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -21,7 +22,7 @@ public class SetUpTable {
 
     //コンストラクタ
     public SetUpTable(String teacherName, String startPoint, String startTime, String endTime,
-                        String intervalTime, String startBreakTime, String endBreakTime, int totalStudent,int classId) {
+                      String intervalTime, String startBreakTime, String endBreakTime, int totalStudent, int classId) {
         this.teacherName = teacherName;
         this.startPoint = startPoint;
         this.startTime = startTime;
@@ -32,41 +33,53 @@ public class SetUpTable {
         this.totalStudent = totalStudent;
         this.classId = classId;
     }
+
     //getter
     public int getId() {
         return id;
     }
+
     public String getTeacherName() {
         return teacherName;
     }
+
     public String getStartPoint() {
         return startPoint;
     }
+
     public String getStartTime() {
         return startTime;
     }
+
     public String getEndTime() {
         return endTime;
     }
+
     public int getTotalStudent() {
         return totalStudent;
     }
+
     //setter
     public void setId(int id) {
         this.id = id;
     }
+
     public void setTeacherName(String teacherName) {
         this.teacherName = teacherName;
     }
+
     public void setStartPoint(String startPoint) {
         this.startPoint = startPoint;
     }
+
     public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
+
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
+
     public void setTotalStudent(int totalStudent) {
         this.totalStudent = totalStudent;
     }

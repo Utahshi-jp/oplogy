@@ -1,7 +1,8 @@
 package com.example.oplogy;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DialogFragment extends AppCompatActivity {
 
