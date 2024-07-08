@@ -32,8 +32,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 public class Maps extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
@@ -41,7 +42,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
     private GoogleMap mMap;
     private MapsBinding binding;
     private LinearLayout locationsName;
-    private Spinner date;
+    private Spinner dateSpinner;
     private static final int[] COLORS = new int[]{
             Color.BLUE, Color.RED, Color.GREEN, Color.MAGENTA, Color.CYAN, Color.YELLOW
     };
@@ -49,6 +50,8 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
     private List<LatLng> latLngList = new ArrayList<>();
     private List<String> nameList = new ArrayList<>();
     private List<Integer> colorList = new ArrayList<>();
+
+    private Map<String, Runnable> dateMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,24 +69,34 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
         locationsName = findViewById(R.id.locationsName);
 
+        // 日付を入れる処理
+        String dateData = "6月3日/6月4日/6月5日/6月6日/6月7日";
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.add("6月3日");
-        adapter.add("6月4日");
-        adapter.add("6月5日");
-        date = findViewById(R.id.date);
-        date.setAdapter(adapter);
+        String[] dates = dateData.split("/");
+        for (String date : dates) {
+            adapter.add(date);
+        }
 
-        date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        // 各日付に対応するRunnableを設定する
+        dateMap.put("6月3日", this::firstMapAndNames);
+        dateMap.put("6月4日", this::secondMapAndNames);
+        dateMap.put("6月5日", this::thirdMapAndNames);
+        // 必要に応じて追加の日付に対応するメソッドをここに追加
+        dateMap.put("6月6日", this::additionalMapAndNames);
+        dateMap.put("6月7日", this::additionalMapAndNames2);
+
+        dateSpinner = findViewById(R.id.date);
+        dateSpinner.setAdapter(adapter);
+
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = (String) parent.getItemAtPosition(position);
-                if (selectedItem.equals("6月4日")) {
-                    secondMapAndNames();
-                } else if (selectedItem.equals("6月5日")) {
-                    thildMapAndNames();
-                } else {
-                    firstMapAndNames();
+                Runnable mapLoader = dateMap.get(selectedItem);
+                if (mapLoader != null) {
+                    mapLoader.run();
                 }
             }
 
@@ -98,7 +111,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
-        firstMapAndNames();
+        firstMapAndNames(); // 最初に表示するデータセットをロード
     }
 
     private void firstMapAndNames() {
@@ -113,10 +126,23 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         loadMapAndNames(locationData2, nameData2);
     }
 
-    private void thildMapAndNames() {
+    private void thirdMapAndNames() {
         String locationData3 = "35.09050879999539,136.87845379325216/35.091950716938875,136.8826598363985";
         String nameData3 = "名古屋港水族館/2番目";
         loadMapAndNames(locationData3, nameData3);
+    }
+
+    // 追加の日付に対応するメソッド
+    private void additionalMapAndNames() {
+        String locationData4 = "35.09050879999539,136.87845379325216/35.091950716938875,136.8826598363985/35.09300000000000,136.88300000000000";
+        String nameData4 = "名古屋港水族館/2番目/3番目";
+        loadMapAndNames(locationData4, nameData4);
+    }
+
+    private void additionalMapAndNames2() {
+        String locationData5 = "35.09050879999539,136.87845379325216/35.091950716938875,136.8826598363985/35.09400000000000,136.88400000000000";
+        String nameData5 = "名古屋港水族館/2番目/3番目";
+        loadMapAndNames(locationData5, nameData5);
     }
 
     private void loadMapAndNames(String locationData, String nameData) {
