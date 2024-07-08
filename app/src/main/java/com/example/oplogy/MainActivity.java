@@ -141,47 +141,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
-            checkSetupAndCreateRoute();
+            checkSetupAndCreateRoute(this::fetchDataAndCreateRoute);
         }
 
 
         if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
-            checkSetupAndCreateRoute();
+            checkSetupAndCreateRoute(this::fetchDataAndCreateRoute);
         }
 //        提出状況のクリック処理
         if (view == submission) {
-            ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
-            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
-            toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
-            startActivity(toSubmission);
+            checkSetupAndCreateRoute(() -> {
+                ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
+                Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+                toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
+                startActivity(toSubmission);
+            });
         }
         if (view == imageSubmission) {
-            ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
-            Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
-            toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
-            startActivity(toSubmission);
+            checkSetupAndCreateRoute(() -> {
+                ArrayList<SubmissionStudent> submissionStudents = getSubmissionStudents();
+                Intent toSubmission = new Intent(MainActivity.this, SubmissionActivity.class);
+                toSubmission.putParcelableArrayListExtra("submissionStudents", submissionStudents);
+                startActivity(toSubmission);
+            });
         }
     }
 
-    //IDに関する処理
+    //ID作成、表示に関する処理
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
         List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("クラスID");
-        builder.setMessage("あなたのクラスIDを表示/もしくは新規で作成しますか？");
+        builder.setTitle("ID");
+        builder.setMessage("あなたのIDを表示/もしくは新規で作成しますか？");
 
+        //作成処理
         builder.setPositiveButton("作成", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 classId = CreateUUID.generateUUID(classIdList);
-                // 生成されたクラスIDを表示するメソッド
-                showClassIdDialog("生成されたクラスID",classId);
+                // 生成されたIDを表示するメソッド
+                showClassIdDialog("生成されたID",classId);
             }
         });
+        //表示処理
         builder.setNegativeButton("表示", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -192,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     int currentClassId = getCurrentClassIdFromRoom();
                     runOnUiThread(() -> {
                         // 現在のクラスIDを表示するダイアログ
-                        showClassIdDialog("現在のクラスID",currentClassId);
+                        showClassIdDialog("現在のID",currentClassId);
                     });
                 });
                 executor.shutdown();
@@ -214,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showClassIdDialog(String title, int classId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
-        builder.setMessage("クラスID: " + classId);
+        builder.setMessage("ID: " + classId);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -229,26 +235,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-    //ルート作成の前チェックを行う処理
-    private void checkSetupAndCreateRoute() {
+    //ルート作成、提出状況の遷移を行う前のチェックを行う処理
+    private void checkSetupAndCreateRoute(Runnable onSetupComplete) {
         if (isClassIdSet()) {
             isSetupExists(classId).thenAccept(setupExists -> {
                 if (setupExists) {
-                    fetchDataAndCreateRoute();
+                    runOnUiThread(onSetupComplete);
                 } else {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "先にセットアップを済ませてください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "先にセットアップを済ませてください", Toast.LENGTH_LONG).show();
                     });
                 }
             }).exceptionally(ex -> {
                 ex.printStackTrace();
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_LONG).show();
                 });
                 return null;
             });
         } else {
-            Toast.makeText(this, "先にIDの作成を行ってください", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "先にIDの作成を行ってください", Toast.LENGTH_LONG).show();
         }
     }
     // クラスIDが設定されているかどうかを判定
