@@ -15,9 +15,7 @@
         android:theme="@style/Theme.Oplogy"
         tools:ignore="ExtraText"
         tools:targetApi="31">
-        <activity
-            android:name=".SetUpActivity"
-            android:exported="false" />
+
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -31,8 +29,11 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw" />
+            android:value="YOUR_API_KEY" />
 
+        <activity
+            android:name=".SetUpActivity"
+            android:exported="false" />
         <activity
             android:name=".Maps"
             android:exported="false"
