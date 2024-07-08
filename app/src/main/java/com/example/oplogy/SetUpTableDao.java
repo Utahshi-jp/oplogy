@@ -44,4 +44,9 @@ public interface SetUpTableDao {
     //クラスIDの取得
     @Query("SELECT classId FROM SetUpTable")
     int getClassId();
+
+    @Query("SELECT startPoint FROM setuptable")
+    String getStartPoint();
+
+
 }

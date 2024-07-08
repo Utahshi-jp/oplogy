@@ -2,6 +2,7 @@ package com.example.oplogy;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -243,13 +245,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
             final List<MyDataClass> finalMyDataList = myDataList;
-            CreateRoot createRoot = new CreateRoot(MainActivity.this);
-            Boolean notDuplicates = createRoot.receiveData(finalMyDataList, getApplicationContext());
+            CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
+            String  startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
 
             runOnUiThread(() -> {
-                if (notDuplicates) {
+                if ( !startPointLatLngString.equals("")) {
                     Log.d("MainActivity", "スケジュール作成成功");
+                    saveMyDataList(finalMyDataList);
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
+                    toRoot.putExtra("startPointLatLngString", startPointLatLngString);
                     startActivity(toRoot);
                 } else {
                     //保護者の重複による警告ダイアログ
@@ -260,6 +264,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // createRouteの最後にexecutorをシャットダウン
             executor.shutdown();
         });
+    }
+    private void saveMyDataList(List<MyDataClass> myDataList) {
+        // 共有プリファレンスのインスタンスを取得
+        SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // MyDataListをJSON形式に変換
+        Gson gson = new Gson();
+        String json = gson.toJson(myDataList);
+
+        // JSON形式のデータを共有プリファレンスに保存
+        editor.putString("myDataList", json);
+        editor.apply();
     }
 
     private void showErrorDialog(List<MyDataClass> myDataList) {

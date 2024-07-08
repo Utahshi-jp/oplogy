@@ -44,7 +44,7 @@ public class CreateSchedule {
 
     boolean notSecondDuplicatesBoolean = true;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
 
-    String[] date;
+    String[] homeVisitDaysString;
 
 
     public CreateSchedule(AppCompatActivity activity) {
@@ -55,7 +55,7 @@ public class CreateSchedule {
         String secondDay = sharedPreferences.getString("day2", null);
         String thirdDay = sharedPreferences.getString("day3", null);
 
-        date = new String[]{firstDay, secondDay, thirdDay};
+        homeVisitDaysString = new String[]{firstDay, secondDay, thirdDay};
 
     }
 
@@ -102,18 +102,22 @@ public class CreateSchedule {
             boolean notDuplicatesBoolean = createSchedule(myDataList, intervalArrayInt);
 
             //スケジュールの重複の確認
-            if (!notDuplicatesBoolean) {
+            if (notDuplicatesBoolean) {
+                //スケジュールを基準にソートする
+                sortSchedule(myDataList);
+            }else{
                 //第二希望日で同じ処理を行う
                 Log.d("CreateSchedule", "第二希望");
                 secondSetData(myDataList);
                 secondTimeZoneSort(myDataList);
                 notSecondDuplicatesBoolean = secondCreateSchedule(myDataList, intervalArrayInt);
+                //スケジュールを基準にソートする
+                sortSchedule(myDataList);
             }
         });
         //重複がなければ開始地点の緯度経度を返す
         if (notSecondDuplicatesBoolean) {
-            //スケジュールを基準にソートする
-            sortSchedule(myDataList);
+            //保護者の住所を緯度経度に変換する
             String startPointLatLngString = geocodeAddress(myDataList, context);
             Log.d("CreateSchedule", "startPointLatLngString" + startPointLatLngString);
             outPutLogSchedule(myDataList);
@@ -313,8 +317,8 @@ public class CreateSchedule {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (date[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
-                        checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString());
+                    if (homeVisitDaysString[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                        checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString(),homeVisitDaysString);
                         break;
                     }
                 }
@@ -336,8 +340,8 @@ public class CreateSchedule {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (date[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
-                        checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString());
+                    if (homeVisitDaysString[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                        checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString(),homeVisitDaysString);
                     }
                 }
             }
@@ -351,11 +355,12 @@ public class CreateSchedule {
         return true;
     }
 
-    private void checkSchedule(List<MyDataClass> myDataList, int[][][] intervalArrayInt, int i, int j, int x, String desiredDateString) {
+    private void checkSchedule(List<MyDataClass> myDataList, int[][][] intervalArrayInt, int i, int j, int x, String desiredDateString, String[] homeVisitDaysString) {
         //保護者の希望時間の開始と終了の間にまだ保護者の割り当てがされていないスケジュールの空き時間があるかの判定
         if (intervalArrayInt[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArrayInt[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArrayInt[x][j][1] == 0) {
             intervalArrayInt[x][j][1] += 1;//その時間が割り当て済みでありこと
             myDataList.get(i).setSchedule(Integer.parseInt(desiredDateString.substring(4, 8) + intervalArrayInt[x][j][0]));//スケジュールをmyDataListに入れる(例:6041240(6月4日12時40分))
+            myDataList.get(i).setScheduleDay(homeVisitDaysString[x]);
         }
     }
 
