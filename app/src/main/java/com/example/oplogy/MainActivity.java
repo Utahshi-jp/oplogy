@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,9 +19,13 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -87,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("MainActivity", "geocodeAddress");
 
 
-        //TODO:classIdの初期値を取得
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
@@ -136,9 +140,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
-            fetchDataAndCreateRoute();
-
+            if (isClassIdSet()) {
+                isSetupExists(classId).thenAccept(setupExists -> {
+                    if (setupExists) {
+                        fetchDataAndCreateRoute();
+                    } else {
+                        runOnUiThread(() -> {
+                            Toast.makeText(this, "セットアップが設定されていません", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_SHORT).show();
+                    });
+                    return null;
+                });
+            } else {
+                Toast.makeText(this, "クラスIDが設定されていません", Toast.LENGTH_SHORT).show();
+            }
         }
+
+
         if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
@@ -219,6 +242,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.show();
     }
 
+    private boolean isClassIdSet() {
+    // classIdが0より大きい場合、trueを返す
+    return classId > 0;
+    }
+
+    private CompletableFuture<Boolean> isSetupExists(int classId) {
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        return CompletableFuture.supplyAsync(() -> {
+            AppDatabase db = getDatabaseInstance();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            List<SetUpTable> checkData = setUpTableDao.getAll();
+            for (SetUpTable setUpTable : checkData) {
+                if (setUpTable.classId == classId) {
+                    return true;
+                }
+            }
+            return false;
+        }, executorService).whenComplete((result, throwable) -> executorService.shutdown());
+    }
 
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
@@ -334,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private AppDatabase getDatabaseInstance() {
-        return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+        return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").fallbackToDestructiveMigration().build();
     }
 
 

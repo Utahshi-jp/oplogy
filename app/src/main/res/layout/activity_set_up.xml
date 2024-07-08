@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,9 +22,10 @@
         android:id="@+id/toMain"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_gravity="left"
-        android:layout_marginLeft="10dp"
-        android:src="@drawable/back_button"/>
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/back_button"
+        android:contentDescription="@string/todo" />
 
 
     <TextView
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints=""
-            android:inputType=""
+            android:inputType="text"
             tools:ignore="LabelFor" />
 
     </LinearLayout>
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/startpoint"
             android:autofillHints=""
-            android:inputType=""
+            android:inputType="text"
             tools:ignore="LabelFor" />
 
     </LinearLayout>
@@ -91,7 +91,7 @@
         <TextView
             android:layout_width="90sp"
             android:layout_height="wrap_content"
-            android:text="日付設定"
+            android:text="@string/setUpDate"
             android:gravity="center"/>
 
 <!--        <TextView-->
@@ -109,7 +109,7 @@
             android:id="@+id/setFirstDayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1日目"
+            android:hint="@string/firstDay"
             android:layout_marginStart="7sp"
             android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
@@ -118,7 +118,7 @@
             android:id="@+id/setSecondDayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2日目"
+            android:hint="@string/secondDay"
             android:layout_marginStart="7sp"
             android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
@@ -127,7 +127,7 @@
             android:id="@+id/setThirdDayButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3日目"
+            android:hint="@string/threeDay"
             android:layout_marginStart="7sp"
             android:layout_marginEnd="7sp"
             tools:ignore="DuplicateIds" />
@@ -151,7 +151,7 @@
             android:id="@+id/startTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="未設定"
+            android:hint="@string/notSetUp"
             android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
@@ -186,7 +186,7 @@
             android:id="@+id/endTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="未設定"
+            android:hint="@string/notSetUp"
             android:textSize="20sp"
             android:textAlignment="center"
             android:autofillHints=""
