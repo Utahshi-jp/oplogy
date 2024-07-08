@@ -1,6 +1,7 @@
 package com.example.oplogy;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
@@ -23,8 +24,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 //保護者の希望とSetUpActivityによって設定された情報をもとにスケジュールとルートを作成する
-public class CreateRoot {
+public class CreateSchedule {
     MyDataClass data;//Firestoreから受け取ったdataを入れる変数
+
+    String startPointString;//家庭訪問の開始地点
     String startTimeHomeVisitString;//家庭訪問の開始時間
     String endTimeHomeVisitString;//家庭訪問の終了時間
     String intervalTimeString;//家庭訪問の一家庭当たりの時間
@@ -41,14 +44,23 @@ public class CreateRoot {
 
     boolean notSecondDuplicatesBoolean = true;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
 
-    String[] testdata = {"20240604", "20240605", "20240606"};
+    String[] date;
 
-    public CreateRoot(AppCompatActivity activity) {
+
+    public CreateSchedule(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("visitingDate", Context.MODE_PRIVATE);
+
+        String firstDay = sharedPreferences.getString("day1", null);
+        String secondDay = sharedPreferences.getString("day2", null);
+        String thirdDay = sharedPreferences.getString("day3", null);
+
+        date = new String[]{firstDay, secondDay, thirdDay};
+
     }
 
     //MainActivityからデータを受け取る
-    public Boolean receiveData(List<MyDataClass> myDataList, Context context) {
+    public String receiveData(List<MyDataClass> myDataList, Context context) {
 
         //myDataListの要素data第一希望日と第二希望日に以下を追加する
         //・保護者の希望時間帯の長さ
@@ -92,20 +104,24 @@ public class CreateRoot {
             //スケジュールの重複の確認
             if (!notDuplicatesBoolean) {
                 //第二希望日で同じ処理を行う
-                Log.d("CreateRoot", "第二希望");
+                Log.d("CreateSchedule", "第二希望");
                 secondSetData(myDataList);
                 secondTimeZoneSort(myDataList);
                 notSecondDuplicatesBoolean = secondCreateSchedule(myDataList, intervalArrayInt);
             }
         });
+        //重複がなければ開始地点の緯度経度を返す
         if (notSecondDuplicatesBoolean) {
+            //スケジュールを基準にソートする
             sortSchedule(myDataList);
-            geocodeAddress(myDataList, context);
+            String startPointLatLngString = geocodeAddress(myDataList, context);
+            Log.d("CreateSchedule", "startPointLatLngString" + startPointLatLngString);
             outPutLogSchedule(myDataList);
-            return notSecondDuplicatesBoolean;
+            return startPointLatLngString;
         }
-        Log.d("CreateRoot", "重複によるエラー");
-        return !notSecondDuplicatesBoolean;
+        //重複があるときは""を返す
+        Log.d("CreateSchedule", "重複によるエラー");
+        return "";
     }
 
 
@@ -211,12 +227,12 @@ public class CreateRoot {
 
     private void outPutLogSort(List<MyDataClass> myDataList) {
         for (int i = 0; i < myDataList.size(); i++) {
-            Log.d("CreateRoot", "(index: " + i + ") data: " + myDataList.get(i).getPatronName());
-            Log.d("CreateRoot", "(index: " + i + ") data: " + myDataList.get(i).getClass());
-            Log.d("CreateRoot", "(index: " + i + ") timezone: " + myDataList.get(i).getTimezone());
-            Log.d("CreateRoot", "(index: " + i + ") startDate: " + myDataList.get(i).getStartDateString());
-            Log.d("CreateRoot:outPutLogBeforeSort", "parentStartTimeString: " + myDataList.get(i).getParentStartTimeString());
-            Log.d("CreateRoot:outPutLogBeforeSort", "parentEndTimeString: " + myDataList.get(i).getParentEndTimeString());
+            Log.d("CreateSchedule", "(index: " + i + ") data: " + myDataList.get(i).getPatronName());
+            Log.d("CreateSchedule", "(index: " + i + ") data: " + myDataList.get(i).getClass());
+            Log.d("CreateSchedule", "(index: " + i + ") timezone: " + myDataList.get(i).getTimezone());
+            Log.d("CreateSchedule", "(index: " + i + ") startDate: " + myDataList.get(i).getStartDateString());
+            Log.d("CreateSchedule:outPutLogBeforeSort", "parentStartTimeString: " + myDataList.get(i).getParentStartTimeString());
+            Log.d("CreateSchedule:outPutLogBeforeSort", "parentEndTimeString: " + myDataList.get(i).getParentEndTimeString());
 
         }
     }
@@ -225,6 +241,7 @@ public class CreateRoot {
         // setUpActivityによって入力され、Roomに保存された値を取り出す処理
         //Roomの操作の定義
         SetUpTableDao setUpTableDao = db.setUpTableDao();
+        startPointString = setUpTableDao.getStartPoint();
         startTimeHomeVisitString = setUpTableDao.getStartTime();
         endTimeHomeVisitString = setUpTableDao.getEndTime();
         intervalTimeString = setUpTableDao.getIntervalTime();
@@ -234,11 +251,11 @@ public class CreateRoot {
 
     //Roomからのデータ取得に関するログ
     void outPutLogRoomData() {
-        Log.d("CreateRoot:outPutLogRoomData", "開始時間" + startTimeHomeVisitString);
-        Log.d("CreateRoot:outPutLogRoomData", "終了時刻" + endTimeHomeVisitString);
-        Log.d("CreateRoot:outPutLogRoomData", "一家庭当たりの所要時間" + intervalTimeString);
-        Log.d("CreateRoot:outPutLogRoomData", "休憩開始時刻" + startBreakTimeString);
-        Log.d("CreateRoot:outPutLogRoomData", "休憩終了時刻" + endBreakTimeString);
+        Log.d("CreateSchedule:outPutLogRoomData", "開始時間" + startTimeHomeVisitString);
+        Log.d("CreateSchedule:outPutLogRoomData", "終了時刻" + endTimeHomeVisitString);
+        Log.d("CreateSchedule:outPutLogRoomData", "一家庭当たりの所要時間" + intervalTimeString);
+        Log.d("CreateSchedule:outPutLogRoomData", "休憩開始時刻" + startBreakTimeString);
+        Log.d("CreateSchedule:outPutLogRoomData", "休憩終了時刻" + endBreakTimeString);
     }
 
     private void timeCalculation(String endTimeHomeVisitString, String startBreakTime, String endBreakTime) {
@@ -284,7 +301,7 @@ public class CreateRoot {
 
     private void outPutLogIntervalArray(int[][][] intervalArrayInt) {
         for (int i = 0; i < intervalArrayInt[0].length; i++) {
-            Log.d("CreateRoot", "inteintervalArray:(intex:" + i + ") :" + intervalArrayInt[0][i][0]);
+            Log.d("CreateSchedule", "inteintervalArray:(intex:" + i + ") :" + intervalArrayInt[0][i][0]);
         }
     }
 
@@ -296,7 +313,7 @@ public class CreateRoot {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (testdata[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                    if (date[x].equals(myDataList.get(i).getStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getStartDateString());
                         break;
                     }
@@ -319,7 +336,7 @@ public class CreateRoot {
                 for (int x = 0; x < 3; x++) {
                     //家庭訪問の●日目が保護者の第一希望日かを判定する
                     //まだスケジュールを割り当てていない保護者かを判定する
-                    if (testdata[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
+                    if (date[x].equals(myDataList.get(i).getSecondDayStartDateString()) && myDataList.get(i).getSchedule() == 0) {
                         checkSchedule(myDataList, intervalArrayInt, i, j, x, myDataList.get(i).getSecondDayStartDateString());
                     }
                 }
@@ -349,7 +366,7 @@ public class CreateRoot {
     }
 
 
-    private void geocodeAddress(List<MyDataClass> myDataList, Context context) {
+    private String geocodeAddress(List<MyDataClass> myDataList, Context context) {
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             for (int i = 0; i < myDataList.size(); i++) {
@@ -360,19 +377,35 @@ public class CreateRoot {
                     double latitudeDouble = addressResult.getLatitude();
                     double longitudeDouble = addressResult.getLongitude();
                     //保護者の住所の緯度経度をmyDataListに追加する
-                    myDataList.get(i).setLatLng(new LatLng(latitudeDouble, longitudeDouble));
+                    myDataList.get(i).setLatLngString(String.valueOf(new LatLng(latitudeDouble, longitudeDouble)));
                 }
             }
+            //SetUpで設定した家庭訪問の開始地点を緯度経度に変換
+            String startPointLatLngString = String.valueOf(geocoder.getFromLocationName(startPointString, 1));
+            String[] startPointLatLngArray = startPointLatLngString.split(",");
+            if (startPointLatLngArray.length >= 3) {
+                //[Address[addressLines=[0:"日本、〒510-8102 三重県三重郡朝日町小向８５２−１"],feature=８５２−１,admin=三重県,sub-admin=三重郡,locality=朝日町,thoroughfare=null,postalCode=510-8102,countryCode=JP,countryName=日本,hasLatitude=true,latitude=35.0351632,hasLongitude=true,longitude=136.66538770000003,phone=null,url=null,extras=null]]
+                //というようになっているので配列の後ろから6番目が緯度、4番目が経度
+                //不要なlatitude=とlongitude=を取り除く
+                String latitude = startPointLatLngArray[startPointLatLngArray.length - 6].trim().replace("latitude=", "");
+                String longitude = startPointLatLngArray[startPointLatLngArray.length - 4].trim().replace("longitude=", "");
+                Log.d("CreateSchedule", "Latitude: " + latitude + ", Longitude: " + longitude);
+                // 文字列を結合して形式を整える
+                startPointLatLngString = latitude + "," + longitude;
+                Log.d("CreateSchedule", "startPointLatLngString: " + startPointLatLngString);
+                return startPointLatLngString;
+            }
         } catch (IOException e) {
-            Log.e("CreateRoot", "緯度経度の取得に失敗: " + e);
+            Log.e("CreateSchedule", "緯度経度の取得に失敗: " + e);
         }
+        return null;
     }
 
     private void outPutLogSchedule(List<MyDataClass> myDataList) {
         for (int i = 0; i < myDataList.size(); i++) {
-            Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") data: " + myDataList.get(i));
-            Log.d("CreateRoot:outPutLogSchedule", "(index: " + i + ") Schedule: " + myDataList.get(i).getSchedule());
-            Log.d("CreateRoot", "(index: " + i + ") LatLng" + myDataList.get(i).getLatLng());
+            Log.d("CreateSchedule:outPutLogSchedule", "(index: " + i + ") data: " + myDataList.get(i));
+            Log.d("CreateSchedule:outPutLogSchedule", "(index: " + i + ") Schedule: " + myDataList.get(i).getSchedule());
+            Log.d("CreateSchedule", "(index: " + i + ") LatLng" + myDataList.get(i).getLatLngString());
         }
     }
 }
