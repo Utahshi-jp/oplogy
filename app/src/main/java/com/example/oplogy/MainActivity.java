@@ -2,7 +2,6 @@ package com.example.oplogy;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,17 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -55,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //取得するためのクラスID
     private int classId;
-    private final AppDatabase appDatabase = null;
+    private String address;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
-        Log.d("MainActivity", "geocodeAddress");
+        Log.d("MainActivity","geocodeAddress");
 
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -140,28 +135,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
-            if (isClassIdSet()) {
-                isSetupExists(classId).thenAccept(setupExists -> {
-                    if (setupExists) {
-                        fetchDataAndCreateRoute();
-                    } else {
-                        runOnUiThread(() -> {
-                            Toast.makeText(this, "セットアップが設定されていません", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }).exceptionally(ex -> {
-                    ex.printStackTrace();
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_SHORT).show();
-                    });
-                    return null;
-                });
-            } else {
-                Toast.makeText(this, "クラスIDが設定されていません", Toast.LENGTH_SHORT).show();
-            }
+            fetchDataAndCreateRoute();
+
         }
-
-
         if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
             fetchDataAndCreateRoute();
@@ -181,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //IDに関する処理
+    //UUIDを表示するかのダイアログ
     private void showUUIDYesNoDialog() {
         firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
         List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
@@ -189,77 +165,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("クラスID");
-        builder.setMessage("あなたのクラスIDを表示/もしくは新規で作成しますか？");
+        builder.setMessage("あなたのクラスIDを表示しますか？");
 
-        builder.setPositiveButton("作成", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 classId = CreateUUID.generateUUID(classIdList);
-                // 生成されたクラスIDを表示するメソッド
-                showClassIdDialog("生成されたクラスID",classId);
+                Toast.makeText(MainActivity.this, "クラスID: " + classId, Toast.LENGTH_SHORT).show();
+                imageUuid.setImageResource(R.drawable.checked_image);
             }
         });
-        builder.setNegativeButton("表示", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //roomを扱うため非同期処理
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(() -> {
-                    // 現在のクラスIDを取得
-                    int currentClassId = getCurrentClassIdFromRoom();
-                    runOnUiThread(() -> {
-                        // 現在のクラスIDを表示するダイアログ
-                        showClassIdDialog("現在のクラスID",currentClassId);
-                    });
-                });
-                executor.shutdown();
+                Log.d("DialogNO", "DialogでNoが選ばれました");
+                imageUuid.setImageResource(R.drawable.checked_image);
             }
         });
 
         alertDialog = builder.create();
         alertDialog.show();
 
-    }
-    private int getCurrentClassIdFromRoom() {
-        AppDatabase db = getDatabaseInstance();
-        SetUpTableDao setUpTableDao = db.setUpTableDao();
-
-        // 現在のクラスIDを取得
-        return setUpTableDao.getClassId();
-    }
-    //クラスIDを表示するダイアログ
-    private void showClassIdDialog(String title, int classId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage("クラスID: " + classId);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private boolean isClassIdSet() {
-    // classIdが0より大きい場合、trueを返す
-    return classId > 0;
-    }
-
-    private CompletableFuture<Boolean> isSetupExists(int classId) {
-        final ExecutorService executorService = Executors.newSingleThreadExecutor();
-        return CompletableFuture.supplyAsync(() -> {
-            AppDatabase db = getDatabaseInstance();
-            SetUpTableDao setUpTableDao = db.setUpTableDao();
-            List<SetUpTable> checkData = setUpTableDao.getAll();
-            for (SetUpTable setUpTable : checkData) {
-                if (setUpTable.classId == classId) {
-                    return true;
-                }
-            }
-            return false;
-        }, executorService).whenComplete((result, throwable) -> executorService.shutdown());
     }
 
     //ルート作成の非同期処理
@@ -317,15 +243,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
             final List<MyDataClass> finalMyDataList = myDataList;
-            CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
-            String  startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
+            CreateRoot createRoot = new CreateRoot(MainActivity.this);
+            Boolean notDuplicates = createRoot.receiveData(finalMyDataList, getApplicationContext());
 
             runOnUiThread(() -> {
-                if ( !startPointLatLngString.equals("")) {
+                if (notDuplicates) {
                     Log.d("MainActivity", "スケジュール作成成功");
-                    saveMyDataList(finalMyDataList);
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
-                    toRoot.putExtra("startPointLatLngString", startPointLatLngString);
                     startActivity(toRoot);
                 } else {
                     //保護者の重複による警告ダイアログ
@@ -336,19 +260,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // createRouteの最後にexecutorをシャットダウン
             executor.shutdown();
         });
-    }
-    private void saveMyDataList(List<MyDataClass> myDataList) {
-        // 共有プリファレンスのインスタンスを取得
-        SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        // MyDataListをJSON形式に変換
-        Gson gson = new Gson();
-        String json = gson.toJson(myDataList);
-
-        // JSON形式のデータを共有プリファレンスに保存
-        editor.putString("myDataList", json);
-        editor.apply();
     }
 
     private void showErrorDialog(List<MyDataClass> myDataList) {
@@ -376,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private AppDatabase getDatabaseInstance() {
-        return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").fallbackToDestructiveMigration().build();
+        return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
     }
 
 

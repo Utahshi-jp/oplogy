@@ -1,5 +1,4 @@
 package com.example.oplogy;
-
 import androidx.room.TypeConverter;
 
 import com.google.firebase.Timestamp;

@@ -1,5 +1,6 @@
 package com.example.oplogy;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class MyDataClass {
     private Long secondDayTimezoneLong;
     private String secondDayParentStartTimeString;
     private String secondDayParentEndTimeString;
-    private String latLngString;
+    private LatLng latLng;
 
 
     public MyDataClass(String patronName, int classId, List<String> address, List<Timestamp> firstDay, int studentNumber, String childName, List<Timestamp> thirdDay, List<Timestamp> secondDay) {
@@ -238,11 +239,11 @@ public class MyDataClass {
         return secondDayStartDateString;
     }
 
-    public void setLatLngString(String latLng) {
-        this.latLngString = latLng;
+    public void setLatLng(LatLng latLng) {
+        this.latLng=latLng;
     }
 
-    public String getLatLngString() {
-        return latLngString;
+    public LatLng getLatLng() {
+        return latLng;
     }
 }

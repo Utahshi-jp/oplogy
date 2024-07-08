@@ -72,6 +72,11 @@
     </LinearLayout>
 
 
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"/>
+
 
 <!--    ルート表示のレイアウト-->
     <LinearLayout
@@ -101,11 +106,6 @@
             android:gravity="left"
             android:layout_gravity="center"/>
     </LinearLayout>
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"/>
 
 
 <!--    提出状況のレイアウト-->

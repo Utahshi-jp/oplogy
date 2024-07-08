@@ -1,11 +1,13 @@
 package com.example.oplogy;
 
-import android.os.Bundle;
-import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Bundle;
+import android.widget.ImageView;
+
+import com.example.oplogy.databinding.SubmissionBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class SubmissionActivity extends AppCompatActivity {
 
 
         // インテントから提出状況の生徒の数を取得
-        studentNumbers = getIntent().getIntegerArrayListExtra("submissionStudents");
+        studentNumbers=getIntent().getIntegerArrayListExtra("submissionStudents");
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -40,7 +42,6 @@ public class SubmissionActivity extends AppCompatActivity {
         // 生徒のリストを取得
         fetchStudents();
     }
-
     private void fetchStudents() {
         // インテントから生徒のリストを取得
         ArrayList<SubmissionStudent> submissionStudents = getIntent().getParcelableArrayListExtra("submissionStudents");
