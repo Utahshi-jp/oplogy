@@ -225,6 +225,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.show();
     }
 
+
+
+
+
     //ルート作成の前チェックを行う処理
     private void checkSetupAndCreateRoute() {
         if (isClassIdSet()) {
@@ -233,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     fetchDataAndCreateRoute();
                 } else {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "セットアップが設定されていません", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "先にセットアップを済ませてください", Toast.LENGTH_SHORT).show();
                     });
                 }
             }).exceptionally(ex -> {
@@ -244,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return null;
             });
         } else {
-            Toast.makeText(this, "クラスIDが設定されていません", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "先にIDの作成を行ってください", Toast.LENGTH_SHORT).show();
         }
     }
     // クラスIDが設定されているかどうかを判定
@@ -272,6 +276,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }, executorService).whenComplete((result, throwable) -> executorService.shutdown());
     }
 
+
+
+
+
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -296,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // `fetchDataAndCreateRoute`メソッド内では、shutdownを呼び出さない
     }
 
+    //人数が足りないときに表示するダイアログ
     private void showRouteCreationDialog() {
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
@@ -312,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
+    //ルート作成の非同期処理
     private void createRoute(ExecutorService executor) {
         executor.execute(() -> {
             List<MyDataClass> myDataList = null;
