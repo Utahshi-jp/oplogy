@@ -5,8 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,12 +41,11 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
     private GoogleMap mMap;
     private MapsBinding binding;
     private LinearLayout locationsName;
-
+    private Spinner date;
     private static final int[] COLORS = new int[]{
             Color.BLUE, Color.RED, Color.GREEN, Color.MAGENTA, Color.CYAN, Color.YELLOW
     };
     private int colorIndex = 0;
-
     private List<LatLng> latLngList = new ArrayList<>();
     private List<String> nameList = new ArrayList<>();
     private List<Integer> colorList = new ArrayList<>();
@@ -63,27 +65,68 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         backMain.setOnClickListener(this);
 
         locationsName = findViewById(R.id.locationsName);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.add("6月3日");
+        adapter.add("6月4日");
+        adapter.add("6月5日");
+        date = findViewById(R.id.date);
+        date.setAdapter(adapter);
+
+        date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = (String) parent.getItemAtPosition(position);
+                if (selectedItem.equals("6月4日")) {
+                    secondMapAndNames();
+                } else if (selectedItem.equals("6月5日")) {
+                    thildMapAndNames();
+                } else {
+                    firstMapAndNames();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
     }
 
-
-    // 書くところはここのみです。後は触らなくて大丈夫です。
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
+        firstMapAndNames();
+    }
 
-        // ここに緯度と経度を入れてください「/」で区切って取得する処理となっています
+    private void firstMapAndNames() {
         String locationData = "35.09050879999539,136.87845379325216/35.091950716938875,136.8826598363985/35.09273643623442,136.88154941341296/35.09473643623442,136.88154941341296/35.09673643623442,136.88154941341296";
-        // ここに名前等いれたい情報を乗せてください。
         String nameData = "名古屋港水族館/2番目/3番目/4番目/5番目";
-
         loadMapAndNames(locationData, nameData);
     }
 
+    private void secondMapAndNames() {
+        String locationData2 = "35.09050879999539,136.87845379325216/35.091950716938875,136.8826598363985/35.09273643623442,136.88154941341296";
+        String nameData2 = "名古屋港水族館/2番目/3番目";
+        loadMapAndNames(locationData2, nameData2);
+    }
 
-    // 名前入力の処理
+    private void thildMapAndNames() {
+        String locationData3 = "35.09050879999539,136.87845379325216/35.091950716938875,136.8826598363985";
+        String nameData3 = "名古屋港水族館/2番目";
+        loadMapAndNames(locationData3, nameData3);
+    }
+
     private void loadMapAndNames(String locationData, String nameData) {
         try {
+            latLngList.clear();
+            nameList.clear();
+            colorList.clear();
+            locationsName.removeAllViews();
+            mMap.clear();
+
             String[] locArray = locationData.split("/");
             String[] nameArray = nameData.split("/");
 
@@ -115,7 +158,6 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         }
     }
 
-    //ルート表示の処理（APIがちゃんと作動している時に動く所です）
     private void drawRoute() {
         new Thread(() -> {
             try {
@@ -146,7 +188,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
                 }
                 br.close();
 
-                Log.d("Maps", "API response: " + jsonResults.toString()); // APIレスポンス全体をログに記録
+                Log.d("Maps", "API response: " + jsonResults.toString());
 
                 JsonObject jsonObject = new Gson().fromJson(jsonResults.toString(), JsonObject.class);
                 JsonArray routes = jsonObject.getAsJsonArray("routes");
@@ -158,11 +200,8 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
                     Log.d("Maps", "Polyline points: " + points);
 
-                    runOnUiThread(() -> {
-                        mMap.addPolyline(new PolylineOptions().addAll(points).width(5).color(Color.BLUE));
-                    });
+                    runOnUiThread(() -> mMap.addPolyline(new PolylineOptions().addAll(points).width(5).color(Color.BLUE)));
                 } else {
-                    // エラーが発生した場合の処理
                     JsonPrimitive errorMessage = jsonObject.getAsJsonPrimitive("error_message");
                     if (errorMessage != null) {
                         Log.e("Maps", "Error: " + errorMessage.getAsString());
@@ -170,7 +209,6 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
                         Log.e("Maps", "No routes found and no error message provided");
                     }
                 }
-
             } catch (Exception e) {
                 Log.e("Maps", "Error drawing route", e);
             }
@@ -209,8 +247,6 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         return poly;
     }
 
-
-    // マップのピン等に入れる色の処理
     private float getHueFromColor(int color) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
@@ -228,8 +264,6 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         }
     }
 
-
-    // ScrollViewのTextViewの中の処理（名前や、色等）
     private void addLocationToScrollView(String locationName, int color) {
         runOnUiThread(() -> {
             try {
@@ -256,14 +290,12 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         });
     }
 
-    //色の重複（赤・赤等を避ける）処理
     private int getNextColor() {
         int color = COLORS[colorIndex];
         colorIndex = (colorIndex + 1) % COLORS.length;
         return color;
     }
 
-    //クリックしたらメイン画面に戻ります
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.BackMain) {
@@ -271,8 +303,6 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         }
     }
 
-
-    //マップのピンをクリックしたときの処理
     @Override
     public boolean onMarkerClick(Marker marker) {
         String locationName = (String) marker.getTag();

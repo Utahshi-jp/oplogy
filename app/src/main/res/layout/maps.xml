@@ -20,15 +20,14 @@
             android:layout_width="40dp"
             android:layout_height="90dp"
             android:src="@drawable/back_button"
-            android:layout_weight="5" />
+            android:layout_weight="4" />
 
-        <TextView
+        <Spinner
             android:id="@+id/date"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:hint="今日の日付"
-            android:textSize="40dp" />
+            android:layout_height="60dp"
+            android:layout_weight="5"
+            android:textSize="50dp" />
     </LinearLayout>
 
     <fragment
