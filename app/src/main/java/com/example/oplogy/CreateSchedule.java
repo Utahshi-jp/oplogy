@@ -382,8 +382,19 @@ public class CreateSchedule {
             }
             //SetUpで設定した家庭訪問の開始地点を緯度経度に変換
             String startPointLatLngString = String.valueOf(geocoder.getFromLocationName(startPointString, 1));
-            Log.d("CreateSchedule", "startPointLatLngString" + startPointLatLngString);
-            return startPointLatLngString;
+            String[] startPointLatLngArray = startPointLatLngString.split(",");
+            if (startPointLatLngArray.length >= 3) {
+                //[Address[addressLines=[0:"日本、〒510-8102 三重県三重郡朝日町小向８５２−１"],feature=８５２−１,admin=三重県,sub-admin=三重郡,locality=朝日町,thoroughfare=null,postalCode=510-8102,countryCode=JP,countryName=日本,hasLatitude=true,latitude=35.0351632,hasLongitude=true,longitude=136.66538770000003,phone=null,url=null,extras=null]]
+                //というようになっているので配列の後ろから6番目が緯度、4番目が経度
+                //不要なlatitude=とlongitude=を取り除く
+                String latitude = startPointLatLngArray[startPointLatLngArray.length - 6].trim().replace("latitude=", "");
+                String longitude = startPointLatLngArray[startPointLatLngArray.length - 4].trim().replace("longitude=", "");
+                Log.d("CreateSchedule", "Latitude: " + latitude + ", Longitude: " + longitude);
+                // 文字列を結合して形式を整える
+                startPointLatLngString = latitude + "," + longitude;
+                Log.d("CreateSchedule", "startPointLatLngString: " + startPointLatLngString);
+                return startPointLatLngString;
+            }
         } catch (IOException e) {
             Log.e("CreateSchedule", "緯度経度の取得に失敗: " + e);
         }
