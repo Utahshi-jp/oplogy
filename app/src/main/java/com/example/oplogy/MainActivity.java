@@ -141,31 +141,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        ルート作成のクリック処理
         if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
-            if (isClassIdSet()) {
-                isSetupExists(classId).thenAccept(setupExists -> {
-                    if (setupExists) {
-                        fetchDataAndCreateRoute();
-                    } else {
-                        runOnUiThread(() -> {
-                            Toast.makeText(this, "セットアップが設定されていません", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }).exceptionally(ex -> {
-                    ex.printStackTrace();
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_SHORT).show();
-                    });
-                    return null;
-                });
-            } else {
-                Toast.makeText(this, "クラスIDが設定されていません", Toast.LENGTH_SHORT).show();
-            }
+            checkSetupAndCreateRoute();
         }
 
 
         if (view == imageRoot) {
             imageRoot.setImageResource(R.drawable.pin);
-            fetchDataAndCreateRoute();
+            checkSetupAndCreateRoute();
         }
 //        提出状況のクリック処理
         if (view == submission) {
@@ -243,6 +225,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.show();
     }
 
+    //ルート作成の前チェックを行う処理
+    private void checkSetupAndCreateRoute() {
+        if (isClassIdSet()) {
+            isSetupExists(classId).thenAccept(setupExists -> {
+                if (setupExists) {
+                    fetchDataAndCreateRoute();
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "セットアップが設定されていません", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }).exceptionally(ex -> {
+                ex.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_SHORT).show();
+                });
+                return null;
+            });
+        } else {
+            Toast.makeText(this, "クラスIDが設定されていません", Toast.LENGTH_SHORT).show();
+        }
+    }
     // クラスIDが設定されているかどうかを判定
     private boolean isClassIdSet() {
     // classIdが0より大きい場合、trueを返す
