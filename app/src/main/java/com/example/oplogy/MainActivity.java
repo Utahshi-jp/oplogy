@@ -243,23 +243,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.show();
     }
 
+    // クラスIDが設定されているかどうかを判定
     private boolean isClassIdSet() {
     // classIdが0より大きい場合、trueを返す
     return classId > 0;
     }
 
+    // セットアップが存在するかどうかを判定
     private CompletableFuture<Boolean> isSetupExists(int classId) {
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
             AppDatabase db = getDatabaseInstance();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
+            //データベースの値を全取得
             List<SetUpTable> checkData = setUpTableDao.getAll();
             for (SetUpTable setUpTable : checkData) {
+                //SetUpTableのclassIdと引数のclassIdが一致する場合、trueを返す
                 if (setUpTable.classId == classId) {
                     return true;
                 }
             }
             return false;
+            //処理完了時にexecutorServiceをシャットダウン
         }, executorService).whenComplete((result, throwable) -> executorService.shutdown());
     }
 
@@ -375,6 +380,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    //Room作成のメソッド
     private AppDatabase getDatabaseInstance() {
         return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").fallbackToDestructiveMigration().build();
     }
