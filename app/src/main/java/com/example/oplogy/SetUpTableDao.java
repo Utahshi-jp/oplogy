@@ -1,4 +1,5 @@
 package com.example.oplogy;
+
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -10,6 +11,7 @@ import java.util.List;
 public interface SetUpTableDao {
     @Insert
     void insertAll(SetUpTable... setUpTables);
+
     //更新処理
     @Update
     void update(SetUpTable setUpTable);
@@ -18,6 +20,7 @@ public interface SetUpTableDao {
     //削除処理
     @Query("DELETE FROM SetUpTable")
     void deleteAll();
+
     //全件取得
     @Query("SELECT * FROM SetUpTable")
     List<SetUpTable> getAll();
@@ -27,19 +30,30 @@ public interface SetUpTableDao {
 
     @Query("SELECT totalStudent FROM SetUpTable")
     int getTotalStudent();
+
     //開始時間と終了時間の取得
     @Query("SELECT startTime FROM SetUpTable")
     String getStartTime();
+
     @Query("SELECT endTime FROM SetUpTable")
     String getEndTime();
+
     //教師名の取得
     @Query("SELECT intervalTime FROM SetUpTable")
     String getIntervalTime();
+
     @Query("SELECT StartBreakTime FROM SetUpTable")
     String getStartBreakTime();
+
     @Query("SELECT EndBreakTime FROM SetUpTable")
     String getEndBreakTime();
+
     //クラスIDの取得
     @Query("SELECT classId FROM SetUpTable")
     int getClassId();
+
+    @Query("SELECT startPoint FROM setuptable")
+    String getStartPoint();
+
+
 }

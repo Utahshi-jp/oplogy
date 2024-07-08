@@ -22,7 +22,7 @@ public class CreateUUID {
                 InsertClassIdforFirebase insertClassIdforFirebase = new InsertClassIdforFirebase();
                 insertClassIdforFirebase.insertClassId(uuid);
                 //テスト用
-                uuid=100;
+                uuid = 100;
                 return uuid;
             }
         }

@@ -239,7 +239,7 @@ public class MyDataClass {
     }
 
     public void setLatLngString(String latLng) {
-        this.latLngString=latLng;
+        this.latLngString = latLng;
     }
 
     public String getLatLngString() {

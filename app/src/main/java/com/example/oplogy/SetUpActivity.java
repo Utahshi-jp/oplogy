@@ -67,14 +67,13 @@ public class SetUpActivity extends FragmentActivity
     Button setEndTimeButton;
 
 
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
 
-        int classId= getIntent().getIntExtra("classId", 100000);
+        int classId = getIntent().getIntExtra("classId", 100000);
 
         setTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         setStartPoint = findViewById(R.id.startPoint);                      //開始地点
@@ -104,7 +103,7 @@ public class SetUpActivity extends FragmentActivity
         Button reset = findViewById(R.id.resetButton);
 
         toMain.setOnClickListener(view -> {
-            Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
+            Intent intent = new Intent(SetUpActivity.this, MainActivity.class); //main画面へ戻る処理
             startActivity(intent);
         });
 
@@ -119,7 +118,7 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Third Day:" + thirdDay);
             Log.d(TAG, "Start Time" + startTime);
             Log.d(TAG, "End Time" + endTime);
-            if (setTenMinute.isChecked()){                    //ラジオボタンの状態を取得
+            if (setTenMinute.isChecked()) {                    //ラジオボタンの状態を取得
                 intervalTime = "10";
             } else if (setFifteenMinute.isChecked()) {
                 intervalTime = "15";
@@ -172,12 +171,12 @@ public class SetUpActivity extends FragmentActivity
                     runOnUiThread(() -> Toast.makeText(SetUpActivity.this, "登録しました", Toast.LENGTH_SHORT).show());
                 }
                 //家庭訪問日を保存する共有プリファレンス
-                SharedPreferences sharedPreferences=getSharedPreferences("visitingDate",MODE_PRIVATE);
-                SharedPreferences.Editor editor= sharedPreferences.edit();
+                SharedPreferences sharedPreferences = getSharedPreferences("visitingDate", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                editor.putString("day1",firstDay);
-                editor.putString("day2",secondDay);
-                editor.putString("day3",thirdDay);
+                editor.putString("day1", firstDay);
+                editor.putString("day2", secondDay);
+                editor.putString("day3", thirdDay);
 
                 editor.apply();
 
@@ -186,17 +185,17 @@ public class SetUpActivity extends FragmentActivity
 
         });
 
-        setFirstDay.setOnClickListener(v ->{
+        setFirstDay.setOnClickListener(v -> {
             isDateSelected = 1;
             showDatePickerDialog(); //DatePickerの表示
         });
 
-        setSecondDay.setOnClickListener(v ->{
+        setSecondDay.setOnClickListener(v -> {
             isDateSelected = 2;
             showDatePickerDialog();
         });
 
-        setThirdDay.setOnClickListener(v ->{
+        setThirdDay.setOnClickListener(v -> {
             isDateSelected = 3;
             showDatePickerDialog();
         });
@@ -245,7 +244,7 @@ public class SetUpActivity extends FragmentActivity
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) { //Dateを成形する
         // DatePickerDialogで選択された日付を処理する
-        String str = String.format(Locale.JAPAN, "%02d/%02d",  month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
+        String str = String.format(Locale.JAPAN, "%02d/%02d", month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
 
         if (isDateSelected == 1) {
             stringYear = String.valueOf(year);                                          //年
@@ -291,7 +290,7 @@ public class SetUpActivity extends FragmentActivity
         } else if (isStartTimeSelected == 3) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
-            startBreakTime =stringHourOfDay + stringMinute;
+            startBreakTime = stringHourOfDay + stringMinute;
             setStartBreakTime.setText("　" + str + "　");
 
         } else if (isStartTimeSelected == 4) {
