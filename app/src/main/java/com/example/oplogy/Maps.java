@@ -44,9 +44,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
     ImageView backMain;
     private GoogleMap mMap;
-    private MapsBinding binding;
     private LinearLayout locationsName;
-    private Spinner dateSpinner;
     //GoogleMapAPiで使用可能な色
     private static final int[] COLORS = new int[]{Color.parseColor("#007FFF"), // HUE_AZURE
             Color.parseColor("#0000FF"), // HUE_BLUE
@@ -60,20 +58,18 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             Color.parseColor("#FFFF00") // HUE_YELLOW
     };
     private int colorIndex = 0;
-    private List<LatLng> latLngList = new ArrayList<>();
-    private List<String> nameList = new ArrayList<>();
-    private List<Integer> colorList = new ArrayList<>();
+    private final List<LatLng> latLngList = new ArrayList<>();
+    private final List<String> nameList = new ArrayList<>();
+    private final List<Integer> colorList = new ArrayList<>();
 
-    private Map<String, Runnable> dateMap = new HashMap<>();
-
-    private AppDatabase db = null;
+    private final Map<String, Runnable> dateMap = new HashMap<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // バインディングの設定
-        binding = MapsBinding.inflate(getLayoutInflater());
+        com.example.oplogy.databinding.MapsBinding binding = MapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // マップフラグメントの設定
@@ -103,7 +99,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             dateMap.put(formattedDayString, () -> loadMapAndNames(createlocationData(finalI), getscrollViewlData(finalI)));
         }
 
-        dateSpinner = findViewById(R.id.date);
+        Spinner dateSpinner = findViewById(R.id.date);
         dateSpinner.setAdapter(adapter);
 
         // スピナーのアイテム選択リスナーを設定

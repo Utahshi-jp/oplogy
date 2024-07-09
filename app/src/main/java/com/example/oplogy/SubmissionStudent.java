@@ -3,16 +3,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class SubmissionStudent implements Parcelable {
-    private int studentNumber;
+    private int studentNumberInt;
     private boolean submitted;
 
     public SubmissionStudent(int studentNumber, boolean submitted) {
-        this.studentNumber = studentNumber;
+        this.studentNumberInt = studentNumber;
         this.submitted = submitted;
     }
 
     protected SubmissionStudent(Parcel in) {
-        studentNumber = in.readInt();
+        studentNumberInt = in.readInt();
         submitted = in.readByte() != 0;
     }
 
@@ -29,7 +29,7 @@ public class SubmissionStudent implements Parcelable {
     };
 
     public int getStudentNumber() {
-        return studentNumber;
+        return studentNumberInt;
     }
 
     public boolean isSubmitted() {
@@ -43,7 +43,7 @@ public class SubmissionStudent implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(studentNumber);
+        parcel.writeInt(studentNumberInt);
         parcel.writeByte((byte) (submitted ? 1 : 0));
     }
 }

@@ -195,12 +195,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         executor.execute(() -> {
             AppDatabase db = getDatabaseInstance();            SetUpTableDao setUpTableDao = db.setUpTableDao();
-            int totalStudent = setUpTableDao.getTotalStudent();
-            int myDataListSize = firestoreReception.getMyDataListSize();
+            int totalStudentInt = setUpTableDao.getTotalStudent();
+            int myDataListSizeInt = firestoreReception.getMyDataListSize();
 
             //総生徒数と提出済みになっている生徒の数が一致するかの確認
             runOnUiThread(() -> {
-                if (totalStudent != myDataListSize) {
+                if (totalStudentInt != myDataListSizeInt) {
                     //未提出者がいることの警告ダイアログ
                     showRouteCreationDialog();
                 } else {
@@ -271,10 +271,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // MyDataListをJSON形式に変換
         Gson gson = new Gson();
-        String json = gson.toJson(myDataList);
+        String jsonString = gson.toJson(myDataList);
 
         // JSON形式のデータを共有プリファレンスに保存
-        editor.putString("myDataList", json);
+        editor.putString("myDataList", jsonString);
         editor.apply();
     }
 
@@ -320,17 +320,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // 1. Roomデータベースから全生徒数を取得
             AppDatabase db = getDatabaseInstance();
             SetUpTableDao setUpTableDao = db.setUpTableDao();
-            int totalStudent = setUpTableDao.getTotalStudent();
+            int totalStudentInt = setUpTableDao.getTotalStudent();
             // 2. Firestoreから生徒番号のリストを取得
-            ArrayList<Integer> firestoreStudentNumbers = new ArrayList<>();
+            ArrayList<Integer> firestoreStudentNumbersList = new ArrayList<>();
             for (MyDataClass myData : myDataList) {
-                int studentNumber = myData.getStudentNumber();
-                firestoreStudentNumbers.add(studentNumber);
+                int studentNumberInt = myData.getStudentNumber();
+                firestoreStudentNumbersList.add(studentNumberInt);
             }
 
             // 3. SubmissionStudentオブジェクトのリストを作成
-            for (int i = 1; i <= totalStudent; i++) {
-                boolean submitted = firestoreStudentNumbers.contains(i);
+            for (int i = 1; i <= totalStudentInt; i++) {
+                boolean submitted = firestoreStudentNumbersList.contains(i);
                 submissionStudents.add(new SubmissionStudent(i, submitted));
             }
 
