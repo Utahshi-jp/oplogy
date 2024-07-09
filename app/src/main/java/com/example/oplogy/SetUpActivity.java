@@ -2,10 +2,11 @@ package com.example.oplogy;
 
 import static android.content.ContentValues.TAG;
 
-
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
@@ -44,6 +45,16 @@ public class SetUpActivity extends FragmentActivity
     String startBreakTime;
     String endBreakTime;
     int totalStudent;
+    String stringYear;
+    String stringMonth;
+    String stringDayOfMonth;
+    String stringHourOfDay;
+    String stringMinute;
+    Button buttonFirstDay;
+    Button buttonSecondDay;
+    Button buttonThirdDay;
+    Button buttonStartTimeButton;
+    Button buttonEndTimeButton;
     private TextView textViewTeacherName;
     private TextView textViewStartPoint;
     private TextView textViewStartTime;
@@ -54,29 +65,13 @@ public class SetUpActivity extends FragmentActivity
     private int intIsDateSelected;
     private int intIsStartTimeSelected;
 
-    String stringYear;
-    String stringMonth;
-    String stringDayOfMonth;
-
-
-    String stringHourOfDay;
-    String stringMinute;
-
-    Button buttonFirstDay;
-    Button buttonSecondDay;
-    Button buttonThirdDay;
-    Button buttonStartTimeButton;
-    Button buttonEndTimeButton;
-
-
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
 
-        int classId= getIntent().getIntExtra("classId", 100000);
+        int classId = getIntent().getIntExtra("classId", 100000);
 
         textViewTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         textViewStartPoint = findViewById(R.id.startPoint);                      //開始地点
@@ -106,9 +101,12 @@ public class SetUpActivity extends FragmentActivity
         Button reset = findViewById(R.id.resetButton);
 
         toMain.setOnClickListener(view -> {
-            Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
+            Intent intent = new Intent(SetUpActivity.this, MainActivity.class); //main画面へ戻る処理
             startActivity(intent);
         });
+
+        //SetUpTableに情報があった場合、それをeditTextに表示するメソッド
+        showLoadDataYesNoDialog();
 
         setUp.setOnClickListener(view -> {
 
@@ -121,7 +119,7 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Third Day:" + thirdDay);
             Log.d(TAG, "Start Time" + startTime);
             Log.d(TAG, "End Time" + endTime);
-            if (radioButtonTenMinute.isChecked()){                    //ラジオボタンの状態を取得
+            if (radioButtonTenMinute.isChecked()) {                    //ラジオボタンの状態を取得
                 intervalTime = "10";
             } else if (radioButtonFifteenMinute.isChecked()) {
                 intervalTime = "15";
@@ -189,13 +187,13 @@ public class SetUpActivity extends FragmentActivity
                     runOnUiThread(() -> Toast.makeText(SetUpActivity.this, "登録しました", Toast.LENGTH_SHORT).show());
                 }
                 //家庭訪問日を保存する共有プリファレンス
-                SharedPreferences sharedPreferences=getSharedPreferences("visitingDate",MODE_PRIVATE);
-                SharedPreferences.Editor editor= sharedPreferences.edit();
+                SharedPreferences sharedPreferences = getSharedPreferences("visitingDate", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 //editorに値を渡す
-                editor.putString("day1",firstDay);  //1日目
-                editor.putString("day2",secondDay); //2日目
-                editor.putString("day3",thirdDay);  //3日目
+                editor.putString("day1", firstDay);  //1日目
+                editor.putString("day2", secondDay); //2日目
+                editor.putString("day3", thirdDay);  //3日目
 
                 editor.apply();
 
@@ -205,17 +203,17 @@ public class SetUpActivity extends FragmentActivity
         });
 
         //DatePicker用
-        buttonFirstDay.setOnClickListener(v ->{
+        buttonFirstDay.setOnClickListener(v -> {
             intIsDateSelected = 1;  //ボタンの判別（Date）
             showDatePickerDialog(); //DatePickerの表示
         });
 
-        buttonSecondDay.setOnClickListener(v ->{
+        buttonSecondDay.setOnClickListener(v -> {
             intIsDateSelected = 2;
             showDatePickerDialog();
         });
 
-        buttonThirdDay.setOnClickListener(v ->{
+        buttonThirdDay.setOnClickListener(v -> {
             intIsDateSelected = 3;
             showDatePickerDialog();
         });
@@ -267,7 +265,7 @@ public class SetUpActivity extends FragmentActivity
             endTime = "";
             intervalTime = "";
             startBreakTime = "";
-            endBreakTime ="" ;
+            endBreakTime = "";
 
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -282,7 +280,7 @@ public class SetUpActivity extends FragmentActivity
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) { //Dateを成形する
         // DatePickerDialogで選択された日付を処理する
-        String str = String.format(Locale.JAPAN, "%02d/%02d",  month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
+        String str = String.format(Locale.JAPAN, "%02d/%02d", month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
 
         if (intIsDateSelected == 1) {
             stringYear = String.valueOf(year);                                          //年
@@ -329,7 +327,7 @@ public class SetUpActivity extends FragmentActivity
         } else if (intIsStartTimeSelected == 3) {
             stringHourOfDay = String.format("%02d", hourOfDay);
             stringMinute = String.format("%02d", minute);
-            startBreakTime =stringHourOfDay + stringMinute;
+            startBreakTime = stringHourOfDay + stringMinute;
             textViewStartBreakTime.setText("　" + str + "　");
 
         } else if (intIsStartTimeSelected == 4) {
@@ -350,4 +348,48 @@ public class SetUpActivity extends FragmentActivity
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
+    private void showLoadDataYesNoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("データの読み込み");
+        builder.setMessage("SetUpテーブルからデータを読み込みますか？");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                loadSetupData();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void loadSetupData() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            String teacherName = setUpTableDao.getTeacherName();
+            String startPoint = setUpTableDao.getStartPoint();
+            int totalStudent = setUpTableDao.getTotalStudent();
+
+            runOnUiThread(() -> {
+                textViewTeacherName.setText(teacherName);
+                textViewStartPoint.setText(startPoint);
+                textViewTotalStudent.setText(String.valueOf(totalStudent));
+            });
+
+
+        });
+    }
+
 }
+
+//TODO: 教師名、開始地点、生徒総数を取得し表示する
