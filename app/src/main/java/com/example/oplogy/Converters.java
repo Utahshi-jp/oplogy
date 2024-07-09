@@ -16,11 +16,11 @@ public class Converters {
     // タイムスタンプを文字列(yyyy-mm-dd,日時)に変換
     @TypeConverter
     public static List<String> fromTimestampList(List<Timestamp> timestamps) {
-        List<String> strings = new ArrayList<>();
+        List<String> stringsList = new ArrayList<>();
         for (Timestamp timestamp : timestamps) {
-            strings.add(format.format(timestamp.toDate()));
+            stringsList.add(format.format(timestamp.toDate()));
         }
-        return strings;
+        return stringsList;
     }
 
     @TypeConverter

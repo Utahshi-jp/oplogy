@@ -7,10 +7,10 @@ public class CreateUUID {
 
     public static int generateUUID(List<Integer> classIdList ){
         while (true){
-            int uuid = (int)(Math.random() * 1000000);
+            int uuidInt = (int)(Math.random() * 1000000);
             boolean isDuplicate = false;
-            for(int classId : classIdList){
-                if(classId==uuid){
+            for(int classIdInt : classIdList){
+                if(classIdInt==uuidInt){
                     //重複があればフラグを立て、ループを抜ける
                     isDuplicate = true;
                     break;
@@ -20,10 +20,10 @@ public class CreateUUID {
             if (!isDuplicate) {
                 //firestoreに挿入処理
                 InsertClassIdforFirebase insertClassIdforFirebase = new InsertClassIdforFirebase();
-                insertClassIdforFirebase.insertClassId(uuid);
+                insertClassIdforFirebase.insertClassId(uuidInt);
                 //テスト用
-                uuid=100;
-                return uuid;
+                uuidInt=100;
+                return uuidInt;
             }
         }
     }
