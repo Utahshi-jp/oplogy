@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.StudentViewHolder> {
 
-    private List<SubmissionStudent> students;
+    private final List<SubmissionStudent> studentsList;
 
     public static class StudentViewHolder extends RecyclerView.ViewHolder {
         public TextView studentNumberTextView;
@@ -25,9 +27,10 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.St
     }
 
     public SubmissionAdapter(List<SubmissionStudent> students) {
-        this.students = students;
+        this.studentsList = students;
     }
 
+    @NonNull
     @Override
     public StudentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -37,7 +40,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.St
 
     @Override
     public void onBindViewHolder(StudentViewHolder holder, int position) {
-        SubmissionStudent student = students.get(position);
+        SubmissionStudent student = studentsList.get(position);
         holder.studentNumberTextView.setText(String.valueOf(student.getStudentNumber()));
         // 提出済みかどうかで表示を変える
         if (student.isSubmitted()) {
@@ -57,6 +60,6 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.St
 
     @Override
     public int getItemCount() {
-        return students.size();
+        return studentsList.size();
     }
 }

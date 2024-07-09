@@ -44,12 +44,9 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
     ImageView backMain;
     private GoogleMap mMap;
-    private MapsBinding binding;
     private LinearLayout locationsName;
-    private Spinner dateSpinner;
     //GoogleMapAPiで使用可能な色
-    private static final int[] COLORS = new int[]{
-            Color.parseColor("#007FFF"), // HUE_AZURE
+    private static final int[] COLORS = new int[]{Color.parseColor("#007FFF"), // HUE_AZURE
             Color.parseColor("#0000FF"), // HUE_BLUE
             Color.parseColor("#00FFFF"), // HUE_CYAN
             Color.parseColor("#00FF00"), // HUE_GREEN
@@ -61,36 +58,35 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             Color.parseColor("#FFFF00") // HUE_YELLOW
     };
     private int colorIndex = 0;
-    private List<LatLng> latLngList = new ArrayList<>();
-    private List<String> nameList = new ArrayList<>();
-    private List<Integer> colorList = new ArrayList<>();
+    private final List<LatLng> latLngList = new ArrayList<>();
+    private final List<String> nameList = new ArrayList<>();
+    private final List<Integer> colorList = new ArrayList<>();
 
-    private Map<String, Runnable> dateMap = new HashMap<>();
-
-    private AppDatabase db = null;
+    private final Map<String, Runnable> dateMap = new HashMap<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        binding = MapsBinding.inflate(getLayoutInflater());
+        // バインディングの設定
+        com.example.oplogy.databinding.MapsBinding binding = MapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        // マップフラグメントの設定
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // 各UI要素の設定
         backMain = findViewById(R.id.BackMain);
         backMain.setOnClickListener(this);
 
         locationsName = findViewById(R.id.locationsName);
 
-        String dateData = formatDate(getSharedPreferencesData(0)) + "/" + formatDate(getSharedPreferencesData(1)) + "/" + formatDate(getSharedPreferencesData(2));
-
+        // スピナーの設定
+        String dateDataString = formatDate(getSharedPreferencesData(0)) + "/" + formatDate(getSharedPreferencesData(1)) + "/" + formatDate(getSharedPreferencesData(2));
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String[] dates = dateData.split("/");
+        String[] dates = dateDataString.split("/");
         for (String date : dates) {
             adapter.add(date);
         }
@@ -100,22 +96,18 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             int finalI = i;
             String dayString = getSharedPreferencesData(i);
             String formattedDayString = formatDate(dayString);
-            if (i == 0) {
-                dateMap.put(formattedDayString, () -> firstMapAndNames(createlocationData(finalI), getData(finalI)));
-            } else if (i == 1) {
-                dateMap.put(formattedDayString, () -> secondMapAndNames(createlocationData(finalI), getData(finalI)));
-            } else {
-                dateMap.put(formattedDayString, () -> thirdMapAndNames(createlocationData(finalI), getData(finalI)));
-            }
+            dateMap.put(formattedDayString, () -> loadMapAndNames(createlocationData(finalI), getscrollViewlData(finalI)));
         }
-        dateSpinner = findViewById(R.id.date);
+
+        Spinner dateSpinner = findViewById(R.id.date);
         dateSpinner.setAdapter(adapter);
 
+        // スピナーのアイテム選択リスナーを設定
         dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = (String) parent.getItemAtPosition(position);
-                Runnable mapLoader = dateMap.get(selectedItem);
+                String selectedItemString = (String) parent.getItemAtPosition(position);
+                Runnable mapLoader = dateMap.get(selectedItemString);
                 if (mapLoader != null) {
                     mapLoader.run();
                 }
@@ -128,16 +120,22 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         });
     }
 
-
+    //ルート表示を押して最初に表示されるルート(3日間の家庭訪問における1日目)の設定
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        //Google mapの定義
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
-        String latlngString = createlocationData(0);
-        String homeVisitDataString = getData(0);
-        firstMapAndNames(latlngString, homeVisitDataString);
+        //家庭訪問1日目のスケジュール順に緯度経度の情報をString型の変数に格納
+        //35.1711355,136.88552149999998/35.1696089,136.884084/35.1732838,136.88832890000003/...
+        String locationDataString = createlocationData(0);
+        //家庭訪問1日目のスケジュール順に住所や出席番号、家庭訪問の開始時間の情報をString型の変数に格納
+        //開始地点/出席番号2番:鈴木次郎<〒453-0015 愛知県名古屋市中村区椿町６−９ 地下１階～５階> 06月04日12時00分/...
+        String scrollViewlDataString = getscrollViewlData(0);
+        loadMapAndNames(locationDataString, scrollViewlDataString);
     }
 
+    //家庭訪問の〇日目が何月何日かを返すメソッド
     private String getSharedPreferencesData(int i) {
         SharedPreferences sharedPreferences = getSharedPreferences("visitingDate", MODE_PRIVATE);
         // SetUpで設定した8桁の数字表記の家庭訪問日を日付表記に変更
@@ -152,49 +150,59 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         return dayString;
     }
 
-
+    //家庭訪問の日付を8桁の整数表記から○月〇日(20240707→07月07日)表記に変更する
     private String formatDate(String date) {
         if (date == null || date.length() != 8) {
             return "";
         }
-        String month = date.substring(4, 6);
-        String day = date.substring(6, 8);
-        return month + "月" + day + "日";
+        String monthString = date.substring(4, 6);
+        String dayString = date.substring(6, 8);
+        return monthString + "月" + dayString + "日";
     }
 
+    //家庭訪問1日目のスケジュール順に緯度経度の情報をString型の変数に格納
     private String createlocationData(int i) {
+        //家庭訪問の開始地点の緯度経度
         String startPointLatLngString = getIntent().getStringExtra("startPointLatLngString");
         List<MyDataClass> myDataList = getMyDataList();
+        //家庭訪問の緯度経度情報をまとめる変数
         StringBuilder latlngString = new StringBuilder();
-
         for (int y = -1; y < myDataList.size(); y++) {
             if (y < 0) {
+                //家庭訪問の開始地点を追加
                 latlngString.append(startPointLatLngString);
             } else if (myDataList.get(y).getScheduleDay().equals(getSharedPreferencesData(i))) {
                 if (latlngString.length() > 0) {
+                    //区切りのスラッシュ
                     latlngString.append("/");
                 }
+                //mydataListから取り出した家庭訪問の各家庭の住所の緯度経度を追加
+                //この時点ではlongitude latitudeのような不要な文字があるのでformatLatLngメソッドで緯度経度だけのデータにする
                 latlngString.append(formatLatLng(myDataList.get(y)));
             }
         }
-
+        //各家庭の緯度経度をまとめたものを返す
         return latlngString.toString();
     }
 
+    //緯度と経度は(35.1711355,136.88552149999998)のように()の中に入っているのでそこだけを取り出す
     private String formatLatLng(MyDataClass myData) {
-        String latlng = myData.getLatLngString();
-        int startIndex = latlng.indexOf("(") + 1;
-        int endIndex = latlng.indexOf(")");
-        return latlng.substring(startIndex, endIndex);
+        String latlngString = myData.getLatLngString();
+        int startIndex = latlngString.indexOf("(") + 1;
+        int endIndex = latlngString.indexOf(")");
+        return latlngString.substring(startIndex, endIndex);
     }
 
-    private String getData(int i) {
+    //ScrollViewにて表示するdataの作成メソッド
+    private String getscrollViewlData(int i) {
         List<MyDataClass> myDataList = getMyDataList();
         String homeVisitDataString = "";
         for (int y = -1; y < myDataList.size(); y++) {
             if (y < 0) {
+                //家庭訪問の開始地点
                 homeVisitDataString += "開始地点/";
             } else if (myDataList.get(y).getScheduleDay().equals(getSharedPreferencesData(i)) && y + 1 < myDataList.size()) {
+                //出席番号:生徒の名前 <住所> 家庭訪問の開始時間+/
                 homeVisitDataString += "出席番号" + String.valueOf(myDataList.get(y).getStudentNumber()) + "番:" + myDataList.get(y).getChildName() + "<" + myDataList.get(y).getAddress().get(0) + "> " + formatSchedule(String.valueOf(myDataList.get(y).getSchedule())) + "/";
             } else if (myDataList.get(y).getScheduleDay().equals(getSharedPreferencesData(i))) {
                 homeVisitDataString += "出席番号" + String.valueOf(myDataList.get(y).getStudentNumber()) + "番:" + myDataList.get(y).getChildName() + " <" + myDataList.get(y).getAddress().get(0) + "> " + formatSchedule(String.valueOf(myDataList.get(y).getSchedule()));
@@ -203,12 +211,13 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         return homeVisitDataString;
     }
 
+    //家庭訪問のscheduleを7桁の整数から○月〇日●時〇分(6041200→06月12日05時20分)に変換
     private String formatSchedule(String schedule) {
-        String month = "0" + schedule.substring(0, 1);
-        String day = schedule.substring(1, 3);
-        String hour = schedule.substring(3, 5);
-        String minute = schedule.substring(5, 7);
-        return month + "月" + day + "日" + hour + "時" + minute + "分";
+        String monthString = "0" + schedule.substring(0, 1);
+        String dayString = schedule.substring(1, 3);
+        String hourString = schedule.substring(3, 5);
+        String minuteString = schedule.substring(5, 7);
+        return monthString + "月" + dayString + "日" + hourString + "時" + minuteString + "分";
     }
 
     // 共有プリファレンスからMyDataListを取得するメソッド
@@ -217,40 +226,22 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
 
         // 共有プリファレンスからJSON形式のデータを取得
-        String json = sharedPreferences.getString("myDataList", "");
+        String jsonString = sharedPreferences.getString("myDataList", "");
 
         // JSON形式のデータをMyDataListに変換
         Gson gson = new Gson();
         Type type = new TypeToken<List<MyDataClass>>() {
         }.getType();
-        List<MyDataClass> myDataList = gson.fromJson(json, type);
+        List<MyDataClass> myDataList = gson.fromJson(jsonString, type);
 
         return myDataList;
     }
 
-    private void firstMapAndNames(String latlngStringFirstDay, String homeVisitDataString) {
-        String locationData = latlngStringFirstDay;
-        String labelData = homeVisitDataString;
-        Log.d("maps", "locationData" + locationData);
-        Log.d("maps", "labelData" + labelData);
-        loadMapAndNames(locationData, labelData);
-    }
 
-    private void secondMapAndNames(String latlngStringSeconfDay, String homeVisitDataString) {
-        String locationData = latlngStringSeconfDay;
-        String labelData = homeVisitDataString;
-        loadMapAndNames(locationData, labelData);
-    }
-
-    private void thirdMapAndNames(String latlngStringThirdDay, String homeVisitDataString) {
-        String locationData = latlngStringThirdDay;
-        String labelData = homeVisitDataString;
-        loadMapAndNames(locationData, labelData);
-    }
-
-
+    //mapやgetscrollViewlに値を渡すハブの役割のメソッド
     private void loadMapAndNames(String locationData, String nameData) {
         try {
+            //mapに関するすべてのデータをリセット
             latLngList.clear();
             nameList.clear();
             colorList.clear();
@@ -258,31 +249,31 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             mMap.clear();
 
             // locationDataをスラッシュで分割して緯度経度リストを取得
-            String[] locArray = locationData.split("/");
+            String[] locArrayString = locationData.split("/");
             // nameDataをスラッシュで分割して名前リストを取得
-            String[] nameArray = nameData.split("/");
+            String[] nameArrayString = nameData.split("/");
 
-            for (int i = 0; i < locArray.length; i++) {
+            for (int i = 0; i < locArrayString.length; i++) {
                 // 緯度経度をカンマで分割してLatLngオブジェクトを作成
-                String[] latLng = locArray[i].split(",");
-                if (latLng.length == 2) {
-                    double latitude = Double.parseDouble(latLng[0]);
-                    double longitude = Double.parseDouble(latLng[1]);
-                    LatLng position = new LatLng(latitude, longitude);
+                String[] latLngString = locArrayString[i].split(",");
+                if (latLngString.length == 2) {
+                    double latitudeDouble = Double.parseDouble(latLngString[0]);
+                    double longitudeDouble = Double.parseDouble(latLngString[1]);
+                    LatLng position = new LatLng(latitudeDouble, longitudeDouble);
                     latLngList.add(position);
 
                     // 名前リストから対応する名前を取得
-                    String name = nameArray.length > i ? nameArray[i] : "Unknown";
-                    nameList.add(name);
+                    String nameString = nameArrayString.length > i ? nameArrayString[i] : "Unknown";
+                    nameList.add(nameString);
 
                     // 色リストから次の色を取得
-                    int color = getNextColor();
-                    colorList.add(color);
+                    int colorInt = getNextColor();
+                    colorList.add(colorInt);
 
                     // 地図にピンを追加
-                    addPinToMap(name, position, color);
+                    addPinToMap(nameString, position, colorInt);
                     // スクロールビューに場所を追加
-                    addLocationToScrollView(name, color);
+                    addLocationToScrollView(nameString, colorInt);
                 }
             }
 
@@ -292,10 +283,12 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
                 drawRoute();  // ルートを描画するメソッドを呼び出す
             }
         } catch (Exception e) {
-            Log.e("Maps", "Error loading maps and names", e);
+            Log.e("Maps", "エラーが発生しました。原因は以下", e);
         }
     }
 
+    // ルートを描画するメソッド
+    // Google マップの Directions API を使用してルート情報を取得し、ポリラインで描画
     private void drawRoute() {
         new Thread(() -> {
             try {
@@ -312,25 +305,27 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
                     }
                 }
                 urlBuilder.append("&mode=driving");
-                urlBuilder.append("&key=").append(getString(R.string.maps_api_key));
+                //APiキーの設定
+                urlBuilder.append("&key=").append("AIzaSyBQ1Ak-I2NL5TP4K59ZI0VgzKk6HNZuusw");
 
                 String urlString = urlBuilder.toString();
                 Log.d("Maps", "Directions API URL: " + urlString);
 
+                // Directions APIにリクエストを送信してレスポンスを取得
                 URL url = new URL(urlString);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
                 StringBuilder jsonResults = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    jsonResults.append(line);
+                String lineString;
+                while ((lineString = br.readLine()) != null) {
+                    jsonResults.append(lineString);
                 }
                 br.close();
 
                 Log.d("Maps", "API response: " + jsonResults.toString());
-
+                // レスポンスからルート情報を取得してポリラインで描画
                 JsonObject jsonObject = new Gson().fromJson(jsonResults.toString(), JsonObject.class);
                 JsonArray routes = jsonObject.getAsJsonArray("routes");
                 if (routes.size() > 0) {
@@ -343,36 +338,41 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
                     runOnUiThread(() -> mMap.addPolyline(new PolylineOptions().addAll(points).width(5).color(Color.BLUE)));
                 } else {
+                    // ルートが見つからなかった場合のエラーメッセージを表示
                     JsonPrimitive errorMessage = jsonObject.getAsJsonPrimitive("error_message");
                     if (errorMessage != null) {
-                        Log.e("Maps", "Error: " + errorMessage.getAsString());
+                        Log.e("Maps", "エラーが発生しました。原因は以下: " + errorMessage.getAsString());
                     } else {
-                        Log.e("Maps", "No routes found and no error message provided");
+                        Log.e("Maps", "原因不明のエラー");
                     }
                 }
             } catch (Exception e) {
-                Log.e("Maps", "Error drawing route", e);
+                Log.e("Maps", "ルートの描画に失敗しました", e);
             }
         }).start();
     }
 
+    // エンコードされた文字列から座標情報をデコードするためのメソッド
     private List<LatLng> decodePoly(String encoded) {
-        List<LatLng> poly = new ArrayList<>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
+        List<LatLng> poly = new ArrayList<>(); // 座標情報を格納するリスト
+        int index = 0, len = encoded.length();// 文字列のインデックスと長さ
+        int latInt = 0, lng = 0; // 緯度と経度の初期値
 
+        // 文字列の長さに達するまで繰り返す
         while (index < len) {
             int b, shift = 0, result = 0;
+            // バイト値を取得し、ビットシフトとOR演算を行って座標値を復元する
             do {
                 b = encoded.charAt(index++) - 63;
                 result |= (b & 0x1f) << shift;
                 shift += 5;
             } while (b >= 0x20);
             int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
+            latInt += dlat;
 
             shift = 0;
             result = 0;
+            // バイト値を取得し、ビットシフトとOR演算を行って座標値を復元する
             do {
                 b = encoded.charAt(index++) - 63;
                 result |= (b & 0x1f) << shift;
@@ -380,34 +380,35 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             } while (b >= 0x20);
             int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)), (((double) lng / 1E5)));
+            // LatLngオブジェクトを作成してリストに追加する
+            LatLng p = new LatLng((((double) latInt / 1E5)), (((double) lng / 1E5)));
             poly.add(p);
         }
+        // 座標情報のリストを返す
         return poly;
     }
 
-
+    // Colorクラスを使用して、与えられた色から色相値を計算するメソッド
     private float getHueFromColor(int color) {
         float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
+        Color.colorToHSV(color, hsv);//整数の色値をHSV（色相、彩度、明度）の形式に変換し、色相値を取得します。
         return hsv[0];
     }
 
+    //mapにピンを追加するメソッド
     private void addPinToMap(String locationName, LatLng position, int color) {
-        Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(position)
-                .title(locationName)
-                .icon(BitmapDescriptorFactory.defaultMarker(getHueFromColor(color)))
-        );
+        // マーカーオプションを作成し、位置、タイトル、色を設定する
+        Marker marker = mMap.addMarker(new MarkerOptions().position(position).title(locationName).icon(BitmapDescriptorFactory.defaultMarker(getHueFromColor(color))));
         if (marker != null) {
             marker.setTag(locationName);
         }
     }
 
+    // スクロールビューに位置情報を追加するメソッド
     private void addLocationToScrollView(String locationName, int color) {
         runOnUiThread(() -> {
             try {
+                // テキストビューの作成
                 TextView textView = new TextView(this);
                 textView.setText(locationName);
                 textView.setTextSize(20);
@@ -416,7 +417,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
                 // テキストビューにクリックリスナーを追加
                 textView.setOnClickListener(v -> {
-                    // 名前リストからインデックスを取得
+                    // 名前リストから位置情報を取得
                     int index = nameList.indexOf(locationName);
                     if (index != -1) {
                         LatLng position = latLngList.get(index);
@@ -425,15 +426,14 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
                     }
                 });
 
+                // 下線のビューの作成
                 View underline = new View(this);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        3
-                );
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3);
                 params.setMargins(0, 0, 0, 16);
                 underline.setLayoutParams(params);
                 underline.setBackgroundColor(Color.BLACK);
 
+                // テキストビューと下線のビューをスクロールビューに追加
                 locationsName.addView(textView);
                 locationsName.addView(underline);
             } catch (Exception e) {
@@ -455,13 +455,20 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
         }
     }
 
+
     @Override
+    //マーカーがクリックされた際の処理を行うメソッド
     public boolean onMarkerClick(Marker marker) {
+        // マーカーから場所の名前を取得します。
         String locationName = (String) marker.getTag();
+        // 場所の名前がnullではない場合に処理を実行します。
         if (locationName != null) {
+            // マーカーのタイトルとして場所の名前を設定します。
             marker.setTitle(locationName);
+            // マーカーの情報ウィンドウを表示します。
             marker.showInfoWindow();
         }
+        // デフォルトの動作も実行するためにfalseを返します。
         return false;
     }
 }
