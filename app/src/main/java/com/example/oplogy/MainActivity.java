@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //取得するためのクラスID
     private int classId;
-    private String address;
 
 
     @Override
