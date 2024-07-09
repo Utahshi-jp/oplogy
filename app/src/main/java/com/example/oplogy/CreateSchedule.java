@@ -55,6 +55,7 @@ public class CreateSchedule {
         String secondDay = sharedPreferences.getString("day2", null);
         String thirdDay = sharedPreferences.getString("day3", null);
 
+        Log.d("createSchedule","day1"+firstDay+"day2"+secondDay+"thirdday"+thirdDay);
         homeVisitDaysString = new String[]{firstDay, secondDay, thirdDay};
 
     }
@@ -359,8 +360,9 @@ public class CreateSchedule {
         //保護者の希望時間の開始と終了の間にまだ保護者の割り当てがされていないスケジュールの空き時間があるかの判定
         if (intervalArrayInt[x][j][0] >= Integer.parseInt(myDataList.get(i).getParentStartTimeString()) && intervalArrayInt[x][j + 1][0] <= Integer.parseInt(myDataList.get(i).getParentEndTimeString()) && intervalArrayInt[x][j][1] == 0) {
             intervalArrayInt[x][j][1] += 1;//その時間が割り当て済みでありこと
-            myDataList.get(i).setSchedule(Integer.parseInt(desiredDateString.substring(4, 8) + intervalArrayInt[x][j][0]));//スケジュールをmyDataListに入れる(例:6041240(6月4日12時40分))
             myDataList.get(i).setScheduleDay(homeVisitDaysString[x]);
+            Log.d("CreateSchedule","getScheduleDay"+myDataList.get(i).getScheduleDay());
+            myDataList.get(i).setSchedule(Integer.parseInt(desiredDateString.substring(4, 8) + intervalArrayInt[x][j][0]));//スケジュールをmyDataListに入れる(例:6041240(6月4日12時40分))
         }
     }
 
