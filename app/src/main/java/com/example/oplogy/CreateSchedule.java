@@ -42,13 +42,14 @@ public class CreateSchedule {
     private final AppDatabase db;
     private int arraySizeInt;
 
-    boolean notSecondDuplicatesBoolean = true;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
+    private boolean notSecondDuplicatesBoolean;//スケジュールの重複の有無(第一希望日のみで通った場合も考えて初期はtrue)
 
     String[] homeVisitDaysString;
 
 
     public CreateSchedule(AppCompatActivity activity) {
         this.db = Room.databaseBuilder(activity.getApplicationContext(), AppDatabase.class, "SetUpTable").build();
+        this.notSecondDuplicatesBoolean = true; // 初期値をtrueに設定する
         SharedPreferences sharedPreferences = activity.getSharedPreferences("visitingDate", Context.MODE_PRIVATE);
 
         String firstDay = sharedPreferences.getString("day1", null);
@@ -57,7 +58,6 @@ public class CreateSchedule {
 
         Log.d("createSchedule","day1"+firstDay+"day2"+secondDay+"thirdday"+thirdDay);
         homeVisitDaysString = new String[]{firstDay, secondDay, thirdDay};
-
     }
 
     //MainActivityからデータを受け取る
@@ -116,17 +116,18 @@ public class CreateSchedule {
                 sortSchedule(myDataList);
             }
         });
-        //重複がなければ開始地点の緯度経度を返す
+        // 重複がなければ開始地点の緯度経度を返す
         if (notSecondDuplicatesBoolean) {
-            //保護者の住所を緯度経度に変換する
+            // 保護者の住所を緯度経度に変換する
             String startPointLatLngString = geocodeAddress(myDataList, context);
             Log.d("CreateSchedule", "startPointLatLngString" + startPointLatLngString);
             outPutLogSchedule(myDataList);
             return startPointLatLngString;
+        } else {
+            // 重複があるときは""を返す
+            Log.d("CreateSchedule", "重複によるエラー");
+            return "";
         }
-        //重複があるときは""を返す
-        Log.d("CreateSchedule", "重複によるエラー");
-        return "";
     }
 
 
@@ -347,6 +348,7 @@ public class CreateSchedule {
                 }
             }
         }
+
 
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getSchedule() == 0) {//重複により割り当てがされていない保護者がいないかの確認

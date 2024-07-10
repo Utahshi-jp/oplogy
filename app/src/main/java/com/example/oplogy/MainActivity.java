@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
         firestoreReception = new FirestoreReception();
-        Log.d("MainActivity","geocodeAddress");
+        Log.d("MainActivity", "geocodeAddress");
 
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
     }
-
 
 
     //    クリック処理
@@ -194,7 +193,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
-            AppDatabase db = getDatabaseInstance();            SetUpTableDao setUpTableDao = db.setUpTableDao();
+            AppDatabase db = getDatabaseInstance();
+            SetUpTableDao setUpTableDao = db.setUpTableDao();
             int totalStudentInt = setUpTableDao.getTotalStudent();
             int myDataListSizeInt = firestoreReception.getMyDataListSize();
 
@@ -245,10 +245,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
             final List<MyDataClass> finalMyDataList = myDataList;
             CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
-            String  startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
-
+            String startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
+            Boolean notDuplicatesBoolean = null;
+            for (int i = 0; i < myDataList.size(); i++) {
+                if (myDataList.get(i).getSchedule() == 0) {
+                    notDuplicatesBoolean = false;
+                    break;
+                } else {
+                    notDuplicatesBoolean = true;
+                }
+            }
+            Boolean finalNotDuplicatesBoolean = notDuplicatesBoolean;
+            Log.d("MainActivity", "重複判定" + String.valueOf(finalNotDuplicatesBoolean));
             runOnUiThread(() -> {
-                if ( !startPointLatLngString.equals("")) {
+                if (finalNotDuplicatesBoolean) {
                     Log.d("MainActivity", "スケジュール作成成功");
                     saveMyDataList(finalMyDataList);
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
@@ -264,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             executor.shutdown();
         });
     }
+
     private void saveMyDataList(List<MyDataClass> myDataList) {
         // 共有プリファレンスのインスタンスを取得
         SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
@@ -285,12 +296,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 studentNumbers.add(data.getStudentNumber());
             }
         }
-        StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。調整してください。\n出席番号: ");
+        StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。保護者に連絡して調整してください。\n\n");
         for (int i = 0; i < studentNumbers.size(); i++) {
-            message.append(studentNumbers.get(i));
-            if (i < studentNumbers.size() - 1) {
-                message.append(", ");
-            }
+            message.append("出席番号:" + studentNumbers.get(i));
+            message.append("\n保護者名:" + myDataList.get(i).getPatronName());
+            message.append("\n第一希望 " + myDataList.get(i).getStartDateString().substring(4,6)+"月");
+            message.append(myDataList.get(i).getStartDateString().substring(6,8)+"日");
+            message.append(" " + myDataList.get(i).getParentStartTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getParentStartTimeString().substring(2, 4));
+            message.append("～" + myDataList.get(i).getParentEndTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getParentEndTimeString().substring(2, 4));
+            message.append("\n第二希望 " + myDataList.get(i).getSecondDayStartDateString().substring(4,6)+"月");
+            message.append(myDataList.get(i).getSecondDayStartDateString().substring(6,8)+"日");
+            message.append(" " + myDataList.get(i).getSecondDayParentStartTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getSecondDayParentStartTimeString().substring(2, 4));
+            message.append("～" + myDataList.get(i).getSecondDayParentEndTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getSecondDayParentEndTimeString().substring(2, 4) + "\n\n");
         }
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
@@ -305,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AppDatabase getDatabaseInstance() {
         return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
     }
-
 
 
     //提出状況の取得
