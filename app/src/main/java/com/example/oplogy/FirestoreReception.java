@@ -16,19 +16,18 @@ import java.util.Map;
 
 public class FirestoreReception {
 
+    //firestoreから受け取ったデータを束ねるためのマップ
+    public List<MyDataClass> myDataList = new ArrayList<>();
     private FirebaseFirestore db;
 
     public FirestoreReception() {
         db = FirebaseFirestore.getInstance();
     }
 
-    //firestoreから受け取ったデータを束ねるためのマップ
-    public List<MyDataClass> myDataList = new ArrayList<>();
-
     //ClassIdを引数にデータの作成を行う
     public void getDocumentsByClassId(int classId) {
         myDataList.clear();
-        CollectionReference collectionRef = db.collection("testAddressArray");
+        CollectionReference collectionRef = db.collection("testDistinct");
 
         // classIdが引数のものを取得する
         collectionRef.whereEqualTo("classId", classId).get()
