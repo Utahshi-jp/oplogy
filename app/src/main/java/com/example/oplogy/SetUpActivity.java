@@ -2,7 +2,6 @@ package com.example.oplogy;
 
 import static android.content.ContentValues.TAG;
 
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -42,6 +41,16 @@ public class SetUpActivity extends FragmentActivity
     String startBreakTimeString;
     String endBreakTimeString;
     int totalStudentString;
+    String stringYearString;
+    String stringMonthString;
+    String stringDayOfMonthString;
+    String stringHourOfDayString;
+    String stringMinuteString;
+    Button setFirstDay;
+    Button setSecondDay;
+    Button setThirdDay;
+    Button setStartTimeButton;
+    Button setEndTimeButton;
     private TextView setTeacherName;
     private TextView setStartPoint;
     private TextView setStartTime;
@@ -52,29 +61,13 @@ public class SetUpActivity extends FragmentActivity
     private int isDateSelectedInt;
     private int isStartTimeSelectedInt;
 
-    String stringYearString;
-    String stringMonthString;
-    String stringDayOfMonthString;
-
-
-    String stringHourOfDayString;
-    String stringMinuteString;
-
-    Button setFirstDay;
-    Button setSecondDay;
-    Button setThirdDay;
-    Button setStartTimeButton;
-    Button setEndTimeButton;
-
-
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
 
-        int classIdInt= getIntent().getIntExtra("classId", 100000);
+        int classIdInt = getIntent().getIntExtra("classId", 100000);
 
         setTeacherName = findViewById(R.id.teacherName);                    //先生の名前
         setStartPoint = findViewById(R.id.startPoint);                      //開始地点
@@ -104,7 +97,7 @@ public class SetUpActivity extends FragmentActivity
         Button reset = findViewById(R.id.resetButton);
 
         toMain.setOnClickListener(view -> {
-            Intent intent = new Intent(SetUpActivity.this,MainActivity.class); //main画面へ戻る処理
+            Intent intent = new Intent(SetUpActivity.this, MainActivity.class); //main画面へ戻る処理
             startActivity(intent);
         });
 
@@ -119,7 +112,7 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Third Day:" + thirdDayString);
             Log.d(TAG, "Start Time" + startTimeString);
             Log.d(TAG, "End Time" + endTimeString);
-            if (setTenMinute.isChecked()){                    //ラジオボタンの状態を取得
+            if (setTenMinute.isChecked()) {                    //ラジオボタンの状態を取得
                 intervalTimeString = "10";
             } else if (setFifteenMinute.isChecked()) {
                 intervalTimeString = "15";
@@ -172,12 +165,12 @@ public class SetUpActivity extends FragmentActivity
                     runOnUiThread(() -> Toast.makeText(SetUpActivity.this, "登録しました", Toast.LENGTH_SHORT).show());
                 }
                 //家庭訪問日を保存する共有プリファレンス
-                SharedPreferences sharedPreferences=getSharedPreferences("visitingDate",MODE_PRIVATE);
-                SharedPreferences.Editor editor= sharedPreferences.edit();
+                SharedPreferences sharedPreferences = getSharedPreferences("visitingDate", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                editor.putString("day1",firstDayString);
-                editor.putString("day2",secondDayString);
-                editor.putString("day3",thirdDayString);
+                editor.putString("day1", firstDayString);
+                editor.putString("day2", secondDayString);
+                editor.putString("day3", thirdDayString);
 
                 editor.apply();
 
@@ -186,17 +179,17 @@ public class SetUpActivity extends FragmentActivity
 
         });
 
-        setFirstDay.setOnClickListener(v ->{
+        setFirstDay.setOnClickListener(v -> {
             isDateSelectedInt = 1;
             showDatePickerDialog(); //DatePickerの表示
         });
 
-        setSecondDay.setOnClickListener(v ->{
+        setSecondDay.setOnClickListener(v -> {
             isDateSelectedInt = 2;
             showDatePickerDialog();
         });
 
-        setThirdDay.setOnClickListener(v ->{
+        setThirdDay.setOnClickListener(v -> {
             isDateSelectedInt = 3;
             showDatePickerDialog();
         });
@@ -245,7 +238,7 @@ public class SetUpActivity extends FragmentActivity
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) { //Dateを成形する
         // DatePickerDialogで選択された日付を処理する
-        String str = String.format(Locale.JAPAN, "%02d/%02d",  month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
+        String str = String.format(Locale.JAPAN, "%02d/%02d", month + 1, dayOfMonth); // TextViewに表示する日付の形式を設定
 
         if (isDateSelectedInt == 1) {
             stringYearString = String.valueOf(year);                                          //年
@@ -291,7 +284,7 @@ public class SetUpActivity extends FragmentActivity
         } else if (isStartTimeSelectedInt == 3) {
             stringHourOfDayString = String.format("%02d", hourOfDay);
             stringMinuteString = String.format("%02d", minute);
-            startBreakTimeString =stringHourOfDayString + stringMinuteString;
+            startBreakTimeString = stringHourOfDayString + stringMinuteString;
             setStartBreakTime.setText("　" + str + "　");
 
         } else if (isStartTimeSelectedInt == 4) {
