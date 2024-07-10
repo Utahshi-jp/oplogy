@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -334,9 +335,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             final List<MyDataClass> finalMyDataList = myDataList;
             CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
             String startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
-
+            Boolean notDuplicatesBoolean = null;
+            for (int i = 0; i < myDataList.size(); i++) {
+                if (myDataList.get(i).getSchedule() == 0) {
+                    notDuplicatesBoolean = false;
+                    break;
+                } else {
+                    notDuplicatesBoolean = true;
+                }
+            }
+            Boolean finalNotDuplicatesBoolean = notDuplicatesBoolean;
+            Log.d("MainActivity", "重複判定" + String.valueOf(finalNotDuplicatesBoolean));
             runOnUiThread(() -> {
-                if (!startPointLatLngString.equals("")) {
+                if (finalNotDuplicatesBoolean) {
                     Log.d("MainActivity", "スケジュール作成成功");
                     saveMyDataList(finalMyDataList);
                     Intent toRoot = new Intent(MainActivity.this, Maps.class);
@@ -374,12 +385,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 studentNumbers.add(data.getStudentNumber());
             }
         }
-        StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。調整してください。\n出席番号: ");
+        StringBuilder message = new StringBuilder("保護者の重複が重大でルート作成ができません。保護者に連絡して調整してください。\n\n");
         for (int i = 0; i < studentNumbers.size(); i++) {
-            message.append(studentNumbers.get(i));
-            if (i < studentNumbers.size() - 1) {
-                message.append(", ");
-            }
+            message.append("出席番号:" + studentNumbers.get(i));
+            message.append("\n保護者名:" + myDataList.get(i).getPatronName());
+            message.append("\n第一希望 " + myDataList.get(i).getStartDateString().substring(4,6)+"月");
+            message.append(myDataList.get(i).getStartDateString().substring(6,8)+"日");
+            message.append(" " + myDataList.get(i).getParentStartTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getParentStartTimeString().substring(2, 4));
+            message.append("～" + myDataList.get(i).getParentEndTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getParentEndTimeString().substring(2, 4));
+            message.append("\n第二希望 " + myDataList.get(i).getSecondDayStartDateString().substring(4,6)+"月");
+            message.append(myDataList.get(i).getSecondDayStartDateString().substring(6,8)+"日");
+            message.append(" " + myDataList.get(i).getSecondDayParentStartTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getSecondDayParentStartTimeString().substring(2, 4));
+            message.append("～" + myDataList.get(i).getSecondDayParentEndTimeString().substring(0, 2));
+            message.append(":" + myDataList.get(i).getSecondDayParentEndTimeString().substring(2, 4) + "\n\n");
         }
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
