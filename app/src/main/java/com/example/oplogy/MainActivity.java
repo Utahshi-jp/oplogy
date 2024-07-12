@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -190,9 +189,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 executor.execute(() -> {
                     // 現在のクラスIDを取得
                     int currentClassId = getCurrentClassIdFromRoom();
+                    if (currentClassId == 0) {
+                        currentClassId = classId;
+                    }
+                    final int showDialogClassId = currentClassId;
                     runOnUiThread(() -> {
                         // 現在のクラスIDを表示するダイアログ
-                        showClassIdDialog("現在のID", currentClassId);
+                        showClassIdDialog("現在のID", showDialogClassId);
                     });
                 });
                 executor.shutdown();
@@ -389,14 +392,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i < studentNumbers.size(); i++) {
             message.append("出席番号:" + studentNumbers.get(i));
             message.append("\n保護者名:" + myDataList.get(i).getPatronName());
-            message.append("\n第一希望 " + myDataList.get(i).getStartDateString().substring(4,6)+"月");
-            message.append(myDataList.get(i).getStartDateString().substring(6,8)+"日");
+            message.append("\n第一希望 " + myDataList.get(i).getStartDateString().substring(4, 6) + "月");
+            message.append(myDataList.get(i).getStartDateString().substring(6, 8) + "日");
             message.append(" " + myDataList.get(i).getParentStartTimeString().substring(0, 2));
             message.append(":" + myDataList.get(i).getParentStartTimeString().substring(2, 4));
             message.append("～" + myDataList.get(i).getParentEndTimeString().substring(0, 2));
             message.append(":" + myDataList.get(i).getParentEndTimeString().substring(2, 4));
-            message.append("\n第二希望 " + myDataList.get(i).getSecondDayStartDateString().substring(4,6)+"月");
-            message.append(myDataList.get(i).getSecondDayStartDateString().substring(6,8)+"日");
+            message.append("\n第二希望 " + myDataList.get(i).getSecondDayStartDateString().substring(4, 6) + "月");
+            message.append(myDataList.get(i).getSecondDayStartDateString().substring(6, 8) + "日");
             message.append(" " + myDataList.get(i).getSecondDayParentStartTimeString().substring(0, 2));
             message.append(":" + myDataList.get(i).getSecondDayParentStartTimeString().substring(2, 4));
             message.append("～" + myDataList.get(i).getSecondDayParentEndTimeString().substring(0, 2));
