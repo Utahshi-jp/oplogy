@@ -42,9 +42,6 @@ import java.util.Map;
 
 public class Maps extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
-    ImageView backMain;
-    private GoogleMap mMap;
-    private LinearLayout locationsName;
     //GoogleMapAPiで使用可能な色
     private static final int[] COLORS = new int[]{Color.parseColor("#007FFF"), // HUE_AZURE
             Color.parseColor("#0000FF"), // HUE_BLUE
@@ -57,13 +54,14 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
             Color.parseColor("#8A2BE2"), // HUE_VIOLET
             Color.parseColor("#FFFF00") // HUE_YELLOW
     };
-    private int colorIndex = 0;
     private final List<LatLng> latLngList = new ArrayList<>();
     private final List<String> nameList = new ArrayList<>();
     private final List<Integer> colorList = new ArrayList<>();
-
     private final Map<String, Runnable> dateMap = new HashMap<>();
-
+    ImageView backMain;
+    private GoogleMap mMap;
+    private LinearLayout locationsName;
+    private int colorIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,11 +211,22 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
 
     //家庭訪問のscheduleを7桁の整数から○月〇日●時〇分(6041200→06月12日05時20分)に変換
     private String formatSchedule(String schedule) {
-        String monthString = "0" + schedule.substring(0, 1);
-        String dayString = schedule.substring(1, 3);
-        String hourString = schedule.substring(3, 5);
-        String minuteString = schedule.substring(5, 7);
-        return monthString + "月" + dayString + "日" + hourString + "時" + minuteString + "分";
+        Log.d("Maps", "schedule: " + schedule);
+        if (schedule.length() != 7) {
+            schedule = "0" + schedule;
+            String monthString = schedule.substring(0, 2);
+            String dayString = schedule.substring(2, 4);
+            String hourString = "0" + schedule.substring(4, 5);
+            String minuteString = schedule.substring(5, 7);
+            return monthString + "月" + dayString + "日" + hourString + "時" + minuteString + "分";
+        } else {
+            String monthString = "0" + schedule.substring(0, 1);
+            String dayString = schedule.substring(1, 3);
+            String hourString = schedule.substring(3, 5);
+            String minuteString = schedule.substring(5, 7);
+            return monthString + "月" + dayString + "日" + hourString + "時" + minuteString + "分";
+
+        }
     }
 
     // 共有プリファレンスからMyDataListを取得するメソッド
