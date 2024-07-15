@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="20"
     tools:context=".MainActivity">
+
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"/>
+        android:layout_weight="2" />
 
 
-<!--    ID作成のレイアウト-->
+    <!--    ID作成のレイアウト-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:weightSum="2"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <ImageView
             android:id="@+id/imageUuid"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/checked_image"
             android:layout_weight="1"
-            />
+            android:src="@drawable/checked_image" />
 
         <TextView
             android:id="@+id/creatUUID"
@@ -37,110 +36,129 @@
             android:layout_weight="1"
             android:gravity="left"
             android:text="ID作成"
-            android:textSize="50dp"
-            />
+            android:textSize="50dp" />
 
     </LinearLayout>
 
 
-<!--    セットアップのレイアウト-->
+    <!--    セットアップのレイアウト-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:weightSum="2"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <ImageView
             android:id="@+id/imageSetup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/checked_image"
             android:layout_weight="1"
-            />
+            android:src="@drawable/checked_image" />
 
         <TextView
             android:id="@+id/setUp"
             android:layout_width="99dp"
             android:layout_height="wrap_content"
-            android:text="セットアップ"
-            android:textSize="40dp"
-            android:textStyle="bold"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="left"
-            android:layout_gravity="center"/>
+            android:text="セットアップ"
+            android:textSize="40dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!--    フォームのURLのレイアウト-->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <ImageView
+            android:id="@+id/imageFormURL"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/checked_image" />
+
+        <TextView
+            android:id="@+id/formURL"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="GoogleformのURL"
+            android:textSize="40dp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="3"/>
+        android:layout_weight="2" />
 
 
-<!--    ルート表示のレイアウト-->
+    <!--    ルート表示のレイアウト-->
     <LinearLayout
         android:layout_width="400dp"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:weightSum="2"
         android:layout_gravity="center"
-        android:orientation="horizontal">
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <ImageView
             android:id="@+id/imageRoot"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/pin"
             android:layout_weight="1"
-            />
+            android:src="@drawable/pin" />
 
         <TextView
             android:id="@+id/root"
             android:layout_width="99dp"
             android:layout_height="wrap_content"
-            android:text="ルート表示"
-            android:textSize="40dp"
-            android:textStyle="bold"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="left"
-            android:layout_gravity="center"/>
+            android:text="ルート表示"
+            android:textSize="40dp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 
-<!--    提出状況のレイアウト-->
+    <!--    提出状況のレイアウト-->
     <LinearLayout
         android:layout_width="350dp"
         android:layout_height="0dp"
-        android:layout_weight="3"
         android:layout_gravity="center"
-        android:weightSum="2"
-        android:orientation="horizontal">
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <ImageView
             android:id="@+id/imageSubmission"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/submission"
             android:layout_weight="1"
-            />
+            android:src="@drawable/submission" />
 
         <TextView
             android:id="@+id/submission"
             android:layout_width="99dp"
             android:layout_height="wrap_content"
-            android:text="提出状況"
-            android:textSize="40dp"
-            android:textStyle="bold"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="left"
-            android:layout_gravity="center"/>
+            android:text="提出状況"
+            android:textSize="40dp"
+            android:textStyle="bold" />
     </LinearLayout>
-
-
-
-
-
 
 
 </LinearLayout>
