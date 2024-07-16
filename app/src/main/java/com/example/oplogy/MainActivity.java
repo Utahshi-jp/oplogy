@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();   // 画面遷移後元の状態に戻す
         }
 
-        //        formコピー用のクリック処理
+//      formコピー用のクリック処理
         if (view == formURL) {
             imageFormURL.setImageResource(R.drawable.ischecked_uuid);
             copyUrlToClipboard(URL_TO_COPY);
