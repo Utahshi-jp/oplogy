@@ -1,6 +1,9 @@
 package com.example.oplogy;
 
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,19 +30,20 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    //    formコピー用のURL
+    private static final String URL_TO_COPY = "https://docs.google.com/forms/d/e/1FAIpQLScKI_ca01nO7die7SqZyThiqa7NB7gcucMJtiV_-sc3eZX6KQ/viewform";
     //    ダイアログの宣言
     private AlertDialog alertDialog;
-
     //    ID作成のTextViewとImageView
     private TextView creatUUID;
     private ImageView imageUuid;
-
-
     //    セットアップのTextViewとImageView
     private TextView setUp;
     private ImageView imageSetup;
-
-    //    セットアップのTextViewとImageView
+    //    formコピー用のボタン
+    private TextView formURL;
+    private ImageView imageFormURL;
+    //    ルート作成のTextViewとImageView
     private TextView root;
     private ImageView imageRoot;
     //    提出状況のTextViewとImageView
@@ -71,6 +75,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setUp.setOnClickListener(this);
         imageSetup = findViewById(R.id.imageSetup);
         imageSetup.setOnClickListener(this);
+
+//        formコピー用のインテント
+        formURL = findViewById(R.id.formURL);
+        formURL.setOnClickListener(this);
+        imageFormURL = findViewById(R.id.imageFormURL);
+        imageFormURL.setOnClickListener(this);
+
 
 //        ルート作成用のインテント
         root = findViewById(R.id.root);
@@ -134,6 +145,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();   // 画面遷移後元の状態に戻す
         }
 
+//      formコピー用のクリック処理
+        if (view == formURL) {
+            imageFormURL.setImageResource(R.drawable.ischecked_uuid);
+            copyUrlToClipboard(URL_TO_COPY);
+        }
+        if (view == imageFormURL) {
+            imageFormURL.setImageResource(R.drawable.ischecked_uuid);
+            copyUrlToClipboard(URL_TO_COPY);
+        }
+
 //        ルート作成のクリック処理
         if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
@@ -161,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
         }
     }
+
 
     //ID作成、表示に関する処理
     private void showUUIDYesNoDialog() {
@@ -280,6 +302,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }, executorService).whenComplete((result, throwable) -> executorService.shutdown());
     }
 
+    //クリップボードにURLをコピーする処理
+    private void copyUrlToClipboard(String url) {
+        try {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("URL", url);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(this, "GoogleFormのURLをコピーしました", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "エラー コピーできませんでした", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error copying URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {
@@ -342,6 +379,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
 
+            //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
             final List<MyDataClass> finalMyDataList = myDataList;
             CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
             String startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
