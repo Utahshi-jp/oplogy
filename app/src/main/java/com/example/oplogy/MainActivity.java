@@ -1,5 +1,6 @@
 package com.example.oplogy;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -322,6 +323,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createRoute(ExecutorService executor) {
+        // ProgressDialogを作成
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         executor.execute(() -> {
             List<MyDataClass> myDataList = null;
             while (myDataList == null) {
@@ -330,11 +337,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    runOnUiThread(progressDialog::dismiss); // 進行状況ダイアログを閉じる
                     return;
                 }
             }
 
-            //final宣言することによって、スレッドセーフになる(ラムダ式内で使えるようにする)
             final List<MyDataClass> finalMyDataList = myDataList;
             CreateSchedule createSchedule = new CreateSchedule(MainActivity.this);
             String startPointLatLngString = createSchedule.receiveData(myDataList, getApplicationContext());
@@ -349,7 +356,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Boolean finalNotDuplicatesBoolean = notDuplicatesBoolean;
             Log.d("MainActivity", "重複判定" + String.valueOf(finalNotDuplicatesBoolean));
+
             runOnUiThread(() -> {
+                progressDialog.dismiss(); // 進行状況ダイアログを閉じる
                 if (finalNotDuplicatesBoolean) {
                     Log.d("MainActivity", "スケジュール作成成功");
                     saveMyDataList(finalMyDataList);
@@ -357,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     toRoot.putExtra("startPointLatLngString", startPointLatLngString);
                     startActivity(toRoot);
                 } else {
-                    //保護者の重複による警告ダイアログ
+                    // 保護者の重複による警告ダイアログ
                     showErrorDialog(finalMyDataList);
                 }
             });
@@ -366,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             executor.shutdown();
         });
     }
+
 
     private void saveMyDataList(List<MyDataClass> myDataList) {
         // 共有プリファレンスのインスタンスを取得
