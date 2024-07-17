@@ -1,7 +1,9 @@
 package com.example.oplogy;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubmissionActivity extends AppCompatActivity {
+    private final List<SubmissionStudent> studentsList = new ArrayList<>();
     private RecyclerView recyclerView;
     private SubmissionAdapter submissionAdapter;
-    private final List<SubmissionStudent> studentsList = new ArrayList<>();
-    ArrayList<Integer> studentNumbersList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +26,7 @@ public class SubmissionActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.BackMain_fromSubmission);
         backButton.setOnClickListener(v -> finish());
 
-
-        // インテントから提出状況の生徒の数を取得
-        studentNumbersList=getIntent().getIntegerArrayListExtra("submissionStudents");
-
+        // RecyclerViewとアダプターの初期化
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         submissionAdapter = new SubmissionAdapter(studentsList);
@@ -37,15 +35,21 @@ public class SubmissionActivity extends AppCompatActivity {
         // 生徒のリストを取得
         fetchStudents();
     }
+
     private void fetchStudents() {
         // インテントから生徒のリストを取得
         ArrayList<SubmissionStudent> submissionStudentsList = getIntent().getParcelableArrayListExtra("submissionStudents");
 
-        // 生徒のリストを反復処理し、それをRecyclerViewに表示
-        studentsList.addAll(submissionStudentsList);
+        if (submissionStudentsList != null) {
+            Log.d("SubmissionActivity", "Size of submissionStudentsList: " + submissionStudentsList.size());
+
+            studentsList.addAll(submissionStudentsList);
+        } else {
+            Log.e("SubmissionActivity", "submissionStudentsList is null");
+            Toast.makeText(this, "生徒のリストが取得できませんでした", Toast.LENGTH_SHORT).show();
+        }
 
         // データが変更されたことをアダプターに通知
         submissionAdapter.notifyDataSetChanged();
     }
 }
-

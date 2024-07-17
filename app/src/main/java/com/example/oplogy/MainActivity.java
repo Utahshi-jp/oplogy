@@ -343,6 +343,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // `fetchDataAndCreateRoute`メソッド内では、shutdownを呼び出さない
     }
 
+    //  未提出者がいることの警告ダイアログ
     private void showRouteCreationDialog() {
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("警告")
@@ -358,6 +359,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .show();
     }
+
+//  ルート作成の非同期処理
 
     private void createRoute(ExecutorService executor) {
         // ProgressDialogを作成
@@ -414,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-
+    //  作成したルートを(Mapに渡せるように)保存するメソッド
     private void saveMyDataList(List<MyDataClass> myDataList) {
         // 共有プリファレンスのインスタンスを取得
         SharedPreferences sharedPreferences = getSharedPreferences("MyDataList", MODE_PRIVATE);
@@ -429,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.apply();
     }
 
+    //  保護者の重複による警告ダイアログ
     private void showErrorDialog(List<MyDataClass> myDataList) {
         List<Integer> studentNumbers = new ArrayList<>();
         for (MyDataClass data : myDataList) {
@@ -462,14 +466,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
-
+    //  データベースのインスタンスを取得するメソッド
     private AppDatabase getDatabaseInstance() {
         return Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "SetUpTable").build();
     }
 
 
     //提出状況の取得
-    private ArrayList<SubmissionStudent> getSubmissionStudents() {
+    public ArrayList<SubmissionStudent> getSubmissionStudents() {
         ArrayList<SubmissionStudent> submissionStudents = new ArrayList<>();
         List<MyDataClass> myDataList = firestoreReception.getMyDataList();
 
@@ -477,39 +481,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CountDownLatch latch = new CountDownLatch(1);
 
         executor.execute(() -> {
-            // 1. Roomデータベースから全生徒数を取得
-            AppDatabase db = getDatabaseInstance();
-            SetUpTableDao setUpTableDao = db.setUpTableDao();
-            int totalStudentInt = setUpTableDao.getTotalStudent();
-            // 2. Firestoreから生徒番号のリストを取得
-            ArrayList<Integer> firestoreStudentNumbersList = new ArrayList<>();
-            for (MyDataClass myData : myDataList) {
-                int studentNumberInt = myData.getStudentNumber();
-                firestoreStudentNumbersList.add(studentNumberInt);
-            }
+            try {
+                // 1. Roomデータベースから全生徒数を取得
+                AppDatabase db = getDatabaseInstance();
+                SetUpTableDao setUpTableDao = db.setUpTableDao();
+                int totalStudentInt = setUpTableDao.getTotalStudent();
 
-            // 3. SubmissionStudentオブジェクトのリストを作成
-            for (int i = 1; i <= totalStudentInt; i++) {
-                boolean submitted = firestoreStudentNumbersList.contains(i);
-                submissionStudents.add(new SubmissionStudent(i, submitted));
-            }
+                // 2. Firestoreから生徒番号のリストを取得
+                ArrayList<Integer> firestoreStudentNumbersList = new ArrayList<>();
+                for (MyDataClass myData : myDataList) {
+                    int studentNumberInt = myData.getStudentNumber();
+                    firestoreStudentNumbersList.add(studentNumberInt);
+                }
 
-            // 4. データベース操作が完了したことを通知
-            latch.countDown();
+                // 3. SubmissionStudentオブジェクトのリストを作成
+                for (int i = 1; i <= totalStudentInt; i++) {
+                    boolean submitted = firestoreStudentNumbersList.contains(i);
+                    submissionStudents.add(new SubmissionStudent(i, submitted));
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // ログにエラーメッセージを出力
+            } finally {
+                // 4. データベース操作が完了したことを通知
+                latch.countDown();
+            }
         });
 
         try {
-            // データベース操作が完了するのを待つ
-            latch.await();
+            latch.await(); // 非同期処理が完了するまで待機
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            executor.shutdown(); // ExecutorServiceをシャットダウン
         }
 
-        executor.shutdown();
-
-        // SubmissionStudentオブジェクトのリストを返す
         return submissionStudents;
     }
+
 
     @Override
     protected void onDestroy() {
