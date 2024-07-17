@@ -2,6 +2,8 @@ package com.example.oplogy;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -414,6 +416,8 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
     }
 
     // スクロールビューに位置情報を追加するメソッド
+    // スクロールビューに位置情報を追加するメソッド
+// スクロールビューに位置情報を追加するメソッド
     private void addLocationToScrollView(String locationName, int color) {
         runOnUiThread(() -> {
             try {
@@ -422,34 +426,51 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback, View.O
                 textView.setText(locationName);
                 textView.setTextSize(20);
                 textView.setPadding(16, 16, 16, 16);
-                textView.setBackgroundColor(color);
+                textView.setTextColor(Color.BLACK); // 文字色を黒に設定
+                textView.setBackgroundColor(Color.WHITE); // 背景色を白に設定
+
+                // 円を作成
+                ShapeDrawable circle = new ShapeDrawable(new OvalShape());
+                circle.setIntrinsicWidth(30);
+                circle.setIntrinsicHeight(30);
+                circle.getPaint().setColor(color);
+
+                // 左側に円を表示するためにDrawableを設定
+                textView.setCompoundDrawablesWithIntrinsicBounds(circle, null, null, null);
+                textView.setCompoundDrawablePadding(16);
 
                 // テキストビューにクリックリスナーを追加
                 textView.setOnClickListener(v -> {
-                    // 名前リストから位置情報を取得
-                    int index = nameList.indexOf(locationName);
-                    if (index != -1) {
-                        LatLng position = latLngList.get(index);
-                        // カメラを該当ピンの位置に移動
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                    for (int j = 0; j < nameList.size(); j++) {
+                        if (nameList.get(j).equals(locationName)) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngList.get(j), 17));
+                            break;
+                        }
                     }
                 });
 
-                // 下線のビューの作成
-                View underline = new View(this);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3);
-                params.setMargins(0, 0, 0, 16);
-                underline.setLayoutParams(params);
-                underline.setBackgroundColor(Color.BLACK);
+                // ボーダーラインの作成
+                View border = new View(this);
+                border.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, // 横幅は親と同じ
+                        2 // 高さは2dp
+                ));
+                border.setBackgroundColor(Color.GRAY); // ボーダーラインの色を設定
 
-                // テキストビューと下線のビューをスクロールビューに追加
-                locationsName.addView(textView);
-                locationsName.addView(underline);
+                // レイアウトの作成
+                LinearLayout layout = new LinearLayout(this);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                layout.addView(textView);
+                layout.addView(border);
+
+                // スクロールビューにレイアウトを追加
+                locationsName.addView(layout);
             } catch (Exception e) {
-                Log.e("Maps", "Error adding location to scroll view", e);
+                Log.e("Maps", "エラーが発生しました。原因は以下", e);
             }
         });
     }
+
 
     private int getNextColor() {
         int color = COLORS[colorIndex];
