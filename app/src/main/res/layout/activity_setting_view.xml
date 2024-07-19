@@ -4,145 +4,123 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="20"
-    tools:context=".MainActivity">
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="2" />
-
-
-    <!--    タイトルのレイアウト-->
-
+    android:weightSum="13"
+    tools:context=".SettingView">
 
     <LinearLayout
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="4"
+        android:layout_weight="2"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:weightSum="3">
+        android:weightSum="10">
 
         <ImageView
-            android:id="@+id/imageTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/app_icon" />
+            android:id="@+id/BackMain_fromSetting"
+            android:layout_width="36dp"
+            android:layout_height="74dp"
+            android:layout_weight="3"
+            android:src="@drawable/back_button" />
 
         <TextView
-            android:id="@+id/title"
-            android:layout_width="99dp"
+            android:id="@+id/Setting"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="2"
-            android:gravity="left"
-            android:text="OPLOGY"
-            android:textSize="60dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="2" />
-
-
-    <!--    ルート表示のレイアウト-->
-    <LinearLayout
-        android:layout_width="400dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="3"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-        <ImageView
-            android:id="@+id/imageRoot"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/pin" />
-
-        <TextView
-            android:id="@+id/root"
-            android:layout_width="99dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:text="ルート表示"
-            android:textSize="40dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5" />
-
-
-    <!--    提出状況のレイアウト-->
-    <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="3"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-        <ImageView
-            android:id="@+id/imageSubmission"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/submission" />
-
-        <TextView
-            android:id="@+id/submission"
-            android:layout_width="99dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:text="提出状況"
-            android:textSize="40dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5" />
-
-    <!--    諸々の設定のレイアウト-->
-    <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="3"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-        <ImageView
-            android:id="@+id/imageSetting"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/setting" />
-
-        <TextView
-            android:id="@+id/setting"
-            android:layout_width="99dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="left"
+            android:layout_weight="7"
+            android:padding="8dp"
             android:text="設定"
-            android:textSize="40dp"
+            android:textSize="40dp" />
+    </LinearLayout>
+
+    <!--    ID作成のレイアウト-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <ImageView
+            android:id="@+id/imageUuid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:src="@drawable/createid" />
+
+        <TextView
+            android:id="@+id/creatUUID"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="ID作成"
+            android:textSize="50dp" />
+
+    </LinearLayout>
+
+
+    <!--    セットアップのレイアウト-->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+
+        android:weightSum="2">
+
+        <ImageView
+            android:id="@+id/imageSetup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:src="@drawable/settingsetup" />
+
+        <TextView
+            android:id="@+id/setUp"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="家庭訪問情報"
+            android:textSize="36dp"
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!--    フォームのURLのレイアウト-->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <ImageView
+            android:id="@+id/imageFormURL"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:src="@drawable/form" />
+
+        <TextView
+            android:id="@+id/formURL"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="GoogleformのURL"
+            android:textSize="28dp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>
