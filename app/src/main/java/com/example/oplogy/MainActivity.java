@@ -1,10 +1,6 @@
 package com.example.oplogy;
 
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,30 +26,21 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //    formコピー用のURL
-    private static final String URL_TO_COPY = "https://docs.google.com/forms/d/e/1FAIpQLScKI_ca01nO7die7SqZyThiqa7NB7gcucMJtiV_-sc3eZX6KQ/viewform";
+
     //    ダイアログの宣言
     private AlertDialog alertDialog;
     //    ID作成のTextViewとImageView
-    private TextView creatUUID;
-    private ImageView imageUuid;
-    //    セットアップのTextViewとImageView
-    private TextView setUp;
-    private ImageView imageSetup;
-    //    formコピー用のボタン
-    private TextView formURL;
-    private ImageView imageFormURL;
-    //    ルート作成のTextViewとImageView
     private TextView root;
     private ImageView imageRoot;
     //    提出状況のTextViewとImageView
     private TextView submission;
     private ImageView imageSubmission;
+    private TextView SettingView;
+    private ImageView imageSettingView;
 
     //firestoreの受信関連
     private FirebaseFirestore db;
     private FirestoreReception firestoreReception;
-    private FirestoreReception_classIdDatabase firestoreReception_classIdDatabase;
 
     //取得するためのクラスID
     private int classId;
@@ -63,24 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-//        ID作成用のインテント
-        creatUUID = findViewById(R.id.creatUUID);
-        creatUUID.setOnClickListener(this);
-        imageUuid = findViewById(R.id.imageUuid);
-        imageUuid.setOnClickListener(this);
-
-
-//        セットアップ用のインテント
-        setUp = findViewById(R.id.setUp);
-        setUp.setOnClickListener(this);
-        imageSetup = findViewById(R.id.imageSetup);
-        imageSetup.setOnClickListener(this);
-
-//        formコピー用のインテント
-        formURL = findViewById(R.id.formURL);
-        formURL.setOnClickListener(this);
-        imageFormURL = findViewById(R.id.imageFormURL);
-        imageFormURL.setOnClickListener(this);
 
 
 //        ルート作成用のインテント
@@ -94,6 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         submission.setOnClickListener(this);
         imageSubmission = findViewById(R.id.imageSubmission);
         imageSubmission.setOnClickListener(this);
+
+//        設定用のインテント
+        SettingView = findViewById(R.id.setting);
+        SettingView.setOnClickListener(this);
+        imageSettingView = findViewById(R.id.imageSetting);
+        imageSettingView.setOnClickListener(this);
 
 //      firestoreの受信関連
         db = FirebaseFirestore.getInstance();
@@ -121,40 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //    クリック処理
     @Override
     public void onClick(View view) {
-//        ID作成のクリック処理
-        if (view == creatUUID) {
-            imageUuid.setImageResource(R.drawable.ischecked_uuid);
-            showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
-        }
-        if (view == imageUuid) {
-            imageUuid.setImageResource(R.drawable.ischecked_uuid);
-            showUUIDYesNoDialog();//UUIDを表示するかのダイアログ
-        }
-//        セットアップのクリック処理
-        if (view == setUp) {
-            imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
-            toSetup.putExtra("classId", classId);
-            startActivity(toSetup);
-            finish();   // 画面遷移後元の状態に戻す
-        }
-        if (view == imageSetup) {
-            imageSetup.setImageResource(R.drawable.ischecked_uuid);
-            Intent toSetup = new Intent(MainActivity.this, SetUpActivity.class);
-            startActivity(toSetup);
-            finish();   // 画面遷移後元の状態に戻す
-        }
-
-//      formコピー用のクリック処理
-        if (view == formURL) {
-            imageFormURL.setImageResource(R.drawable.ischecked_uuid);
-            copyUrlToClipboard(URL_TO_COPY);
-        }
-        if (view == imageFormURL) {
-            imageFormURL.setImageResource(R.drawable.ischecked_uuid);
-            copyUrlToClipboard(URL_TO_COPY);
-        }
-
 //        ルート作成のクリック処理
         if (view == root) {
             imageRoot.setImageResource(R.drawable.pin);
@@ -181,76 +122,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(toSubmission);
             });
         }
-    }
-
-
-    //ID作成、表示に関する処理
-    private void showUUIDYesNoDialog() {
-        firestoreReception_classIdDatabase = new FirestoreReception_classIdDatabase();
-        List<Integer> classIdList = firestoreReception_classIdDatabase.getAllDocumentsFromClassIdDatabase();
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("ID");
-        builder.setMessage("あなたのIDを表示/もしくは新規で作成しますか？");
-
-        //作成処理
-        builder.setPositiveButton("作成", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                classId = CreateUUID.generateUUID(classIdList);
-                // 生成されたIDを表示するメソッド
-                showClassIdDialog("生成されたID", classId);
-            }
-        });
-        //表示処理
-        builder.setNegativeButton("表示", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //roomを扱うため非同期処理
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(() -> {
-                    // 現在のクラスIDを取得
-                    int currentClassId = getCurrentClassIdFromRoom();
-                    if (currentClassId == 0) {
-                        currentClassId = classId;
-                    }
-                    final int showDialogClassId = currentClassId;
-                    runOnUiThread(() -> {
-                        // 現在のクラスIDを表示するダイアログ
-                        showClassIdDialog("現在のID", showDialogClassId);
-                    });
-                });
-                executor.shutdown();
-            }
-        });
-
-        alertDialog = builder.create();
-        alertDialog.show();
-
-    }
-
-    private int getCurrentClassIdFromRoom() {
-        AppDatabase db = getDatabaseInstance();
-        SetUpTableDao setUpTableDao = db.setUpTableDao();
-
-        // 現在のクラスIDを取得
-        return setUpTableDao.getClassId();
-    }
-
-    //クラスIDを表示するダイアログ
-    private void showClassIdDialog(String title, int classId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage("ID: " + classId);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        if (view == SettingView) {
+            Intent toSettingView = new Intent(MainActivity.this, SettingView.class);
+            startActivity(toSettingView);
+        }
+        if (view == imageSettingView) {
+            Intent toSettingView = new Intent(MainActivity.this, SettingView.class);
+            startActivity(toSettingView);
+        }
     }
 
 
@@ -262,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runOnUiThread(onSetupComplete);
                 } else {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "先にセットアップを済ませてください", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "先に設定画面で情報を入力してください", Toast.LENGTH_SHORT).show();
                     });
                 }
             }).exceptionally(ex -> {
@@ -273,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return null;
             });
         } else {
-            Toast.makeText(this, "先にIDの作成を行ってください", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "先に設定画面で情報を入力してください", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -302,21 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }, executorService).whenComplete((result, throwable) -> executorService.shutdown());
     }
 
-    //クリップボードにURLをコピーする処理
-    private void copyUrlToClipboard(String url) {
-        try {
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("URL", url);
-            if (clipboard != null) {
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(this, "GoogleFormのURLをコピーしました", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "エラー コピーできませんでした", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "Error copying URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
 
     //ルート作成の非同期処理
     private void fetchDataAndCreateRoute() {

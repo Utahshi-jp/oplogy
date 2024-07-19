@@ -19,6 +19,9 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".SettingView"
+            android:exported="false" />
+        <activity
             android:name=".SetUpActivity"
             android:exported="false" />
         <!--

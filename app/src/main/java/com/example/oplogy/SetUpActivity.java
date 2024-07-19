@@ -97,7 +97,7 @@ public class SetUpActivity extends FragmentActivity
         Button reset = findViewById(R.id.resetButton);
 
         toMain.setOnClickListener(view -> {
-            Intent intent = new Intent(SetUpActivity.this, MainActivity.class); //main画面へ戻る処理
+            Intent intent = new Intent(SetUpActivity.this, SettingView.class); //main画面へ戻る処理
             startActivity(intent);
         });
 
