@@ -104,8 +104,22 @@ public class SetUpActivity extends FragmentActivity
         setUp.setOnClickListener(view -> {
 
             teacherNameString = setTeacherName.getText().toString(); //各変数に値を挿入
-            Log.d(TAG, "Teacher Name: " + teacherNameString);
             startPointString = setStartPoint.getText().toString();
+            firstDayString = setFirstDay.getText().toString();
+            secondDayString = setSecondDay.getText().toString();
+            thirdDayString = setThirdDay.getText().toString();
+            startTimeString = setStartTime.getText().toString();
+            endTimeString = setEndTime.getText().toString();
+            startBreakTimeString = setStartBreakTime.getText().toString();
+            endBreakTimeString = setEndBreakTime.getText().toString();
+
+            try {
+                totalStudentString = Integer.parseInt(setTotalStudent.getText().toString());
+            } catch (NumberFormatException e) {
+                Toast.makeText(SetUpActivity.this, "記入欄にすべて入力を済ませてから押してください", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Log.d(TAG, "Teacher Name: " + teacherNameString);
             Log.d(TAG, "Start Point: " + startPointString);
             Log.d(TAG, "First Day:" + firstDayString);
             Log.d(TAG, "Second Day:" + secondDayString);
@@ -124,10 +138,8 @@ public class SetUpActivity extends FragmentActivity
             Log.d(TAG, "Interval Time" + intervalTimeString);
             Log.d(TAG, "Start Break Time" + startBreakTimeString);
             Log.d(TAG, "End Break Time" + endBreakTimeString);
-            totalStudentString = Integer.parseInt(setTotalStudent.getText().toString()); //数値型に変更
             Log.d(TAG, "Total Student" + totalStudentString);
             Log.d(TAG, "onClick: できてるよ");
-
 
             // データベースへの登録処理
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -175,7 +187,6 @@ public class SetUpActivity extends FragmentActivity
                 editor.apply();
 
             });
-
 
         });
 
@@ -234,6 +245,7 @@ public class SetUpActivity extends FragmentActivity
             });
         });
     }
+
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) { //Dateを成形する
