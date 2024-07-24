@@ -27,12 +27,9 @@ public class FirestoreReception {
     //ClassIdを引数にデータの作成を行う
     public void getDocumentsByClassId(int classId) {
         myDataList.clear();
-        //pixel6a
-        CollectionReference collectionRef = db.collection("test0711Data");
+        CollectionReference collectionRef = db.collection("QuestionForm");
 
-        //xiaomi
-//        CollectionReference collectionRef = db.collection("testDistinct");
-        // classIdが引数のものを取得する
+
         collectionRef.whereEqualTo("classId", classId).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

@@ -21,8 +21,6 @@ public class CreateUUID {
                 //firestoreに挿入処理
                 InsertClassIdforFirebase insertClassIdforFirebase = new InsertClassIdforFirebase();
                 insertClassIdforFirebase.insertClassId(uuidInt);
-                //テスト用
-                uuidInt = 328071;
                 return uuidInt;
             }
         }

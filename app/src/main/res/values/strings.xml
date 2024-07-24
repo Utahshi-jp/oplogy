@@ -3,7 +3,7 @@
     <string name="maps_api_key">AIzaSyBqLqPm76UFpwbpU8b3oiH0wbkhosrPWpU</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="setUp">設定</string>
-    <string name="reset">リセット</string>
+    <string name="reset">データ削除</string>
     <string name="teacherName">担任の名前</string>
     <string name="startPoint">開始地点</string>
     <string name="startTime">開始時刻</string>
